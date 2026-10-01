@@ -4,13 +4,13 @@
   "uid": "TC78",
   "version": 1000,
   "so": "trcw78.so",
-  "module": "module.mpc.json",
   "art": "html",
   "build": {
     "root": ".",
     "sources": [
       "src/dsp/cr78_plugin.cpp",
-      "src/dsp/cr78_engine.cpp"
+      "src/dsp/cr78_engine.cpp",
+      "src/mpc_pads_engine.c"
     ],
     "cflags": [
       "-Isrc",
@@ -23,5 +23,6 @@
       "-lm"
     ]
   },
-  "layout": "layout.conf"
+  "layout": "layout.conf",
+  "params": "module.mpc.json"
 }

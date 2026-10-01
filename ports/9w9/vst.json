@@ -4,13 +4,13 @@
   "uid": "T9W9",
   "version": 1000,
   "so": "tr9w9.so",
-  "module": "module.mpc.json",
   "art": "html",
   "build": {
     "root": ".",
     "sources": [
       "src/dsp/er99_plugin.c",
-      "src/dsp/er99_engine.c"
+      "src/dsp/er99_engine.c",
+      "src/mpc_pads_engine.c"
     ],
     "cflags": [
       "-Isrc",
@@ -25,5 +25,6 @@
   "defines": {
     "MODULE_SUBDIR": "\"engine\""
   },
-  "layout": "layout.conf"
+  "layout": "layout.conf",
+  "params": "module.mpc.json"
 }

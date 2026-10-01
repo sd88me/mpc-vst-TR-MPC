@@ -4,13 +4,13 @@
   "uid": "T8W8",
   "version": 1000,
   "so": "tr8w8.so",
-  "module": "module.mpc.json",
   "art": "html",
   "build": {
     "root": ".",
     "sources": [
       "src/dsp/sc808_plugin.cpp",
-      "src/dsp/sc808_engine.cpp"
+      "src/dsp/sc808_engine.cpp",
+      "src/mpc_pads_engine.c"
     ],
     "cflags": [
       "-Isrc",
@@ -23,5 +23,6 @@
       "-lm"
     ]
   },
-  "layout": "layout.conf"
+  "layout": "layout.conf",
+  "params": "module.mpc.json"
 }

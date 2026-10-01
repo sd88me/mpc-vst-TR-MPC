@@ -165,7 +165,8 @@ void destroy(void *p) {
 void midi(void *p, const uint8_t *m, int len) {
     Inst *in = (Inst *)p;
     if (len < 3 || (m[0] & 0xF0) != 0x90 || m[2] == 0) return;   /* one-shots: note-offs ignored */
-    const int slot = (int)m[1] - 36;
+    /* notes 36-51, or 0-15 (what the MPC OS drum-pad patch sends: pad n = note n-1) */
+    const int slot = m[1] < kSlots ? (int)m[1] : (int)m[1] - 36;
     if (slot < 0 || slot >= kSlots) return;
     int b, v;
     flat_to_bv(in->slot_flat[slot], &b, &v);

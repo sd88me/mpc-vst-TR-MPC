@@ -4,13 +4,13 @@
   "uid": "T6W6",
   "version": 1000,
   "so": "tr6w6.so",
-  "module": "module.mpc.json",
   "art": "html",
   "build": {
     "root": ".",
     "sources": [
       "src/dsp/sd606_plugin.cpp",
-      "src/dsp/sd606_engine.cpp"
+      "src/dsp/sd606_engine.cpp",
+      "src/mpc_pads_engine.c"
     ],
     "cflags": [
       "-Isrc",
@@ -24,5 +24,6 @@
       "-lm"
     ]
   },
-  "layout": "layout.conf"
+  "layout": "layout.conf",
+  "params": "module.mpc.json"
 }
