@@ -1,0 +1,13 @@
+{
+  "name": "6W6", "vendor": "sd88me", "uid": "T6W6", "version": 1000,
+  "so": "tr6w6.so",
+  "module": "module.mpc.json",
+  "art": "html",
+  "build": {
+    "root": ".",
+    "sources": ["src/dsp/sd606_plugin.cpp", "src/dsp/sd606_engine.cpp"],
+    "cflags": ["-Isrc", "-Isrc/dsp", "-Isrc/host", "-Isrc/vendor/606", "-O3", "-std=gnu++14"],
+    "libs": ["-lm"]
+  }
+}
+
