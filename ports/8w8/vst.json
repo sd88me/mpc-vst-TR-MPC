@@ -1,0 +1,12 @@
+{
+  "name": "8W8", "vendor": "sd88me", "uid": "T8W8", "version": 1000,
+  "so": "tr8w8.so",
+  "module": "module.mpc.json",
+  "art": "html",
+  "build": {
+    "root": ".",
+    "sources": ["src/dsp/sc808_plugin.cpp", "src/dsp/sc808_engine.cpp"],
+    "cflags": ["-Isrc", "-Isrc/dsp", "-Isrc/host", "-std=gnu++14", "-O3"],
+    "libs": ["-lm"]
+  }
+}

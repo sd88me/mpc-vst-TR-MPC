@@ -1,0 +1,2014 @@
+{
+ "id": "cw78",
+ "name": "CW-78",
+ "abbrev": "CW-78",
+ "version": "1.5.0",
+ "description": "Roland CR-78 CompuRhythm - 14 circuit-modelled voices built from the 1979 service notes and held to Roland's own factory alignment table, plus the machine's 34 preset rhythms. 7 distortion types per voice and on the master, reverb and delay sends, bus compressor.",
+ "author": "athousanddetails; every voice modelled from the Roland CR-78 service notes (June 1979), VG-11A voicing board",
+ "dsp": "dsp.so",
+ "api_version": 2,
+ "component_type": "sound_generator",
+ "min_host_version": "0.12.1",
+ "capabilities": {
+  "audio_out": true,
+  "audio_in": false,
+  "midi_in": true,
+  "midi_out": false,
+  "chainable": true,
+  "component_type": "sound_generator",
+  "default_forward_channel": 1
+ },
+ "chain_params": [
+  {
+   "key": "bd_tune",
+   "name": "BD Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "bd_decay",
+   "name": "BD Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 44
+  },
+  {
+   "key": "bd_drive",
+   "name": "BD Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "bd_dist_type",
+   "name": "BD Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "bd_level",
+   "name": "BD Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "sd_tune",
+   "name": "SD Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "sd_decay",
+   "name": "SD Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 41
+  },
+  {
+   "key": "sd_snappy",
+   "name": "SD Snappy",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "sd_drive",
+   "name": "SD Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "sd_dist_type",
+   "name": "SD Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "sd_level",
+   "name": "SD Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "rs_tune",
+   "name": "RS Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "rs_decay",
+   "name": "RS Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 32
+  },
+  {
+   "key": "rs_drive",
+   "name": "RS Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "rs_dist_type",
+   "name": "RS Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rs_level",
+   "name": "RS Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "hh_tune",
+   "name": "HH Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "hh_decay",
+   "name": "HH Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 56
+  },
+  {
+   "key": "hh_drive",
+   "name": "HH Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "hh_dist_type",
+   "name": "HH Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "hh_level",
+   "name": "HH Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "cy_tune",
+   "name": "CY Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "cy_decay",
+   "name": "CY Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 60
+  },
+  {
+   "key": "cy_drive",
+   "name": "CY Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cy_dist_type",
+   "name": "CY Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "cy_level",
+   "name": "CY Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "ma_tune",
+   "name": "M Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "ma_decay",
+   "name": "M Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 37
+  },
+  {
+   "key": "ma_drive",
+   "name": "M Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "ma_dist_type",
+   "name": "M Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "ma_level",
+   "name": "M Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "cl_tune",
+   "name": "C Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "cl_decay",
+   "name": "C Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 44
+  },
+  {
+   "key": "cl_drive",
+   "name": "C Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cl_dist_type",
+   "name": "C Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "cl_level",
+   "name": "C Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "hb_tune",
+   "name": "HB Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "hb_decay",
+   "name": "HB Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 48
+  },
+  {
+   "key": "hb_drive",
+   "name": "HB Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "hb_dist_type",
+   "name": "HB Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "hb_level",
+   "name": "HB Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "lb_tune",
+   "name": "LB Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "lb_decay",
+   "name": "LB Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 48
+  },
+  {
+   "key": "lb_drive",
+   "name": "LB Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "lb_dist_type",
+   "name": "LB Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "lb_level",
+   "name": "LB Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "lc_tune",
+   "name": "LC Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "lc_decay",
+   "name": "LC Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 55
+  },
+  {
+   "key": "lc_drive",
+   "name": "LC Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "lc_dist_type",
+   "name": "LC Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "lc_level",
+   "name": "LC Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "cb_tune",
+   "name": "CB Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "cb_decay",
+   "name": "CB Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 38
+  },
+  {
+   "key": "cb_drive",
+   "name": "CB Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cb_dist_type",
+   "name": "CB Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "cb_level",
+   "name": "CB Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "tb_tune",
+   "name": "TB Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "tb_decay",
+   "name": "TB Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 76
+  },
+  {
+   "key": "tb_drive",
+   "name": "TB Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "tb_dist_type",
+   "name": "TB Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "tb_level",
+   "name": "TB Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "gu_tune",
+   "name": "G Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "gu_decay",
+   "name": "G Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 59
+  },
+  {
+   "key": "gu_rate",
+   "name": "G Rate",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "gu_drive",
+   "name": "G Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "gu_dist_type",
+   "name": "G Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "gu_level",
+   "name": "G Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "mb_tune",
+   "name": "MB Tune",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "mb_decay",
+   "name": "MB Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 52
+  },
+  {
+   "key": "mb_drive",
+   "name": "MB Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "mb_dist_type",
+   "name": "MB Distortion",
+   "type": "enum",
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "mb_level",
+   "name": "MB Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 64,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "master_dist",
+   "name": "Master Dist",
+   "type": "enum",
+   "options": [
+    "Off",
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ],
+   "default": 0
+  },
+  {
+   "key": "master_drive",
+   "name": "Master Drive",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "comp",
+   "name": "Comp",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "volume",
+   "name": "Volume",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 100,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "vel_depth",
+   "name": "Velocity",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 127
+  },
+  {
+   "key": "note_map",
+   "name": "Note Map",
+   "type": "enum",
+   "options": [
+    "Rack 36",
+    "GM"
+   ],
+   "default": 0
+  },
+  {
+   "key": "hat_choke",
+   "name": "Choke",
+   "type": "enum",
+   "options": [
+    "Off",
+    "MA/TB",
+    "All3"
+   ],
+   "default": 0
+  },
+  {
+   "key": "sd_rev",
+   "name": "SD Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "sd_dly",
+   "name": "SD Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "rs_rev",
+   "name": "RS Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "rs_dly",
+   "name": "RS Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "hh_rev",
+   "name": "HH Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "hh_dly",
+   "name": "HH Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cy_rev",
+   "name": "CY Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cy_dly",
+   "name": "CY Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "ma_rev",
+   "name": "M Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "ma_dly",
+   "name": "M Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cl_rev",
+   "name": "C Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cl_dly",
+   "name": "C Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "hb_rev",
+   "name": "HB Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "hb_dly",
+   "name": "HB Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "lb_rev",
+   "name": "LB Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "lb_dly",
+   "name": "LB Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "lc_rev",
+   "name": "LC Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "lc_dly",
+   "name": "LC Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cb_rev",
+   "name": "CB Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "cb_dly",
+   "name": "CB Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "tb_rev",
+   "name": "TB Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "tb_dly",
+   "name": "TB Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "gu_rev",
+   "name": "G Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "gu_dly",
+   "name": "G Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "mb_rev",
+   "name": "MB Rev",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "mb_dly",
+   "name": "MB Dly",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 0
+  },
+  {
+   "key": "rev_decay",
+   "name": "REV Decay",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 73
+  },
+  {
+   "key": "rev_tone",
+   "name": "REV Tone",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 57
+  },
+  {
+   "key": "rev_hpf",
+   "name": "REV HPF",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 62
+  },
+  {
+   "key": "rev_level",
+   "name": "REV Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 85,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "dly_time",
+   "name": "DLY Time",
+   "type": "enum",
+   "options": [
+    "1/32",
+    "1/16T",
+    "1/16",
+    "1/8T",
+    "1/16.",
+    "1/8",
+    "1/4T",
+    "1/8.",
+    "1/4",
+    "1/2T",
+    "1/4.",
+    "1/2",
+    "1/2."
+   ],
+   "default": 7
+  },
+  {
+   "key": "dly_fdbk",
+   "name": "DLY Fdbk",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 52
+  },
+  {
+   "key": "dly_tone",
+   "name": "DLY Tone",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 51
+  },
+  {
+   "key": "dly_hpf",
+   "name": "DLY HPF",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 62
+  },
+  {
+   "key": "dly_level",
+   "name": "DLY Level",
+   "type": "int",
+   "min": 0,
+   "max": 127,
+   "default": 85,
+   "viz": {
+    "kind": "fader"
+   }
+  },
+  {
+   "key": "rhy_mode",
+   "name": "RHY Mode",
+   "type": "enum",
+   "options": [
+    "Off",
+    "Play"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rhy_ab",
+   "name": "RHY A/B",
+   "type": "enum",
+   "options": [
+    "A",
+    "B"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rhy_style",
+   "name": "RHY Rhythm 1",
+   "type": "enum",
+   "options": [
+    "Waltz",
+    "Shufl",
+    "SloRck",
+    "Swing",
+    "FoxTng",
+    "Boogie",
+    "Enka",
+    "Bossa",
+    "Samba",
+    "MamCha",
+    "BegRhu",
+    "Rock1",
+    "Rock2",
+    "Rock3",
+    "Rock4",
+    "Disco1",
+    "Disco2"
+   ],
+   "default": 11
+  },
+  {
+   "key": "rhy_style2",
+   "name": "RHY Rhythm 2",
+   "type": "enum",
+   "options": [
+    "Off",
+    "Waltz",
+    "Shufl",
+    "SloRck",
+    "Swing",
+    "FoxTng",
+    "Boogie",
+    "Enka",
+    "Bossa",
+    "Samba",
+    "MamCha",
+    "BegRhu",
+    "Rock1",
+    "Rock2",
+    "Rock3",
+    "Rock4",
+    "Disco1",
+    "Disco2"
+   ],
+   "default": 0
+  },
+  {
+   "key": "ui_focus",
+   "name": "Focus",
+   "type": "int",
+   "min": 0,
+   "max": 16,
+   "default": 0
+  },
+  {
+   "key": "mutes",
+   "name": "Mutes",
+   "type": "int",
+   "min": 0,
+   "max": 16383,
+   "default": 0
+  }
+ ],
+ "ui_hierarchy": {
+  "pad_layout": "drums",
+  "focus_param": "ui_focus_level",
+  "levels": {
+   "bd": {
+    "name": "Bass Drum",
+    "note": 36,
+    "role": "drum",
+    "knobs": [
+     "bd_tune",
+     "bd_decay",
+     "bd_drive",
+     "bd_dist_type",
+     "bd_level"
+    ],
+    "params": [
+     {
+      "key": "bd_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "bd_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "bd_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "bd_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "bd_level",
+      "label": "Level"
+     }
+    ]
+   },
+   "sd": {
+    "name": "Snare",
+    "note": 37,
+    "role": "drum",
+    "knobs": [
+     "sd_tune",
+     "sd_decay",
+     "sd_snappy",
+     "sd_drive",
+     "sd_dist_type",
+     "sd_level",
+     "sd_rev",
+     "sd_dly"
+    ],
+    "params": [
+     {
+      "key": "sd_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "sd_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "sd_snappy",
+      "label": "Snappy"
+     },
+     {
+      "key": "sd_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "sd_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "sd_level",
+      "label": "Level"
+     },
+     {
+      "key": "sd_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "sd_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "rs": {
+    "name": "Rim Shot",
+    "note": 38,
+    "role": "drum",
+    "knobs": [
+     "rs_tune",
+     "rs_decay",
+     "rs_drive",
+     "rs_dist_type",
+     "rs_level",
+     "rs_rev",
+     "rs_dly"
+    ],
+    "params": [
+     {
+      "key": "rs_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "rs_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "rs_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "rs_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "rs_level",
+      "label": "Level"
+     },
+     {
+      "key": "rs_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "rs_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "hh": {
+    "name": "Hi-Hat",
+    "note": 39,
+    "role": "drum",
+    "knobs": [
+     "hh_tune",
+     "hh_decay",
+     "hh_drive",
+     "hh_dist_type",
+     "hh_level",
+     "hh_rev",
+     "hh_dly"
+    ],
+    "params": [
+     {
+      "key": "hh_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "hh_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "hh_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "hh_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "hh_level",
+      "label": "Level"
+     },
+     {
+      "key": "hh_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "hh_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "cy": {
+    "name": "Cymbal",
+    "note": 40,
+    "role": "drum",
+    "knobs": [
+     "cy_tune",
+     "cy_decay",
+     "cy_drive",
+     "cy_dist_type",
+     "cy_level",
+     "cy_rev",
+     "cy_dly"
+    ],
+    "params": [
+     {
+      "key": "cy_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "cy_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "cy_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "cy_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "cy_level",
+      "label": "Level"
+     },
+     {
+      "key": "cy_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "cy_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "ma": {
+    "name": "Maracas",
+    "note": 41,
+    "role": "drum",
+    "knobs": [
+     "ma_tune",
+     "ma_decay",
+     "ma_drive",
+     "ma_dist_type",
+     "ma_level",
+     "ma_rev",
+     "ma_dly"
+    ],
+    "params": [
+     {
+      "key": "ma_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "ma_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "ma_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "ma_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "ma_level",
+      "label": "Level"
+     },
+     {
+      "key": "ma_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "ma_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "cl": {
+    "name": "Claves",
+    "note": 42,
+    "role": "drum",
+    "knobs": [
+     "cl_tune",
+     "cl_decay",
+     "cl_drive",
+     "cl_dist_type",
+     "cl_level",
+     "cl_rev",
+     "cl_dly"
+    ],
+    "params": [
+     {
+      "key": "cl_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "cl_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "cl_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "cl_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "cl_level",
+      "label": "Level"
+     },
+     {
+      "key": "cl_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "cl_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "hb": {
+    "name": "Hi Bongo",
+    "note": 43,
+    "role": "drum",
+    "knobs": [
+     "hb_tune",
+     "hb_decay",
+     "hb_drive",
+     "hb_dist_type",
+     "hb_level",
+     "hb_rev",
+     "hb_dly"
+    ],
+    "params": [
+     {
+      "key": "hb_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "hb_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "hb_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "hb_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "hb_level",
+      "label": "Level"
+     },
+     {
+      "key": "hb_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "hb_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "lb": {
+    "name": "Low Bongo",
+    "note": 44,
+    "role": "drum",
+    "knobs": [
+     "lb_tune",
+     "lb_decay",
+     "lb_drive",
+     "lb_dist_type",
+     "lb_level",
+     "lb_rev",
+     "lb_dly"
+    ],
+    "params": [
+     {
+      "key": "lb_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "lb_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "lb_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "lb_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "lb_level",
+      "label": "Level"
+     },
+     {
+      "key": "lb_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "lb_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "lc": {
+    "name": "Low Conga",
+    "note": 45,
+    "role": "drum",
+    "knobs": [
+     "lc_tune",
+     "lc_decay",
+     "lc_drive",
+     "lc_dist_type",
+     "lc_level",
+     "lc_rev",
+     "lc_dly"
+    ],
+    "params": [
+     {
+      "key": "lc_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "lc_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "lc_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "lc_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "lc_level",
+      "label": "Level"
+     },
+     {
+      "key": "lc_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "lc_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "cb": {
+    "name": "Cowbell",
+    "note": 46,
+    "role": "drum",
+    "knobs": [
+     "cb_tune",
+     "cb_decay",
+     "cb_drive",
+     "cb_dist_type",
+     "cb_level",
+     "cb_rev",
+     "cb_dly"
+    ],
+    "params": [
+     {
+      "key": "cb_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "cb_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "cb_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "cb_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "cb_level",
+      "label": "Level"
+     },
+     {
+      "key": "cb_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "cb_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "tb": {
+    "name": "Tambourine",
+    "note": 47,
+    "role": "drum",
+    "knobs": [
+     "tb_tune",
+     "tb_decay",
+     "tb_drive",
+     "tb_dist_type",
+     "tb_level",
+     "tb_rev",
+     "tb_dly"
+    ],
+    "params": [
+     {
+      "key": "tb_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "tb_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "tb_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "tb_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "tb_level",
+      "label": "Level"
+     },
+     {
+      "key": "tb_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "tb_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "gu": {
+    "name": "Guiro",
+    "note": 48,
+    "role": "drum",
+    "knobs": [
+     "gu_tune",
+     "gu_decay",
+     "gu_rate",
+     "gu_drive",
+     "gu_dist_type",
+     "gu_level",
+     "gu_rev",
+     "gu_dly"
+    ],
+    "params": [
+     {
+      "key": "gu_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "gu_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "gu_rate",
+      "label": "Rate"
+     },
+     {
+      "key": "gu_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "gu_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "gu_level",
+      "label": "Level"
+     },
+     {
+      "key": "gu_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "gu_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "mb": {
+    "name": "Metal Beat",
+    "note": 49,
+    "role": "drum",
+    "knobs": [
+     "mb_tune",
+     "mb_decay",
+     "mb_drive",
+     "mb_dist_type",
+     "mb_level",
+     "mb_rev",
+     "mb_dly"
+    ],
+    "params": [
+     {
+      "key": "mb_tune",
+      "label": "Tune"
+     },
+     {
+      "key": "mb_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "mb_drive",
+      "label": "Drive"
+     },
+     {
+      "key": "mb_dist_type",
+      "label": "Distortion"
+     },
+     {
+      "key": "mb_level",
+      "label": "Level"
+     },
+     {
+      "key": "mb_rev",
+      "label": "Rev"
+     },
+     {
+      "key": "mb_dly",
+      "label": "Dly"
+     }
+    ]
+   },
+   "rhy": {
+    "name": "Rhythm",
+    "knobs": [
+     "rhy_mode",
+     "rhy_ab",
+     "rhy_style",
+     "rhy_style2"
+    ],
+    "params": [
+     {
+      "key": "rhy_mode",
+      "label": "Mode"
+     },
+     {
+      "key": "rhy_ab",
+      "label": "A/B"
+     },
+     {
+      "key": "rhy_style",
+      "label": "Rhythm 1"
+     },
+     {
+      "key": "rhy_style2",
+      "label": "Rhythm 2"
+     }
+    ]
+   },
+   "rev": {
+    "name": "Reverb",
+    "knobs": [
+     "rev_decay",
+     "rev_tone",
+     "rev_hpf",
+     "rev_level"
+    ],
+    "params": [
+     {
+      "key": "rev_decay",
+      "label": "Decay"
+     },
+     {
+      "key": "rev_tone",
+      "label": "Tone"
+     },
+     {
+      "key": "rev_hpf",
+      "label": "HPF"
+     },
+     {
+      "key": "rev_level",
+      "label": "Level"
+     }
+    ]
+   },
+   "dly": {
+    "name": "Delay",
+    "knobs": [
+     "dly_time",
+     "dly_fdbk",
+     "dly_tone",
+     "dly_hpf",
+     "dly_level"
+    ],
+    "params": [
+     {
+      "key": "dly_time",
+      "label": "Time"
+     },
+     {
+      "key": "dly_fdbk",
+      "label": "Fdbk"
+     },
+     {
+      "key": "dly_tone",
+      "label": "Tone"
+     },
+     {
+      "key": "dly_hpf",
+      "label": "HPF"
+     },
+     {
+      "key": "dly_level",
+      "label": "Level"
+     }
+    ]
+   },
+   "root": {
+    "name": "CW-78",
+    "knobs": [
+     "master_dist",
+     "master_drive",
+     "comp",
+     "volume",
+     "vel_depth",
+     "hat_choke"
+    ],
+    "params": [
+     {
+      "level": "bd",
+      "label": "Bass Drum"
+     },
+     {
+      "level": "sd",
+      "label": "Snare"
+     },
+     {
+      "level": "rs",
+      "label": "Rim Shot"
+     },
+     {
+      "level": "hh",
+      "label": "Hi-Hat"
+     },
+     {
+      "level": "cy",
+      "label": "Cymbal"
+     },
+     {
+      "level": "ma",
+      "label": "Maracas"
+     },
+     {
+      "level": "cl",
+      "label": "Claves"
+     },
+     {
+      "level": "hb",
+      "label": "Hi Bongo"
+     },
+     {
+      "level": "lb",
+      "label": "Low Bongo"
+     },
+     {
+      "level": "lc",
+      "label": "Low Conga"
+     },
+     {
+      "level": "cb",
+      "label": "Cowbell"
+     },
+     {
+      "level": "tb",
+      "label": "Tambourine"
+     },
+     {
+      "level": "gu",
+      "label": "Guiro"
+     },
+     {
+      "level": "mb",
+      "label": "Metal Beat"
+     },
+     {
+      "level": "rhy",
+      "label": "Rhythm"
+     },
+     {
+      "level": "rev",
+      "label": "Reverb"
+     },
+     {
+      "level": "dly",
+      "label": "Delay"
+     },
+     {
+      "key": "master_dist",
+      "label": "Master Dist"
+     },
+     {
+      "key": "master_drive",
+      "label": "Master Drive"
+     },
+     {
+      "key": "comp",
+      "label": "Comp"
+     },
+     {
+      "key": "volume",
+      "label": "Volume"
+     },
+     {
+      "key": "vel_depth",
+      "label": "Velocity"
+     },
+     {
+      "key": "note_map",
+      "label": "Note Map"
+     },
+     {
+      "key": "hat_choke",
+      "label": "Choke"
+     }
+    ]
+   }
+  }
+ }
+}

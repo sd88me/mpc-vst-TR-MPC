@@ -28,7 +28,7 @@ def main():
     a = ap.parse_args()
     h = open(a.header, encoding="utf-8").read()
     chain = re.search(r"static const char (\w+_chain_params_json)\[\]", h).group(1)
-    pages = re.search(r"static const char (\w+_ui_pages_json)\[\]", h).group(1)
+    pages = re.search(r"static const char (\w+_ui_(?:pages|hierarchy)_json)\[\]", h).group(1)
     mod = json.load(open(a.module_json, encoding="utf-8"))
     mod["chain_params"] = json.loads(literal(h, chain))
     mod["ui_hierarchy"] = json.loads(literal(h, pages))

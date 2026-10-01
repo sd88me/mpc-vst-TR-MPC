@@ -1,0 +1,656 @@
+#!/usr/bin/env python3
+"""Single source of truth for 8W8's parameter surface.
+
+Emits src/dsp/sc808_params.h, which carries THREE things that must never
+drift apart:
+
+  * chain_params   — types/ranges/options the Shadow UI needs (JSON)
+  * ui_pages       — the page hierarchy (JSON; served under "ui_pages" so
+                     ui_chain.js loads it, see the comment in ui_chain.js)
+  * the pot table  — key -> real engineering range + curve + default
+
+9W9 kept the pot table hand-written in a second header and it was a standing
+drift hazard; 6W6 fixed that with this generator and 8W8 inherits it. Adding a
+control is one edit here.
+
+module.json is capped at 8 KB by Schwung's loader, so the JSON payloads are
+served dynamically from the DSP via get_param().
+"""
+import json, pathlib, re
+
+# ---- Schwung's voices contract (pad_layout + per-voice note) ---------------
+#
+# Schwung 0.13 lets a module say that its surface is a drum rack and which MIDI
+# note plays each voice, so the host lays out the pads and follows the voice
+# you are editing without keeping a per-module table. Additive: a pre-0.13 host
+# ignores it, and nothing about 8W8's own editor changes.
+#
+# KEYED BY LEVEL ID, never by position. Three orders exist in a kit like this
+# — the nav list below, sc808_voice_t, and the note numbers — and in 9W9 no two
+# of them agreed, so a positional map silently mislabelled its two hats and its
+# two cymbals. 8W8's three DO agree, all sixteen of them, and the drum-rack map
+# is a plain 36 + index. That is worth nothing as an assumption and something
+# as an assertion: tools/voices_check.py proves it against the plugin's own
+# routers rather than trusting this comment.
+#
+# src/dsp/sc808_plugin.cpp stays the authority — drumrack_to_voice() and the GM
+# switch in note_to_voice(). If those change, change these with them; the check
+# fails if they drift.
+NOTE_MAPS = {
+    # A Move drum rack is notes 36..51, and sixteen voices fill it exactly.
+    # There is no voice past the rack's range and so nothing to invent.
+    "drumrack": {"bd": 36, "sd": 37, "lt": 38, "mt": 39,
+                 "ht": 40, "lc": 41, "mc": 42, "hc": 43,
+                 "rs": 44, "cl": 45, "ma": 46, "cp": 47,
+                 "cb": 48, "ch": 49, "oh": 50, "cy": 51},
+    # Real General MIDI percussion. Where the plugin accepts a pair for one
+    # voice (41/43 toms, 45/47, 48/50, 42/44 closed hat, 49/51/57/59 cymbal)
+    # the FIRST of the pair is the one declared — a voice may carry only one
+    # note, and the host places the pad on the note it is given.
+    "gm":       {"bd": 36, "sd": 38, "lt": 41, "mt": 45,
+                 "ht": 48, "lc": 64, "mc": 62, "hc": 63,
+                 "rs": 37, "cl": 75, "ma": 70, "cp": 39,
+                 "cb": 56, "ch": 42, "oh": 46, "cy": 49},
+}
+
+# Free-form hints. No host behaviour depends on them; a consumer that does not
+# recognise a value ignores it.
+ROLES = {"bd": "kick", "sd": "snare",
+         "lt": "tom", "mt": "tom", "ht": "tom",
+         "lc": "conga", "mc": "conga", "hc": "conga",
+         "rs": "rim", "cl": "clave", "ma": "shaker", "cp": "clap",
+         "cb": "cowbell", "ch": "hat", "oh": "hat", "cy": "cymbal"}
+
+LIN, EXP = 0, 1
+
+# Every continuous control is a 0..127 pot, exactly like a hardware panel.
+# Nobody dials an 808 in milliseconds. The DSP maps each pot to its real range
+# with a musical curve, so the UI only ever shows a pot position.
+#
+# DEFAULTS ARE sc808's OWN ARGUMENTS, converted to pot positions. Pot centre
+# is NOT the default here and is not meant to be: the default is "the sound
+# sc808 makes", which is the thing 8W8's null test verifies. The one
+# exception is called out at the high conga.
+
+
+def P(key, label, lo, hi, curve, default):
+    return dict(kind="pot", key=key, name=label, min=lo, max=hi,
+                curve=curve, default=default)
+
+
+def E(key, label, options, default=0):
+    return dict(kind="enum", key=key, name=label, options=options,
+                default=default)
+
+
+def pot_for(value, lo, hi, curve):
+    """The pot position whose mapped value is `value`.
+
+    Defaults are written as the ENGINEERING value sc808 declares — decay=4.2
+    seconds, click=0.11 — and converted here. Writing pot numbers by hand and
+    hoping they land on the right seconds is how a kit drifts away from the
+    thing it is supposed to reproduce.
+    """
+    import math
+    value = max(lo, min(hi, value))
+    if curve == EXP and lo > 0:
+        t = math.log(value / lo) / math.log(hi / lo)
+    else:
+        t = (value - lo) / (hi - lo)
+    return int(round(t * 127))
+
+
+def PV(key, label, lo, hi, curve, value):
+    """Like P, but the default is given as an engineering value."""
+    return P(key, label, lo, hi, curve, pot_for(value, lo, hi, curve))
+
+
+# Post-voice drive stage. The 808's own nonlinearities live inside the voices
+# where the circuit puts them; this is the panel's Drive/Distortion, which the
+# hardware never had. The same SEVEN flavours as 9W9 and 6W6, so a player who
+# knows what BFZ at 90 does on the 909 knows what it does here.
+#
+# ORDER IS STORAGE ORDER, and it changed when SAT/BFZ/PDIST arrived: Fold
+# moved 2 -> 5 and Crush 3 -> 6. sc808_deserialize remaps older blobs. Never
+# reorder again without extending that migration.
+#
+# Option text is sized for the stock grid's enum box: TWO LINES OF THREE
+# CHARACTERS (font5x3.mjs enumSquareLines). These read DIO/DE, CLI/P, SAT,
+# BFZ, PDI/ST, FOL/D, CRU/SH — which is part of why the three new ones are
+# named the way they are. Do not rename them.
+DIST = ["Diode", "Clip", "SAT", "BFZ", "PDIST", "Fold", "Crush"]
+
+
+# Drive is LINEAR 0..10 and DEFAULTS TO 0, which sc808_shape.h treats as a
+# bit-exact bypass. It was 0.2..8.0 EXP defaulting to 1.0, and that shipped
+# two faults at once: half the throw did nothing (a tanh below unity input is
+# nearly straight) and the normalisation added up to +18 dB of hidden gain
+# that clipped the master sum. The 808 had no drive stage; a fresh patch gets
+# none either.
+def DRIVE(v):  return P(f"{v}_drive", "Drive", 0.0, 10.0, LIN, 0)
+def DTYPE(v):  return E(f"{v}_dist_type", "Distortion", DIST)
+def LEVEL(v):  return P(f"{v}_level", "Level", 0.0, 2.0, LIN, 64)   # pot 64 == 1.0
+
+# Send amounts, one pair per voice. POST-FADER — what you hear is what you
+# send — and 0 by default, which is load-bearing: at zero the FX ticks see
+# exactly 0.0 and return exactly 0.0, so the kit stays bit-identical to one
+# with no FX at all. tools/golden_check holds that.
+#
+# THE KICK GETS NONE. That is 9W9's explicit call and it is the player's:
+# reverb and delay on an 808 kick is mud, and the low end is exactly what the
+# send highpass is there to keep out of the wet path. It also happens to be
+# what keeps the kick page inside the eight-knob limit.
+def SENDS(v):  return [P(f"{v}_rev", "Rev", 0.0, 1.0, LIN, 0),
+                       P(f"{v}_dly", "Dly", 0.0, 1.0, LIN, 0)]
+
+# Pitch as a SEMITONE OFFSET around the voice's own base note, so pot 64 is
+# always "as sc808 has it" whatever that voice is tuned to. +/- an octave.
+def TUNE(v):   return P(f"{v}_tune", "Tune", -12.0, 12.0, LIN, 64)
+
+# The metal voices have no note — they are six fixed oscillators — so their
+# Tune is a RATIO on the whole bank, unity at pot centre.
+def RATIO(v):  return P(f"{v}_tune", "Tune", 0.5, 2.0, EXP, 64)
+
+
+# ---- Pages. One per voice, in TR-808 front-panel order. --------------------
+#
+# SIXTEEN voices, which is exactly what Move's left 4x4 pad block holds — one
+# per sc808 SynthDef. 6W6 uses half the block and 9W9 eleven pads.
+#
+# The rim shot and the claves get a pad each even though the hardware runs
+# them off one channel behind an RS/CL selector. The cost is the Master pad:
+# with sixteen drums there is no sixteenth pad left for it, so Master is
+# reached by the jog like every other page.
+PAGES = [
+    ("bd", "Bass Drum", [
+        # note 34, click 0.11, decay 2 s. `punch` is fixed at 2 in the
+        # SynthDef and exposed here as Tone — it is the level of the second,
+        # faster sine through the 350 Hz highpass, i.e. the beater.
+        # A SEMITONE OFFSET, like every other Tune pot — the engine adds it
+        # to the lane's base note. Declaring it as an absolute MIDI note
+        # instead put the kick at midicps(34+34) = 415 Hz.
+        TUNE("bd"),
+        # Attack BEFORE Decay, and that ordering is load-bearing: the knob grid
+        # spans one AD envelope graphic across an adjacent attack/decay pair,
+        # and it reads the row left to right. Decay-then-attack draws the graph
+        # squashed onto a single slot with an empty knob beside it. Guarded by
+        # test/ui_chain.test.mjs.
+        #
+        # To the circuit engine Attack is the beater: the strike's click bled
+        # into the output, plus the attack-time frequency jump the paper
+        # describes. The default is LOW because the reference kick peaks at
+        # its body (21.7 ms in), not at a click — the pot 100 that made sense
+        # when Attack was only the inaudible frequency jump would now put a
+        # beater on every fresh patch. The sc808 engine reads the same pot as
+        # its `click` pre-level.
+        P("bd_attack", "Attack", 0.0, 1.0, LIN, 24),
+        PV("bd_decay",  "Decay",   0.1,  8.0, EXP,  2.0),
+        PV("bd_tone",   "Tone",    0.0,  6.0, LIN,  2.0),
+        DRIVE("bd"), DTYPE("bd"), LEVEL("bd"),
+    ]),
+    ("sd", "Snare", [
+        # note 65, detune -11, mix 0.7, lpf 121, decay 4.2 s.
+        # Snappy is sc808's `mix`: 0 is all shell, 1 is all wires.
+        TUNE("sd"),   # semitone offset, see bd_tune
+        PV("sd_decay",  "Decay",   0.1,  8.0, EXP,  4.2),
+        PV("sd_snappy", "Snappy",  0.0,  1.0, LIN,  0.7),
+        # No Tone pot. Field verdict: "Tune is enough" — and it was doing
+        # little: the circuit's shell balance sits at its centre, now fixed
+        # in the voice.
+        DRIVE("sd"), DTYPE("sd"), LEVEL("sd"),
+    ]),
+    # The six tom / conga lanes. Decay is RING TIME IN SECONDS (to 1% of
+    # peak) and the defaults are the measured hardware times.
+    #
+    # Tom/conga TUNE is +/-2 SEMITONES, not +/-12: the hardware's TUNING
+    # trimmer, measured on Roland's own model, spans exactly four semitones
+    # lock to lock (LT 84->106 Hz, HT 165->206). The wide pot let one tom
+    # reach its neighbour's pitch, which no 808 can do and which made the
+    # kit's three toms into one tom at three knob positions.
+    ("lt", "Low Tom",   [P("lt_tune", "Tune", -2.0, 2.0, LIN, 64),
+                         PV("lt_decay", "Decay", 0.06, 2.0, EXP, 0.39),
+                         DRIVE("lt"), DTYPE("lt"), LEVEL("lt")]),
+    ("mt", "Mid Tom",   [P("mt_tune", "Tune", -2.0, 2.0, LIN, 64),
+                         PV("mt_decay", "Decay", 0.06, 2.0, EXP, 0.28),
+                         DRIVE("mt"), DTYPE("mt"), LEVEL("mt")]),
+    ("ht", "Hi Tom",    [P("ht_tune", "Tune", -2.0, 2.0, LIN, 64),
+                         PV("ht_decay", "Decay", 0.06, 2.0, EXP, 0.26),
+                         DRIVE("ht"), DTYPE("ht"), LEVEL("ht")]),
+    ("lc", "Low Conga", [P("lc_tune", "Tune", -2.0, 2.0, LIN, 64),
+                         PV("lc_decay", "Decay", 0.06, 2.0, EXP, 0.30),
+                         DRIVE("lc"), DTYPE("lc"), LEVEL("lc")]),
+    ("mc", "Mid Conga", [P("mc_tune", "Tune", -2.0, 2.0, LIN, 64),
+                         PV("mc_decay", "Decay", 0.06, 2.0, EXP, 0.16),
+                         DRIVE("mc"), DTYPE("mc"), LEVEL("mc")]),
+    ("hc", "Hi Conga",  [P("hc_tune", "Tune", -2.0, 2.0, LIN, 64),
+                         PV("hc_decay", "Decay", 0.06, 2.0, EXP, 0.154),
+                         DRIVE("hc"), DTYPE("hc"), LEVEL("hc")]),
+    ("rs", "Rim Shot", [
+        TUNE("rs"),
+        # Two circuit rim shots were built from the schematic and both lost
+        # to the sc808 algorithm on hardware — the second badly enough that
+        # the verdict was "not good at all, I prefer sc808". So the sc808
+        # rim IS the rim here, tuned to rim808.wav. It is the one lane whose
+        # voice did not come from the circuit, and the reason is the ear's.
+        # Decay is SECONDS of audible ring.
+        PV("rs_decay", "Decay", 0.005, 0.20, EXP, 0.016),
+        DRIVE("rs"), DTYPE("rs"), LEVEL("rs"),
+    ]),
+    # Claves: Roland's own model pings at 2518 Hz; note 99 is 2489, so the
+    # base moves to 99.2 in the engine's kBaseNote. Decay measured the same
+    # way. The metal decays (cb/ch/oh/cy) are set from the same renders.
+    ("cl", "Claves", [
+        # A pad of their own. On the hardware the claves share the rim shot's
+        # channel behind an RS/CL selector, and 8W8 ran them as one lane with
+        # a Mode switch for that reason — but sc808 ships them as two
+        # SynthDefs, wanting both in one pattern is normal, and sixteen voices
+        # is exactly what the pad block holds.
+        TUNE("cl"),
+        P("cl_decay", "Decay", 0.0, 1.0, LIN, 64),   # ring stretch, see rs
+        DRIVE("cl"), DTYPE("cl"), LEVEL("cl"),
+    ]),
+    ("ma", "Maracas", [
+        # hpf 113, click 0.027, decay 0.07. `click` here is a real DURATION,
+        # not a level — the 27 ms ramp from 0.3 up to 1 that is the rattle —
+        # so unlike the kick's Attack it is a genuine envelope time.
+        #
+        # ATTACK BEFORE DECAY, and that ordering is the whole of it: the
+        # stock grid detects an adjacent attack/decay pair and draws one AD
+        # envelope spanning both cells. It only reads left to right, so with
+        # Decay first the graph came out backwards and lopsided, sitting over
+        # Decay with Attack blank beside it.
+        TUNE("ma"),
+        # A POSITION, not seconds: the voice scales its fitted 1.2 ms attack
+        # by (position/default) squared, so the default is bit-identical and
+        # the knob spans about 0.2 ms to 19 ms. It fed the sc808 maracas
+        # before the Engine switches came off, and was dead from then until
+        # someone measured it.
+        P("ma_attack", "Attack", 0.0, 1.0, LIN, 32),
+        PV("ma_decay",  "Decay",  0.01, 0.3, EXP, 0.039),   # AU: 39 ms to 1%
+        DRIVE("ma"), DTYPE("ma"), LEVEL("ma"),
+    ]),
+    ("cp", "Hand Clap", [
+        # Tune and ONE Decay, like the hardware (which has only Level).
+        #
+        # Spread and Room existed briefly and were cut on field verdict:
+        # Spread turned the burst into a flam at the range extremes, and Room
+        # against Decay was two knobs for one audible thing — with Room at
+        # zero, Decay had nothing left to act on. The burst spacing is fixed
+        # at the hardware's ~10 ms inside the voice; the tail mix is the
+        # circuit's own fixed level; Decay is the tail's time constant, whose
+        # default 0.33 s is R362 x C143 straight off the schematic.
+        TUNE("cp"),
+        # Decay scales BOTH derived tails together (C144x82k main, C143x330k
+        # floor); 1.0 IS the hardware, the ends halve and double it.
+        PV("cp_decay",  "Decay",  0.35,  2.8,  EXP, 1.0),
+        DRIVE("cp"), DTYPE("cp"), LEVEL("cp"),
+    ]),
+    ("cb", "Cowbell", [
+        # Two oscillators at 811.4 and 538.7 Hz — numbers 5 and 6 of the metal
+        # bank, exactly as the hardware wires them — so Tune is a ratio.
+        RATIO("cb"),
+        PV("cb_decay", "Decay", 0.1, 2.0, EXP, 0.43),   # seconds; AU: 0.43
+        DRIVE("cb"), DTYPE("cb"), LEVEL("cb"),
+    ]),
+    ("ch", "Closed Hat", [
+        RATIO("ch"),
+        PV("ch_decay", "Decay", 0.03, 0.5, EXP, 0.085),   # seconds; sample: 85 ms
+        DRIVE("ch"), DTYPE("ch"), LEVEL("ch"),
+        # Lives here as well as on Master: this is where you are standing when
+        # you want it. The 808 shares one metal source between CH and OH, so
+        # closed cutting open is the hardware behaviour; here it is a switch.
+        E("hh_choke", "Choke", ["Off", "CH>OH", "Mutual"], 1),   # CH>/OH
+    ]),
+    ("oh", "Open Hat", [
+        RATIO("oh"),
+        PV("oh_decay", "Decay", 0.08, 1.5, EXP, 0.44),   # seconds; AU note ends ~0.40 after the gate
+        DRIVE("oh"), DTYPE("oh"), LEVEL("oh"),
+    ]),
+    ("cy", "Cymbal", [
+        RATIO("cy"),
+        PV("cy_decay", "Decay", 0.4, 6.0, EXP, 1.79),   # seconds; AU: 1.79
+        # No Tone pot — field-cut like the snare's. The crash balance is
+        # fixed to the player's reference render.
+        DRIVE("cy"), DTYPE("cy"), LEVEL("cy"),
+    ]),
+]
+
+# Tempo-synced delay: Time is a note DIVISION, not milliseconds, so it is an
+# enum. Order must match kSC808DlyBeats in sc808_fx.h.
+DIVS = ["1/32", "1/16T", "1/16", "1/8T", "1/16.", "1/8", "1/4T", "1/8.",
+        "1/4", "1/2T", "1/4.", "1/2", "1/2."]
+
+# The two send buses get a page each. They are reached by the jog like every
+# other page — there is no pad to spare for them, and none is needed: with
+# sixteen drums the block is full and Master is already reached that way.
+FX_PAGES = [
+    ("rev", "Reverb", [
+        P("rev_decay", "Decay",  0.2,  0.93, LIN, 73),      # 0.62
+        P("rev_tone",  "Tone",   0.0,  1.0,  LIN, 57),      # 0.45
+        P("rev_hpf",   "HPF",   30.0, 800.0, EXP, 62),      # 150 Hz
+        P("rev_level", "Level",  0.0,  1.2,  LIN, 85),      # 0.80
+    ]),
+    ("dly", "Delay", [
+        E("dly_time",  "Time", DIVS, 7),                    # dotted eighth
+        P("dly_fdbk",  "Fdbk",   0.0,  0.85, LIN, 52),      # 0.35
+        P("dly_tone",  "Tone",   0.0,  1.0,  LIN, 51),      # 0.40
+        P("dly_hpf",   "HPF",   30.0, 800.0, EXP, 62),      # 150 Hz
+        P("dly_level", "Level",  0.0,  1.2,  LIN, 85),      # 0.80
+    ]),
+]
+
+GLOBALS = [
+    E("master_dist", "Master Dist", ["Off"] + DIST),
+    P("master_drive", "Master Drive", 0.0, 10.0, LIN, 0),   # 0 = bypass, see DRIVE
+    # The absolute level lives in the per-lane trims (see kit_check), not
+    # here, so Volume sits high with room in both directions rather than
+    # being the thing that stops the kit clipping.
+    # One-knob bus glue, ported from 9W9. NOT 808 circuitry and honest about
+    # it: at zero the stage is not in the path at all (bit-identical), and the
+    # knob blends threshold, ratio and auto-makeup together.
+    P("comp", "Comp", 0.0, 1.0, LIN, 0),
+    P("volume", "Volume", 0.0, 1.0, LIN, 100),
+    # No Accent pot. Velocity replaced it: accent WAS the level a hard hit
+    # reached, and that is now simply the top of the velocity range. Its gain
+    # is folded into SC808_FULL_VELOCITY_GAIN so nothing gets quieter —
+    # deleting it and anchoring the velocity line at 1.0 instead would drop
+    # the whole kit 6 dB, because 1.0 is the UNACCENTED level and a pattern
+    # from Move (which sends velocity 100 and up) had always been playing at
+    # the accented one. 9W9 caught that trap before shipping.
+    #
+    # Velocity is how far BELOW that top a soft hit falls: 0 means every hit
+    # plays at the old accented level, full opens the widest range. It only
+    # ever carves down, never boosts.
+    P("vel_depth", "Velocity", 0.0, 1.0, LIN, 127),
+    E("hh_choke", "Choke", ["Off", "CH>OH", "Mutual"], 1),
+    E("note_map", "Note Map", ["Rack 36", "GM"]),            # RAC/36 in the box
+]
+
+# ---------------------------------------------------------------------------
+
+
+def viz_for(p):
+    """Honest viz declarations for the 0.12.x param-pages renderer.
+
+    Levels draw as faders. The bass drum's "Attack" is a CLICK LEVEL, not an
+    envelope time — declare viz:false so the detector cannot pair it with
+    Decay into a fake AD envelope. 9W9 learned this the hard way. The
+    maracas' Attack genuinely IS a time, so it is left alone.
+    """
+    k = p["key"]
+    if k.endswith("_level") or k == "volume":
+        return {"kind": "fader"}
+    if k == "bd_attack":
+        return False
+    return None
+
+
+# ---- two audiences, two spellings of the same control ----------------------
+#
+# The knob grid draws a param under a page that already says COW BELL, so
+# there it wants to read "Decay". Schwung's LFO and mod pickers draw one FLAT
+# list across the whole module, where SIXTEEN voices each contribute a "Decay"
+# and nothing says which pad you are about to automate. 8W8 has the worst of
+# this in the family: 9W9 has eleven voices and 6W6 eight.
+#
+# param_meta.mjs merges the two sources as {...inlineHierarchy, ...chainParams}
+# and resolves `meta.label || meta.name`. chain_params spells the display
+# string `name`; hierarchy entries spell it `label` — so a `label` on the
+# hierarchy entry survives the merge AND wins the fallback. That is the seam:
+# prefix `name` for the picker, keep `label` bare for the page. Emitting
+# `name` on the hierarchy entry instead is what makes the prefix leak onto the
+# knob grid.
+#
+# The tags are the 808's own panel abbreviations, which is exactly the page id
+# set uppercased — 9W9 had to hand-write its table because its keys carry a
+# `_c_` infix, and ours do not. The two send buses qualify the same way, and
+# they have to: Tone, HPF and Level exist on both of them, and the assertion
+# below caught exactly that the moment the pages were added.
+PICKER_PREFIX = {pid.upper(): pid for pid, _, _ in PAGES + FX_PAGES}
+
+
+def picker_name(key, name):
+    head = key.split("_", 1)[0].upper()
+    return f"{head} {name}" if head in PICKER_PREFIX else name
+
+
+def chain_param(p):
+    if p["kind"] == "enum":
+        d = {"key": p["key"], "name": picker_name(p["key"], p["name"]),
+             "type": "enum", "options": p["options"]}
+    else:
+        d = {"key": p["key"], "name": picker_name(p["key"], p["name"]),
+             "type": "int", "min": 0, "max": 127}
+    # The sc808 default, so a reset gesture (stock Mute+knob, the web
+    # panel's double-click) lands on the verified sound and not on a guessed 64.
+    d["default"] = p["default"]
+    v = viz_for(p)
+    if v is not None:
+        d["viz"] = v
+    return d
+
+
+cp, levels, root, pots, enums, seen = [], {}, [], [], [], set()
+
+
+def register(p):
+    if p["key"] in seen:
+        return
+    seen.add(p["key"])
+    cp.append(chain_param(p))
+    (pots if p["kind"] == "pot" else enums).append(p)
+
+
+# THE KICK IS DRY, on purpose — see SENDS. Everything else gets a pair.
+PAGE_SENDS = {pid: ([] if pid == "bd" else SENDS(pid)) for pid, _, _ in PAGES}
+
+# REGISTRATION ORDER IS STORAGE ORDER for the state blob, and it is
+# APPEND-ONLY. So every parameter that already existed is registered first, in
+# exactly the order it always was, and the new ones go on the end — the pages
+# below then list them in whatever order reads well on the panel. Registering
+# in page order instead would interleave the sends into the middle of the pot
+# table and renumber every patch ever saved.
+for pid, label, params in PAGES:
+    for p in params:
+        register(p)
+for p in GLOBALS:
+    register(p)
+for pid, _, params in PAGES:
+    for p in PAGE_SENDS[pid]:
+        register(p)
+for pid, label, params in FX_PAGES:
+    for p in params:
+        register(p)
+
+# Now the pages, which may reference anything registered above.
+for pid, label, params in PAGES:
+    full = params + PAGE_SENDS[pid]
+    if len(full) > 8:
+        raise SystemExit(f"page {pid} has {len(full)} params — max 8 knobs")
+    levels[pid] = {"name": label,
+                   "knobs": [p["key"] for p in full],
+                   "params": [{"key": p["key"], "label": p["name"]}
+                              for p in full]}
+    root.append({"level": pid, "label": label})
+
+for pid, label, params in FX_PAGES:
+    levels[pid] = {"name": label,
+                   "knobs": [p["key"] for p in params],
+                   "params": [{"key": p["key"], "label": p["name"]}
+                              for p in params]}
+    root.append({"level": pid, "label": label})
+
+root += [{"key": p["key"], "label": p["name"]} for p in GLOBALS]
+levels["root"] = {"name": "8W8",
+                  "knobs": ["master_dist", "master_drive", "comp", "volume",
+                            "vel_depth"],
+                  "params": root}
+
+# Two plugin-level keys that live on NO page but must be in chain_params: the
+# remote-UI manager seeds and periodically re-reads exactly the keys listed
+# here, and a key it does not know about never reaches the browser. ui_focus
+# is the lane the on-device editor is showing (0-14, 15 = master); mutes is
+# the per-lane mute mask, which needs 15 bits.
+cp.append({"key": "ui_focus", "name": "Focus", "type": "int",
+           "min": 0, "max": 16, "default": 0})       # 16 == Master
+cp.append({"key": "mutes", "name": "Mutes", "type": "int",
+           "min": 0, "max": 65535, "default": 0})    # sixteen lanes, sixteen bits
+
+# The point of the prefixes is that no two entries in the flat picker read the
+# same. Assert it rather than trusting it: 9W9 verified this by hand and its
+# own porting notes ask for the assertion, and a duplicate here is invisible —
+# the picker simply shows two identical lines and automating either is a coin
+# flip. ui_focus and mutes are plumbing and never reach the picker.
+_picker = [e for e in cp if e["key"] not in ("ui_focus", "mutes")]
+_dupes = {}
+for e in _picker:
+    _dupes.setdefault(e["name"], []).append(e["key"])
+_clash = {n: k for n, k in _dupes.items() if len(k) > 1}
+if _clash:
+    raise SystemExit("two controls would read the same in the LFO picker: "
+                     + "; ".join(f"{n!r} <- {', '.join(k)}" for n, k in _clash.items()))
+
+cpj = json.dumps(cp, separators=(",", ":"))
+
+
+def hierarchy_for(map_name):
+    """The page hierarchy, plus the voices contract for one note map.
+
+    TWO of these are emitted, because note_map is switchable at RUNTIME. One
+    static hierarchy would be wrong half the time, and a host laying out pads
+    from it would put every voice somewhere else with nothing to say why.
+    get_param picks between them — a pointer choice, nothing built on the
+    audio thread. This is exactly why the declaration rides ui_pages and not
+    module.json, which cannot change its mind.
+
+    ONLY VOICES GET A NOTE. Reverb, Delay and the root Main page make no
+    sound, and a page without a note is how the contract says so — declaring
+    one there would put a pad on something that cannot play.
+    """
+    notes = NOTE_MAPS[map_name]
+    out = {}
+    for lid, lvl in levels.items():
+        e = dict(lvl)
+        if lid in notes:
+            e["note"] = notes[lid]
+            e["role"] = ROLES[lid]
+        out[lid] = e
+    # focus_param names a key this plugin ALREADY publishes: ui_focus_level,
+    # as "<hit-count>:<level-id>". Nothing new is written for it. The count is
+    # what makes re-hitting the pad you are already on navigate again, and the
+    # host accepts the counted form for that reason.
+    #
+    # A NAME, not an index. sc808_voice_t happens to agree with the nav order
+    # here, but that is a fact about today's roster and not a guarantee; a
+    # name stays right whatever order anything else grows into.
+    return {"pad_layout": "drums", "focus_param": "ui_focus_level",
+            "levels": out}
+
+
+uhj  = json.dumps(hierarchy_for("drumrack"), separators=(",", ":"))
+uhjg = json.dumps(hierarchy_for("gm"),       separators=(",", ":"))
+
+# ---- the host's parameter channel ------------------------------------------
+#
+# module.json is capped at 8 KB by Schwung's loader, which is why these two
+# payloads are served from the DSP instead. The DSP's ceiling is different and
+# much higher: shadow_constants.h sets
+#
+#     #define SHADOW_PARAM_VALUE_LEN 65536  /* 64KB for large ui_hierarchy and state */
+#
+# and get_param() in sc808_plugin.cpp REFUSES to truncate — it returns -1
+# rather than hand back half a JSON document. So overrunning this does not
+# corrupt anything; it makes the entire parameter surface vanish, and the
+# editor comes up with nothing on it. That is a bad failure to discover on a
+# device, so it is caught here instead.
+#
+# The guard is at half the ceiling. 8W8 uses about 8 KB with 94 parameters
+# over 16 pages, so there is room for roughly another hundred before this is
+# a real constraint.
+HOST_PARAM_MAX = 65536
+for name, payload in (("chain_params", cpj), ("ui_pages", uhj),
+                      ("ui_pages (GM)", uhjg)):
+    if len(payload) > HOST_PARAM_MAX // 2:
+        raise SystemExit(
+            f"{name} is {len(payload)} B — over half the host's "
+            f"{HOST_PARAM_MAX} B parameter buffer (SHADOW_PARAM_VALUE_LEN). "
+            f"get_param refuses to truncate, so the editor would come up empty.")
+
+
+def cstr(s):
+    q, b = chr(34), chr(92)
+    return "\n".join(
+        f'    "{s[k:k+100].replace(b, b*2).replace(q, b+q)}"'
+        for k in range(0, len(s), 100))
+
+
+pot_rows = "\n".join(
+    f'    {{ "{p["key"]}", {p["min"]:>10.4f}f, {p["max"]:>10.4f}f, '
+    f'{"SC808_EXP" if p["curve"] == EXP else "SC808_LIN"}, {p["default"]:>3} }},'
+    for p in pots)
+enum_rows = "\n".join(
+    f'    {{ "{p["key"]}", {len(p["options"]):>2}, {p["default"]:>2} }},'
+    for p in enums)
+
+root_dir = pathlib.Path(__file__).resolve().parent.parent
+(root_dir / "src/dsp/sc808_params.h").write_text(f"""\
+/* Generated by scripts/gen_params.py — DO NOT EDIT BY HAND.
+ *
+ * module.json is capped at 8 KB by Schwung's loader, so chain_params and the
+ * page hierarchy are served dynamically from the DSP via get_param().
+ *
+ * The pot and enum tables below define storage order for the state blob.
+ * Appending is safe; reordering breaks every saved patch.
+ */
+#ifndef SC808_PARAMS_H
+#define SC808_PARAMS_H
+
+typedef enum {{ SC808_LIN = 0, SC808_EXP = 1 }} sc808_curve_t;
+
+typedef struct {{
+    const char    *key;
+    float          min;
+    float          max;
+    sc808_curve_t  curve;
+    int            def;      /* default POT position, 0..127 */
+}} sc808_pot_t;
+
+typedef struct {{
+    const char *key;
+    int         count;      /* number of options */
+    int         def;
+}} sc808_enum_t;
+
+#define SC808_NUM_POTS  {len(pots)}
+#define SC808_NUM_ENUMS {len(enums)}
+
+static const sc808_pot_t g_sc808_pots[SC808_NUM_POTS] = {{
+{pot_rows}
+}};
+
+static const sc808_enum_t g_sc808_enums[SC808_NUM_ENUMS] = {{
+{enum_rows}
+}};
+
+#define SC808_CHAIN_PARAMS_LEN {len(cpj)}
+static const char sc808_chain_params_json[] =
+{cstr(cpj)};
+
+#define SC808_UI_PAGES_LEN {len(uhj)}
+static const char sc808_ui_pages_json[] =
+{cstr(uhj)};
+
+/* The same hierarchy carrying the General MIDI note map, for note_map == 1.
+ * The map is switchable at runtime, so one static answer would be wrong half
+ * the time; get_param picks. */
+#define SC808_UI_PAGES_GM_LEN {len(uhjg)}
+static const char sc808_ui_pages_gm_json[] =
+{cstr(uhjg)};
+
+#endif /* SC808_PARAMS_H */
+""")
+
+print(f"chain_params {len(cpj)}B  ui_pages {len(uhj)}B  gm {len(uhjg)}B  "
+      f"(host buffer {HOST_PARAM_MAX}B)  "
+      f"pages={len(levels)}  pots={len(pots)}  enums={len(enums)}  "
+      f"params={len(cp)}")

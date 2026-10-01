@@ -1,0 +1,12 @@
+{
+  "name": "CW-78", "vendor": "sd88me", "uid": "TC78", "version": 1000,
+  "so": "trcw78.so",
+  "module": "module.mpc.json",
+  "art": "html",
+  "build": {
+    "root": ".",
+    "sources": ["src/dsp/cr78_plugin.cpp", "src/dsp/cr78_engine.cpp"],
+    "cflags": ["-Isrc", "-Isrc/dsp", "-Isrc/host", "-std=gnu++14", "-O3"],
+    "libs": ["-lm"]
+  }
+}
