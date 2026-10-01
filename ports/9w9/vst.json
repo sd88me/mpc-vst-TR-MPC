@@ -1,13 +1,29 @@
 {
-  "name": "9W9", "vendor": "sd88me", "uid": "T9W9", "version": 1000,
+  "name": "9W9",
+  "vendor": "sd88me",
+  "uid": "T9W9",
+  "version": 1000,
   "so": "tr9w9.so",
   "module": "module.mpc.json",
   "art": "html",
   "build": {
     "root": ".",
-    "sources": ["src/dsp/er99_plugin.c", "src/dsp/er99_engine.c"],
-    "cflags": ["-Isrc", "-Isrc/dsp", "-Isrc/host", "-O3"],
-    "libs": ["-lm"]
+    "sources": [
+      "src/dsp/er99_plugin.c",
+      "src/dsp/er99_engine.c"
+    ],
+    "cflags": [
+      "-Isrc",
+      "-Isrc/dsp",
+      "-Isrc/host",
+      "-O3"
+    ],
+    "libs": [
+      "-lm"
+    ]
   },
-  "defines": {"MODULE_SUBDIR": "\"engine\""}
+  "defines": {
+    "MODULE_SUBDIR": "\"engine\""
+  },
+  "layout": "layout.conf"
 }
