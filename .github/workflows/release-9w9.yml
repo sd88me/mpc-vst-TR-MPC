@@ -1,0 +1,33 @@
+# Build 9W9 into a DRAFT release (9w9-vst-v<version>) with mpc-vst-plugins' shared workflow:
+# Actions -> "Release 9W9 (draft)" -> Run workflow. Install that draft's zip on a device, smoke-test it, then publish
+# the draft (mpc-vst-plugins docs/RELEASING.md). dry_run builds the zip and skin previews as run artifacts only.
+name: Release 9W9 (draft)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version, e.g. 1.0.0
+        required: true
+      dry_run:
+        description: Build only (zip + skin previews as run artifacts), no draft release
+        type: boolean
+        default: false
+
+jobs:
+  9w9:
+    uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@28f5ffd490d1b766b1f093017858db9c0ae47b40
+    permissions:
+      contents: write
+    with:
+      tag: 9w9-vst-v${{ inputs.version }}
+      version: ${{ inputs.version }}
+      tools_ref: 28f5ffd490d1b766b1f093017858db9c0ae47b40
+      vst_dir: ports/9w9
+      build: bash tools/build_ci.sh 9w9
+      host_test: bash tools/test_ci.sh 9w9
+      plugin_id: tr-9w9
+      license: GPL-3.0-only
+      about: ER-99 style drum machine ported from athousanddetails' schwung-9W9, as an MPC/Force VST2 instrument.
+      extra: ports/9w9/src/samples:engine/samples
+      dry_run: ${{ inputs.dry_run }}

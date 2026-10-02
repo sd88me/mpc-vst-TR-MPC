@@ -1,0 +1,32 @@
+# Build CW-78 into a DRAFT release (cw78-vst-v<version>) with mpc-vst-plugins' shared workflow:
+# Actions -> "Release CW-78 (draft)" -> Run workflow. Install that draft's zip on a device, smoke-test it, then publish
+# the draft (mpc-vst-plugins docs/RELEASING.md). dry_run builds the zip and skin previews as run artifacts only.
+name: Release CW-78 (draft)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version, e.g. 1.0.0
+        required: true
+      dry_run:
+        description: Build only (zip + skin previews as run artifacts), no draft release
+        type: boolean
+        default: false
+
+jobs:
+  cw78:
+    uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@28f5ffd490d1b766b1f093017858db9c0ae47b40
+    permissions:
+      contents: write
+    with:
+      tag: cw78-vst-v${{ inputs.version }}
+      version: ${{ inputs.version }}
+      tools_ref: 28f5ffd490d1b766b1f093017858db9c0ae47b40
+      vst_dir: ports/cw78
+      build: bash tools/build_ci.sh cw78
+      host_test: bash tools/test_ci.sh cw78
+      plugin_id: tr-cw78
+      license: GPL-3.0-only
+      about: Drum machine voice set ported from athousanddetails' schwung-CW-78, as an MPC/Force VST2 instrument.
+      dry_run: ${{ inputs.dry_run }}
