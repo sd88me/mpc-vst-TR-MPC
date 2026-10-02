@@ -1,0 +1,1 @@
+{"plugin":"/tmp/tr8w8.so","instrument":1,"open_ms":0.8,"p99_pct":13.1,"max_pct":13.6,"threads_pct":0.0,"verdict":"PASS"}

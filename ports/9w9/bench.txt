@@ -1,0 +1,1 @@
+{"plugin":"/tmp/tr9w9.so","instrument":1,"open_ms":2.0,"p99_pct":21.2,"max_pct":22.9,"threads_pct":0.0,"verdict":"WARN"}
