@@ -1,12 +1,34 @@
 {
-  "name": "TR-Kit", "vendor": "sd88me", "uid": "TRKt", "version": 1000,
+  "name": "TR-Kit",
+  "vendor": "sd88me",
+  "uid": "TRKt",
+  "version": 1000,
   "so": "trkit.so",
   "params": "params.json",
   "build": {
     "root": "..",
-    "sources": ["trkit/src/trkit.cpp", "6w6/src/dsp/sd606_engine.cpp", "8w8/src/dsp/sc808_engine.cpp", "cw78/src/dsp/cr78_engine.cpp", "9w9/src/dsp/er99_engine.c"],
-    "cflags": ["-Itrkit/src", "-I6w6/src/dsp", "-I6w6/src/vendor/606", "-I8w8/src/dsp", "-Icw78/src/dsp", "-I9w9/src/dsp", "-std=gnu++14", "-O3"],
-    "libs": ["-lm"]
+    "sources": [
+      "trkit/src/trkit.cpp",
+      "6w6/src/dsp/sd606_engine.cpp",
+      "8w8/src/dsp/sc808_engine.cpp",
+      "cw78/src/dsp/cr78_engine.cpp",
+      "9w9/src/dsp/er99_engine.c"
+    ],
+    "cflags": [
+      "-Itrkit/src",
+      "-I6w6/src/dsp",
+      "-I6w6/src/vendor/606",
+      "-I8w8/src/dsp",
+      "-Icw78/src/dsp",
+      "-I9w9/src/dsp",
+      "-std=gnu++14",
+      "-O3"
+    ],
+    "libs": [
+      "-lm"
+    ]
   },
-  "defines": {"MODULE_SUBDIR": "\"engine\""}
+  "defines": {
+    "MODULE_SUBDIR": "\"engine\""
+  }
 }

@@ -10,3 +10,6 @@ Layout: `ports/<kit>/` holds each vendored upstream module; a `vst.json` and `la
 tools/test_port.sh needs a path without spaces and a sibling mpc-vst-plugins checkout:
 `bash ../mpc-vst-plugins/tools/test_port.sh ports/6w6/vst.json` (6W6 needs C++14, set in vst.json cflags).
 `tools/extract_module.py` builds `module.mpc.json` (chain_params + ui_hierarchy) from a kit's generated `*_params.h`.
+
+## Manufacturer names
+The four ports (6W6, 8W8, CW-78, 9W9) keep their original author, athousanddetails, as manufacturer and Synths folder name (thousanddetails - VST - <name>); TR-Kit is sd88me's. 	ools/set_vendor.py sets this in each vst.json.
