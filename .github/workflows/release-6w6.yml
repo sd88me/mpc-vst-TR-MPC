@@ -15,7 +15,7 @@ on:
         default: false
 
 jobs:
-  6w6:
+  tr_6w6:
     uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@28f5ffd490d1b766b1f093017858db9c0ae47b40
     permissions:
       contents: write

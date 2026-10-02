@@ -15,4 +15,4 @@ tools/test_port.sh needs a path without spaces and a sibling mpc-vst-plugins che
 The four ports (6W6, 8W8, CW-78, 9W9) keep their original author, athousanddetails, as manufacturer and Synths folder name (thousanddetails - VST - <name>); TR-Kit is sd88me's. 	ools/set_vendor.py sets this in each vst.json.
 
 ## Releases
-Each port releases separately: Actions -> "Release <kit> (draft)" (`.github/workflows/release-<kit>.yml`, tags `<kit>-vst-v<version>`) uses mpc-vst-plugins' shared workflow, pinned to a commit. 9W9's zip carries `engine/samples/*.wav` next to the .so. Local build: `bash tools/build_ci.sh <kit>`, test: `bash tools/test_ci.sh <kit>`. Sample licence for 9W9 (ER-99 derived) is still unchecked.
+Each port releases separately: Actions -> "Release <kit> (draft)" (`.github/workflows/release-<kit>.yml`, tags `<kit>-vst-v<version>`) uses mpc-vst-plugins' shared workflow, pinned to a commit. 9W9's zip carries `engine/samples/*.wav` next to the .so. Local build: `bash tools/build_ci.sh <kit>`, test: `bash tools/test_ci.sh <kit>`. 9W9 samples are ER-99 (GPL-3.0, same as the port).
