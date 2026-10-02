@@ -7,4 +7,4 @@ MPC OS VST plugin port of [8W8](https://github.com/athousanddetails/schwung-8W8)
 
 ## Optional: 16-pad drum layout (firmware patch)
 
-Out of the box MPC shows this plugin with the keyboard (melodic) pad layout. There is an **optional, advanced** patch for MPC OS 3.9.1.2 that gives it the 16-pad drum layout. It modifies Akai's factory `/usr/bin/MPC`, is not part of the normal plugin install or release, and is a separate standalone script with warnings, backups and an uninstall: see [patch/](../../patch/README.md). Read the warnings there before using it.
+Out of the box MPC shows this plugin with the keyboard (melodic) pad layout. There is an **optional, advanced** patch for MPC OS 3.9.1.2 that gives it the 16-pad drum layout. It modifies Akai's factory `/usr/bin/MPC`, is not part of the normal plugin install or release, and is a separate standalone script with warnings, backups and an uninstall: see [tools/mpc_patch in mpc-vst-plugins](https://github.com/sd88me/mpc-vst-plugins/tree/main/tools/mpc_patch). Read the warnings there before using it.

@@ -30,5 +30,7 @@
   },
   "defines": {
     "MODULE_SUBDIR": "\"engine\""
-  }
+  },
+  "layout": "layout.conf",
+  "art": "html"
 }

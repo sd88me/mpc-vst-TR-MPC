@@ -1,5 +1,7 @@
 ﻿# Optional: MPC OS drum-pad patch (16-pad drum layout)
 
+> The canonical home of this patch is [tools/mpc_patch in mpc-vst-plugins](https://github.com/sd88me/mpc-vst-plugins/tree/main/tools/mpc_patch) (merged in PR #109). This folder is the development copy; use that one.
+
 **Not part of any plugin release.** `mpc-drum-pad-patch.sh` is a standalone script you run on the device yourself, if you want it.
 
 ## What it does
