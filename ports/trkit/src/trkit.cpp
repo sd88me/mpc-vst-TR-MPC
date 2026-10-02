@@ -1,5 +1,5 @@
 /*
- * TR-Kit: sixteen slots, each playing any voice from any of the four ported kits (6W6, 8W8, CW-78, 9W9).
+ * TR-MPC: sixteen slots, each playing any voice from any of the four ported kits (6W6, 8W8, CW-78, 9W9).
  *
  * Prototype, engine-level mixing. Each kit's engine renders ONE mono bus with its own reverb, delay,
  * compressor and master stage, and exposes no per-voice output. So a slot does not own a voice; it

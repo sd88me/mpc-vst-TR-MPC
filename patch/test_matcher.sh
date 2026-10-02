@@ -27,9 +27,9 @@ static unsigned call(const char *text) {
 }
 int main(void) {
     struct { const char *name; unsigned want; } t[] = {
-        {"Machinedrum Module", 1}, {"6W6", 1}, {"8W8", 1}, {"CW-78", 1}, {"9W9", 1}, {"TR-Kit", 1},
+        {"Machinedrum Module", 1}, {"6W6", 1}, {"8W8", 1}, {"CW-78", 1}, {"9W9", 1}, {"TR-MPC", 1},
         {"DrumSynth:Multi", 0x4ab2760}, {"Machinedrum Mod", 0x4ab2760}, {"Machinedrum Modules", 0x4ab2760},
-        {"6W", 0x4ab2760}, {"6W66", 0x4ab2760}, {"TR-Kit2", 0x4ab2760}, {"CW-7", 0x4ab2760}, {"", 0x4ab2760},
+        {"6W", 0x4ab2760}, {"6W66", 0x4ab2760}, {"TR-MPC2", 0x4ab2760}, {"CW-7", 0x4ab2760}, {"", 0x4ab2760},
         {"Monomodule One", 0x4ab2760}, {"Clementine-XT", 0x4ab2760}, {"Dexed", 0x4ab2760}, {"9W", 0x4ab2760},
     };
     int bad = 0;

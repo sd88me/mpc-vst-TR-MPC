@@ -34,7 +34,7 @@ cp /t/MPC.stock /t/w3; echo PATCH | run /t/w3 /t/bk3 install >/dev/null; rm /t/b
 run /t/w3 /t/bk3 uninstall >/dev/null; check "uninstall from full backup only" "$(md5 /t/w3)" $STOCK
 # 8 upgrade from the earlier Machinedrum-only patch
 cp /t/MPC.v1 /t/w4; mkdir -p /t/bk4; cp /t/v1bk/orig-regions.txt /t/bk4/
-out=$(run /t/w4 /t/bk4 status); echo "$out" | grep -q 'earlier Machinedrum'; check "status recognises the earlier patch" $? 0
+out=$(run /t/w4 /t/bk4 status); echo "$out" | grep -q 'earlier version'; check "status recognises the earlier patch" $? 0
 out=$(echo PATCH | run /t/w4 /t/bk4 install); check "  upgrade lands on the v2 build" "$(md5 /t/w4)" $V2
 run /t/w4 /t/bk4 uninstall >/dev/null; check "  and uninstall returns to stock" "$(md5 /t/w4)" $STOCK
 # 9 upgrade without the saved bytes refuses and changes nothing
@@ -43,6 +43,10 @@ check "  file untouched" "$(md5 /t/w5)" $V1
 # 10 a file that is not the 3.9.1.2 MPC
 cp /t/bad.bin /t/w6; out=$(echo PATCH | run /t/w6 /t/bk6 install); echo "$out" | grep -q 'not MPC OS 3.9.1.2'; check "other firmware refused" $? 0
 cmp -s /t/bad.bin /t/w6; check "  file untouched" $? 0
+# 12 upgrade from this patch's earlier name table (TR-Kit era)
+cp /t/MPC.v2old /t/w7; mkdir -p /t/bk7; cp /t/v2bk/orig-regions.txt /t/bk7/
+out=$(run /t/w7 /t/bk7 status); echo "$out" | grep -q 'earlier version'; check "status recognises the earlier name table" $? 0
+out=$(echo PATCH | run /t/w7 /t/bk7 install); check "  upgrade lands on the current build" "$(md5 /t/w7)" $V2
 # 11 uninstall on a stock file
 out=$(run /t/w1 /t/bk1 uninstall); echo "$out" | grep -q 'Already stock'; check "uninstall on stock is a no-op" $? 0
 [ $fail = 0 ] && echo PASSED || echo FAILED

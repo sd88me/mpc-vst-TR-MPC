@@ -1,9 +1,9 @@
 {
-  "name": "TR-Kit",
+  "name": "TR-MPC",
   "vendor": "sd88me",
-  "uid": "TRKt",
+  "uid": "TRMP",
   "version": 1000,
-  "so": "trkit.so",
+  "so": "trmpc.so",
   "params": "params.json",
   "build": {
     "root": "..",

@@ -1,4 +1,4 @@
-# TR-Kit (modular version), prototype
+# TR-MPC (modular version), prototype
 
 Sixteen slots; each slot picks any of 49 voices (6W6 8, 8W8 16, CW-78 14, 9W9 11) via `sNN_src`, with Level, Tune, Decay, Drive, Rev and Dly forwarded to that voice's own pots, plus a volume per kit. Pads: MIDI notes 36-51 -> slots 1-16.
 

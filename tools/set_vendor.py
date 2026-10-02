@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Set the plugin manufacturer ("vendor" in vst.json: the Synths folder name and the plugin list's manufacturer).
 
-The four Schwung kit ports keep their original author; TR-Kit, which is new work, is sd88me's.
+The four Schwung kit ports keep their original author; TR-MPC, which is new work, is sd88me's.
 """
 import json
 import os

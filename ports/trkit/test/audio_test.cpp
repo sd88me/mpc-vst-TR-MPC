@@ -1,4 +1,4 @@
-// Offline audio check for TR-Kit: every flat voice, played from slot 1, must make sound and then decay;
+// Offline audio check for TR-MPC: every flat voice, played from slot 1, must make sound and then decay;
 // a retargeted slot must change what the same note plays. Build: see ports/trkit/test/run.sh
 #include <math.h>
 #include <stdio.h>

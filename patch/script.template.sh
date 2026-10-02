@@ -32,6 +32,7 @@ set -u
 STOCK_MD5=592eebc8e1ce0797dc8c98e7002143b8
 PATCHED_MD5=@@PATCHED_MD5@@
 V1_MD5=10a7d0bb4e5fb66ffaa6b2c6a001eef2     # the earlier Machinedrum-only patch (mpc-vst-machinedrum release/mpc_patch)
+V2_MD5=730c959f317ea405c472f273342bc235     # this patch with the name table of 2026-10-01 (it still said "TR-Kit")
 BK=${MPC_PATCH_BACKUP:-/sdcard/MPC-backup}
 REG=$BK/orig-regions.txt
 FULL=$BK/MPC-3.9.1.2.orig
@@ -47,7 +48,7 @@ usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 if [ -n "$TEST" ]; then F=$TEST; else F=$MNT/usr/bin/MPC; fi
 
 state_of() {   # md5 -> word
-    case "$1" in "$STOCK_MD5") echo stock ;; "$PATCHED_MD5") echo patched ;; "$V1_MD5") echo old-patch ;; *) echo unknown ;; esac
+    case "$1" in "$STOCK_MD5") echo stock ;; "$PATCHED_MD5") echo patched ;; "$V1_MD5"|"$V2_MD5") echo old-patch ;; *) echo unknown ;; esac
 }
 
 need_root_device() {
@@ -115,7 +116,7 @@ cmd_status() {
     case "$st" in
         stock) echo "State: stock MPC OS 3.9.1.2, not patched." ;;
         patched) echo "State: PATCHED (plugin names: @@NAMES@@)." ;;
-        old-patch) echo "State: patched with the earlier Machinedrum-only patch; 'install' upgrades it." ;;
+        old-patch) echo "State: patched with an earlier version of this patch (Machinedrum-only, or an older name table); 'install' upgrades it." ;;
         *) echo "State: not MPC OS 3.9.1.2 (or modified some other way). This script will not touch it." ;;
     esac
     [ -f "$FULL" ] && echo "Backup: $FULL present" || echo "Backup: no full backup in $BK"
@@ -140,7 +141,7 @@ cmd_install() {
   - Undo any time with: sh $0 uninstall
   - You use this at your own risk. It is not an Akai product.
 EOF
-    if [ "$st" = old-patch ]; then echo " - This device has the earlier Machinedrum-only patch; it is replaced by this one."; fi
+    if [ "$st" = old-patch ]; then echo " - This device has an earlier version of this patch; it is replaced by this one."; fi
     printf "\nType PATCH to continue: "
     if [ -n "$TEST" ]; then read -r a; else read -r a < /dev/tty 2>/dev/null || read -r a; fi
     [ "$a" = PATCH ] || die "cancelled; nothing was changed"

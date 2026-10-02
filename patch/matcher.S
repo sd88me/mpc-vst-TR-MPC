@@ -44,5 +44,5 @@ table:
         .asciz "8W8"
         .asciz "CW-78"
         .asciz "9W9"
-        .asciz "TR-Kit"
+        .asciz "TR-MPC"
         .byte 0

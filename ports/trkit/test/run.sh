@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Offline audio test for TR-Kit. Run from a path without spaces:   bash ports/trkit/test/run.sh
+# Offline audio test for TR-MPC. Run from a path without spaces:   bash ports/trkit/test/run.sh
 set -euo pipefail
 P="$(cd "$(dirname "$0")/../.." && pwd)"   # ports/
 O=/tmp/trkit_audio; mkdir -p $O

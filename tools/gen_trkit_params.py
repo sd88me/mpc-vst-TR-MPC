@@ -39,5 +39,5 @@ for b, (name, _) in enumerate(KITS):
 sections.append({"label": "Kit volumes", "keys": kv})
 
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ports", "trkit", "params.json")
-json.dump({"name": "TR-Kit", "params": params, "sections": sections}, open(out, "w", newline="\n"), indent=1)
+json.dump({"name": "TR-MPC", "params": params, "sections": sections}, open(out, "w", newline="\n"), indent=1)
 print(len(params), "params,", len(SRC), "voices")
