@@ -105,8 +105,37 @@ const Knob kKnobs[] = {
     { "tune",  { "tune", "pitch", nullptr } },
     { "decay", { "decay", nullptr, nullptr } },
     { "drive", { "drive", nullptr, nullptr } },
+    { "dist",  { "dist_type", nullptr, nullptr } },   /* the voice's distortion character, an enum (0..6) */
+    { "x1",    { nullptr, nullptr, nullptr } },       /* extras: the voice's own pots beyond the four above, see kExtras */
+    { "x2",    { nullptr, nullptr, nullptr } },
+    { "x3",    { nullptr, nullptr, nullptr } },
 };
-constexpr int kNumKnobs = 4;
+constexpr int kNumKnobs = 8;
+
+/* The voice-specific pots of the voices that have any, in the order the skin labels them (X1, X2, X3) */
+struct Extra { int backend; const char *id; const char *keys[3]; };
+const Extra kExtras[] = {
+    { 0, "bd", { "attack", nullptr, nullptr } },
+    { 0, "sd", { "snappy", "tone", nullptr } },
+    { 0, "cp", { "noise", nullptr, nullptr } },
+    { 1, "bd", { "attack", "tone", nullptr } },
+    { 1, "sd", { "snappy", nullptr, nullptr } },
+    { 1, "ma", { "attack", nullptr, nullptr } },
+    { 2, "sd", { "snappy", nullptr, nullptr } },
+    { 2, "gu", { "rate", nullptr, nullptr } },
+    { 3, "bd", { "attack", "sweep_depth", "pitch_mod" } },
+    { 3, "sd", { "noise_decay", "snappy", nullptr } },
+    { 3, "lt", { "attack", nullptr, nullptr } },
+    { 3, "mt", { "attack", nullptr, nullptr } },
+    { 3, "ht", { "attack", nullptr, nullptr } },
+    { 3, "rs", { "saturation", nullptr, nullptr } },
+};
+
+const char *extra_key(int backend, const char *id, int n) {
+    for (const Extra &x : kExtras)
+        if (x.backend == backend && !strcmp(x.id, id)) return x.keys[n];
+    return nullptr;
+}
 
 /* Default flat voice per slot (808 kick/snare/toms, 606 hats, 909 clap/rim/cymbals, CR78 percussion) */
 int default_flat(int slot) {
@@ -130,6 +159,7 @@ struct Inst {
     int quiet[kNumBackends];   /* samples of near-silence since the engine last sounded */
     int fx_quiet;              /* same for the shared FX stage's output */
     int slot_flat[kSlots];
+    int edit_slot;             /* 0..15: the slot the editor page's e_* controls (and edit_voice) act on */
     int pan[kSlots], rev[kSlots], dly[kSlots];   /* 0..127; pan 64 = centre */
 };
 
@@ -149,11 +179,13 @@ bool forward(Inst *in, int slot, const Knob &k, int *val, bool set) {
     void *e = engine_for(in, b);
     if (!e) return false;
     const char *id = kBackends[b].voice_id(v);
+    const char *sfx[3] = { k.suffixes[0], k.suffixes[1], k.suffixes[2] };
+    if (k.name[0] == 'x') sfx[0] = extra_key(b, id, k.name[1] - '1');   /* a voice without that extra ignores it */
     char key[48];
-    for (int s = 0; s < 3 && k.suffixes[s]; ++s) {
+    for (int s = 0; s < 3 && sfx[s]; ++s) {
         const char *infix[2] = { "", "c_" };
         for (int c = 0; c < 2; ++c) {
-            snprintf(key, sizeof key, "%s_%s%s", id, infix[c], k.suffixes[s]);
+            snprintf(key, sizeof key, "%s_%s%s", id, infix[c], sfx[s]);
             if (set ? kBackends[b].set(e, key, *val) : kBackends[b].get(e, key, val)) return true;
         }
     }
@@ -207,11 +239,21 @@ int *owned(Inst *in, int slot, const char *rest) {
 
 void set_state(Inst *in, const char *st);
 
+/* The editor page's controls act on the edit slot: edit_voice -> sNN_src, e_<knob> -> sNN_<knob> */
+bool editor_key(const Inst *in, const char *key, char *out, size_t n) {
+    if (!strcmp(key, "edit_voice")) { snprintf(out, n, "s%02d_src", in->edit_slot + 1); return true; }
+    if (key[0] == 'e' && key[1] == '_') { snprintf(out, n, "s%02d_%s", in->edit_slot + 1, key + 2); return true; }
+    return false;
+}
+
 void set_param(void *p, const char *key, const char *val) {
     Inst *in = (Inst *)p;
     int slot; const char *rest;
     const int x = atoi(val);
     if (!strcmp(key, "state")) { set_state(in, val); return; }
+    if (!strcmp(key, "edit_slot")) { in->edit_slot = x < 0 ? 0 : (x >= kSlots ? kSlots - 1 : x); return; }
+    char ek[24];
+    if (editor_key(in, key, ek, sizeof ek)) { set_param(p, ek, val); return; }
     if (parse_slot(key, &slot, &rest)) {
         if (!strcmp(rest, "src")) {
             if (x >= 0 && x < kTotalVoices) { in->slot_flat[slot] = x; int b, v; flat_to_bv(x, &b, &v); engine_for(in, b); }
@@ -229,14 +271,14 @@ void set_param(void *p, const char *key, const char *val) {
 
 const char *const kFxKeys[] = { "rev_decay", "rev_tone", "rev_hpf", "rev_level", "dly_time", "dly_fdbk", "dly_tone",
                                 "dly_hpf", "dly_level", "master_dist", "master_drive", "comp", "volume" };
-const char *const kSlotKeys[] = { "src", "level", "tune", "decay", "drive", "pan", "rev", "dly" };
+const char *const kSlotKeys[] = { "src", "level", "tune", "decay", "drive", "dist", "x1", "x2", "x3", "pan", "rev", "dly" };
 
 int get_param(void *p, const char *key, char *buf, int n);
 
 /* The project chunk (the wrapper stores whatever "state" returns): every slot and FX value as key=value; pairs,
  * slot keys first within a slot so that src is applied before the voice's own pots. */
 int get_state(Inst *in, char *buf, int n) {
-    int len = snprintf(buf, n, "trmpc1;");
+    int len = snprintf(buf, n, "trmpc1;edit_slot=%d;", in->edit_slot);
     char k[24], v[16];
     for (int s = 1; s <= kSlots; ++s)
         for (const char *sk : kSlotKeys) {
@@ -275,6 +317,9 @@ int get_param(void *p, const char *key, char *buf, int n) {
     Inst *in = (Inst *)p;
     int slot; const char *rest;
     if (!strcmp(key, "state")) return get_state(in, buf, n);
+    if (!strcmp(key, "edit_slot")) return snprintf(buf, n, "%d", in->edit_slot);
+    char ek[24];
+    if (editor_key(in, key, ek, sizeof ek)) return get_param(p, ek, buf, n);
     if (parse_slot(key, &slot, &rest)) {
         if (!strcmp(rest, "src")) return snprintf(buf, n, "%d", in->slot_flat[slot]);
         if (int *o = owned(in, slot, rest)) return snprintf(buf, n, "%d", *o);

@@ -5,6 +5,10 @@ ports/trkit/skin.css. `bash tools/build_ci.sh trkit [style]` copies the chosen l
 Styles:
   restyle   the original 16 slot panels (voice popup + 7 knobs each), drawn as a modular-synth rack: faceplates with
             screws, rack rails, a jack and a pad label per module, blank panels filling the FX page.
+  editor    rack overview + one editor: two mixer pages of 8 compact modules (voice, level, pan, rev), an EDITOR page
+            (slot selector, voice, character with the voice's own extra controls labelled per voice, mix) and the FX page.
+  full      every slot a full module with all its controls (voice, level, tune, decay, drive, dist, three extras labelled
+            per voice, pan, rev, dly), 4 modules per page.
 
 Coordinates: the layout is in "shadow" coordinates, the artwork (art file=) in plugin-area coordinates (the layout's y
 minus Y_OFF = 86).
@@ -70,29 +74,34 @@ def rails():
     return "".join(out)
 
 
-def plate(x0, label, seed, blank=False, pad=None):
+def plate(x0, label, seed, blank=False, pad=None, w=None, head=True):
+    w = w or MOD_W
     y0, y1 = TOP - Y_OFF, BOT - Y_OFF
     h = y1 - y0
     o = ['<g>',
-         '<rect x="%d" y="%d" width="%d" height="%d" rx="3" fill="url(#plate)" stroke="#07080a" stroke-width="1.5"/>' % (x0, y0, MOD_W, h),
-         '<rect x="%g" y="%g" width="%d" height="%d" rx="2" fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1"/>' % (x0 + 1.5, y0 + 1.5, MOD_W - 3, h - 3),
+         '<rect x="%d" y="%d" width="%d" height="%d" rx="3" fill="url(#plate)" stroke="#07080a" stroke-width="1.5"/>' % (x0, y0, w, h),
+         '<rect x="%g" y="%g" width="%d" height="%d" rx="2" fill="none" stroke="#ffffff" stroke-opacity="0.09" stroke-width="1"/>' % (x0 + 1.5, y0 + 1.5, w - 3, h - 3),
          # brushed-metal grain
-         '<rect x="%d" y="%d" width="%d" height="%d" rx="3" fill="url(#grain)" opacity="0.5"/>' % (x0, y0, MOD_W, h)]
-    for k, (sx, sy) in enumerate(((x0 + 14, y0 + 14), (x0 + MOD_W - 14, y0 + 14), (x0 + 14, y1 - 14), (x0 + MOD_W - 14, y1 - 14))):
+         '<rect x="%d" y="%d" width="%d" height="%d" rx="3" fill="url(#grain)" opacity="0.5"/>' % (x0, y0, w, h)]
+    for k, (sx, sy) in enumerate(((x0 + 14, y0 + 14), (x0 + w - 14, y0 + 14), (x0 + 14, y1 - 14), (x0 + w - 14, y1 - 14))):
         o.append(screw(sx, sy, seed * 4 + k))
     if blank:
         o.append('<text x="%g" y="%g" text-anchor="middle" font-family="Titillium Web" font-weight="700" font-size="30" '
-                 'letter-spacing="6" fill="#5ec2b7" fill-opacity="0.55">TR-MPC</text>' % (x0 + MOD_W / 2, (y0 + y1) / 2))
+                 'letter-spacing="6" fill="#5ec2b7" fill-opacity="0.55">TR-MPC</text>' % (x0 + w / 2, (y0 + y1) / 2))
         o.append('<text x="%g" y="%g" text-anchor="middle" font-family="Titillium Web" font-weight="600" font-size="13" '
-                 'letter-spacing="3" fill="#9a9ea8" fill-opacity="0.6">%s</text>' % (x0 + MOD_W / 2, (y0 + y1) / 2 + 28, label))
+                 'letter-spacing="3" fill="#9a9ea8" fill-opacity="0.6">%s</text>' % (x0 + w / 2, (y0 + y1) / 2 + 28, label))
     else:
-        o.append('<rect x="%d" y="%d" width="%d" height="2" fill="#5ec2b7" fill-opacity="0.55"/>' % (x0 + 26, y0 + 40, MOD_W - 52))
-        if pad is not None:
+        if head: o.append('<rect x="%d" y="%d" width="%d" height="2" fill="#5ec2b7" fill-opacity="0.55"/>' % (x0 + 26 if w > 200 else x0 + 16, y0 + 40, w - 52 if w > 200 else w - 32))
+        if pad is not None and w > 200:
             o.append('<text x="%g" y="%g" font-family="Titillium Web" font-weight="600" font-size="13" letter-spacing="3" '
                      'fill="#9a9ea8">PAD %d  %s</text>' % (x0 + 30, y1 - 22, pad, pad_name(pad)))
             o.append('<text x="%g" y="%g" text-anchor="end" font-family="Titillium Web" font-weight="600" font-size="13" '
-                     'letter-spacing="3" fill="#9a9ea8">OUT</text>' % (x0 + MOD_W - 66, y1 - 22))
-            o.append(jack(x0 + MOD_W - 40, y1 - 26))
+                     'letter-spacing="3" fill="#9a9ea8">OUT</text>' % (x0 + w - 66, y1 - 22))
+            o.append(jack(x0 + w - 40, y1 - 26))
+        elif pad is not None:   # compact module: pad and jack only
+            o.append('<text x="%g" y="%g" font-family="Titillium Web" font-weight="600" font-size="12" letter-spacing="1.5" '
+                     'fill="#9a9ea8">%d %s</text>' % (x0 + 28, y1 - 22, pad, pad_name(pad)))
+            o.append(jack(x0 + w - 36, y1 - 26))
     o.append('</g>')
     return "".join(o)
 
@@ -107,11 +116,11 @@ DEFS = """<defs>
 </defs>"""
 
 
-def page_svg(modules):
-    """modules: list of 4 (kind, label, pad) for the 4 rack positions."""
+def page_svg(modules, xs=None, w=None, head=True):
+    """modules: list of (kind, label, pad), one per rack position (xs: their x, default the 4 wide positions)."""
     body = ['<rect width="%d" height="%d" fill="url(#bgg)"/>' % (W, H), rails()]
     for i, (kind, label, pad) in enumerate(modules):
-        body.append(plate(MOD_X[i], label, i, blank=kind == "blank", pad=pad))
+        body.append(plate((xs or MOD_X)[i], label, i, blank=kind == "blank", pad=pad, w=w, head=head))
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d">%s%s</svg>\n'
             % (W, H, W, H, DEFS, "".join(body)))
 
@@ -200,11 +209,150 @@ def build_restyle():
     return "\n".join(out) + "\n"
 
 
+# ---- voice-specific controls (must match kExtras in ports/trkit/src/trkit.cpp) ----
+KITS = [("606", "bd sd lt ht ch oh cy cp"), ("808", "bd sd lt mt ht lc mc hc rs cl ma cp cb ch oh cy"),
+        ("CR78", "bd sd rs hh cy ma cl hb lb lc cb tb gu mb"), ("909", "bd sd lt mt ht rs hc ohh chh rc cr")]
+LABEL = {"attack": "ATTACK", "tone": "TONE", "snappy": "SNAPPY", "noise": "NOISE", "rate": "RATE", "sweep_depth": "SWEEP",
+         "pitch_mod": "PITCH MOD", "noise_decay": "NOISE DCY", "saturation": "SATURATE"}
+EXTRAS = {(0, "bd"): ["attack"], (0, "sd"): ["snappy", "tone"], (0, "cp"): ["noise"],
+          (1, "bd"): ["attack", "tone"], (1, "sd"): ["snappy"], (1, "ma"): ["attack"],
+          (2, "sd"): ["snappy"], (2, "gu"): ["rate"],
+          (3, "bd"): ["attack", "sweep_depth", "pitch_mod"], (3, "sd"): ["noise_decay", "snappy"],
+          (3, "lt"): ["attack"], (3, "mt"): ["attack"], (3, "ht"): ["attack"], (3, "rs"): ["saturation"]}
+
+
+def extras_by_slot_knob():
+    """{0: [(flat voice index, label)], 1: [...], 2: [...]} for X1, X2, X3."""
+    out = {0: [], 1: [], 2: []}
+    flat = 0
+    for b, (_, ids) in enumerate(KITS):
+        for vid in ids.split():
+            for n, key in enumerate(EXTRAS.get((b, vid), [])):
+                out[n].append((flat, LABEL[key]))
+            flat += 1
+    return out
+
+
+def x_knobs(lines, key, n, cx, cy, r, when_key):
+    """The n-th extra knob, one line per voice that has it (shown only while the voice is selected)."""
+    for flat, label in extras_by_slot_knob()[n]:
+        lines.append('knob cx=%d cy=%d r=%d label="%s" key=%s when=%s:%d' % (cx, cy, r, label, key, when_key, flat))
+
+
+def fx_tab(out, header_fn, svg_name):
+    name = "images/%s" % svg_name
+    open(os.path.join(PORT, name), "w", newline="\n").write(
+        page_svg([("slot", t, None) for t, _ in FX_MODULES[:3]] + [("blank", "SHARED FX / MASTER", None)]))
+    out += ["", "[tab FX - MASTER]", "art file=%s fit=stretch" % name] + header_fn
+    for i, (title, ctrls) in enumerate(FX_MODULES):
+        x0 = MOD_X[i]
+        out.append('frame x=%d y=%d w=%d h=%d title="%s"' % (x0 + 26, TOP, MOD_W - 52, BOT - TOP, title))
+        for kind, dx, cy, label, key in ctrls:
+            if kind == "popup":
+                out.append('popup cx=%d cy=%d w=130 h=48 label="%s" key=%s' % (x0 + dx, cy, label, key))
+            else:
+                out.append('knob cx=%d cy=%d r=26 label="%s" key=%s' % (x0 + dx, cy, label, key))
+    out += ['qlinks "FX - MASTER" = fx_rev_decay,fx_rev_tone,fx_rev_level,fx_dly_time,fx_dly_fdbk,fx_dly_level,fx_master_dist,fx_master_drive',
+            'qlinks "REVERB" = fx_rev_decay,fx_rev_tone,fx_rev_hpf,fx_rev_level',
+            'qlinks "DELAY" = fx_dly_time,fx_dly_fdbk,fx_dly_tone,fx_dly_hpf,fx_dly_level',
+            'qlinks "MASTER" = fx_master_dist,fx_master_drive,fx_comp,fx_volume']
+
+
+def build_editor():
+    images = os.path.join(PORT, "images")
+    out = ["# TR-MPC skin (editor): rack overview + one editor. Generated by tools/gen_trmpc_skin.py.", THEME]
+    # two mixer pages: 8 compact modules each
+    cw = 152
+    xs = [EAR + i * (cw + 2) for i in range(8)]
+    for page in range(2):
+        slots = list(range(page * 8 + 1, page * 8 + 9))
+        name = "images/rack_mix_%d.svg" % (page + 1)
+        open(os.path.join(PORT, name), "w", newline="\n").write(
+            page_svg([("slot", "S%d" % s, s) for s in slots], xs=xs, w=cw))
+        out += ["", "[tab S%d - S%d]" % (slots[0], slots[-1]), "art file=%s fit=stretch" % name] + header(page + 1, 4)
+        for i, sl in enumerate(slots):
+            k, x0 = "s%02d_" % sl, xs[i]
+            out.append('frame x=%d y=%d w=%d h=%d title="%d"' % (x0 + 30, TOP, cw - 60, BOT - TOP, sl))
+            out.append('popup cx=%d cy=232 w=130 h=48 label="VOICE" key=%ssrc groups="%s"' % (x0 + cw // 2, k, GROUPS))
+            out.append('knob cx=%d cy=306 r=26 label="LEVEL" key=%slevel' % (x0 + cw // 2, k))
+            out.append('knob cx=%d cy=424 r=26 label="PAN" key=%span' % (x0 + cw // 2, k))
+            out.append('knob cx=%d cy=542 r=26 label="REV" key=%srev' % (x0 + cw // 2, k))
+        out.append('qlinks "S%d - S%d LEVEL" = %s' % (slots[0], slots[-1], ",".join("s%02d_level" % s for s in slots)))
+        out.append('qlinks "S%d - S%d PAN" = %s' % (slots[0], slots[-1], ",".join("s%02d_pan" % s for s in slots)))
+        out.append('qlinks "S%d - S%d REV" = %s' % (slots[0], slots[-1], ",".join("s%02d_rev" % s for s in slots)))
+    # the editor page: select | voice | character | mix
+    name = "images/rack_editor.svg"
+    open(os.path.join(PORT, name), "w", newline="\n").write(
+        page_svg([("slot", "SELECT", None), ("slot", "VOICE", None), ("slot", "CHARACTER", None), ("slot", "MIX", None)]))
+    out += ["", "[tab EDITOR]", "art file=%s fit=stretch" % name] + header(3, 4)
+    titles = ["SELECT SLOT", "VOICE", "CHARACTER", "MIX"]
+    for i, t in enumerate(titles):
+        out.append('frame x=%d y=%d w=%d h=%d title="%s"' % (MOD_X[i] + 26, TOP, MOD_W - 52, BOT - TOP, t))
+    x1, x2, x3, x4 = MOD_X
+    c = lambda x0: (x0 + 78, x0 + 226)
+    out.append('enum_h cx=%d cy=330 label="PAD / SLOT" key=edit_slot sw=66 rows=4' % (x1 + MOD_W // 2))
+    out.append('popup cx=%d cy=240 w=210 h=48 label="VOICE" key=edit_voice groups="%s"' % (x2 + MOD_W // 2, GROUPS))
+    out.append('knob cx=%d cy=330 r=26 label="LEVEL" key=e_level' % c(x2)[0])
+    out.append('knob cx=%d cy=330 r=26 label="TUNE" key=e_tune' % c(x2)[1])
+    out.append('knob cx=%d cy=448 r=26 label="DECAY" key=e_decay' % c(x2)[0])
+    out.append('knob cx=%d cy=448 r=26 label="DRIVE" key=e_drive' % c(x2)[1])
+    out.append('popup cx=%d cy=240 w=210 h=48 label="DISTORTION" key=e_dist' % (x3 + MOD_W // 2))
+    x_knobs(out, "e_x1", 0, c(x3)[0], 330, 26, "edit_voice")
+    x_knobs(out, "e_x2", 1, c(x3)[1], 330, 26, "edit_voice")
+    x_knobs(out, "e_x3", 2, c(x3)[0], 448, 26, "edit_voice")
+    out.append('readout cx=%d cy=240 w=210 h=48 label="EDITING SLOT" key=edit_slot' % (x4 + MOD_W // 2))
+    out.append('knob cx=%d cy=330 r=26 label="PAN" key=e_pan' % c(x4)[0])
+    out.append('knob cx=%d cy=330 r=26 label="REV" key=e_rev' % c(x4)[1])
+    out.append('knob cx=%d cy=448 r=26 label="DLY" key=e_dly' % c(x4)[0])
+    out.append('qlinks "EDITOR" = edit_slot,edit_voice,e_level,e_tune,e_decay,e_drive,e_dist,e_pan,e_x1,e_x2,e_x3,e_rev,e_dly')
+    out.append('qlinks "VOICE" = e_level,e_tune,e_decay,e_drive,e_dist,e_x1,e_x2,e_x3')
+    out.append('qlinks "MIX" = e_pan,e_rev,e_dly,edit_slot,edit_voice')
+    fx_tab(out, header(4, 4), "rack_fx.svg")
+    return "\n".join(out) + "\n"
+
+
+def build_full():
+    out = ["# TR-MPC skin (full): every slot a full module. Generated by tools/gen_trmpc_skin.py.", THEME, "label_scale=0.8"]
+    r, pitch, row0 = 16, 92, 168
+    for page in range(4):
+        slots = list(range(page * 4 + 1, page * 4 + 5))
+        name = "images/rack_full_%d.svg" % (page + 1)
+        open(os.path.join(PORT, name), "w", newline="\n").write(
+            page_svg([("slot", "SLOT %d" % s, s) for s in slots], head=False))
+        out += ["", "[tab S%d - S%d]" % (slots[0], slots[-1]), "art file=%s fit=stretch" % name] + header(page + 1, 5)
+        for i, sl in enumerate(slots):
+            k, x0 = "s%02d_" % sl, MOD_X[i]
+            c1, c2 = x0 + 78, x0 + 226
+            rows = [row0 + n * pitch for n in range(6)]
+            out.append('popup cx=%d cy=%d w=130 h=44 label="VOICE %d" key=%ssrc groups="%s"' % (c1, rows[0] + 14, sl, k, GROUPS))
+            out.append('knob cx=%d cy=%d r=%d label="LEVEL" key=%slevel' % (c2, rows[0], r, k))
+            out.append('knob cx=%d cy=%d r=%d label="TUNE" key=%stune' % (c1, rows[1], r, k))
+            out.append('knob cx=%d cy=%d r=%d label="DECAY" key=%sdecay' % (c2, rows[1], r, k))
+            out.append('knob cx=%d cy=%d r=%d label="DRIVE" key=%sdrive' % (c1, rows[2], r, k))
+            out.append('popup cx=%d cy=%d w=130 h=44 label="DIST" key=%sdist' % (c2, rows[2] + 14, k))
+            x_knobs(out, k + "x1", 0, c1, rows[3], r, k + "src")
+            x_knobs(out, k + "x2", 1, c2, rows[3], r, k + "src")
+            x_knobs(out, k + "x3", 2, c1, rows[4], r, k + "src")
+            out.append('knob cx=%d cy=%d r=%d label="PAN" key=%span' % (c2, rows[4], r, k))
+            out.append('knob cx=%d cy=%d r=%d label="REV" key=%srev' % (c1, rows[5], r, k))
+            out.append('knob cx=%d cy=%d r=%d label="DLY" key=%sdly' % (c2, rows[5], r, k))
+        out.append('qlinks "S%d - S%d" = %s' % (slots[0], slots[-1], ",".join(
+            "s%02d_%s" % (s, kk) for s in slots for kk in ("src", "level", "tune", "decay"))))
+        for sl in slots:
+            keys = ["src", "level", "tune", "decay", "drive", "dist", "x1", "x2", "x3", "pan", "rev", "dly"]
+            out.append('qlinks "SLOT %d" = %s' % (sl, ",".join("s%02d_%s" % (sl, kk) for kk in keys[:8])))
+            out.append('qlinks "SLOT %d B" = %s' % (sl, ",".join("s%02d_%s" % (sl, kk) for kk in keys[8:])))
+    fx_tab(out, header(5, 5), "rack_fx.svg")
+    return "\n".join(out) + "\n"
+
+
 def main():
     os.makedirs(os.path.join(PORT, "layouts"), exist_ok=True)
     open(os.path.join(PORT, "layouts", "restyle.conf"), "w", newline="\n").write(build_restyle())
+    open(os.path.join(PORT, "layouts", "editor.conf"), "w", newline="\n").write(build_editor())
+    open(os.path.join(PORT, "layouts", "full.conf"), "w", newline="\n").write(build_full())
     open(os.path.join(PORT, "skin.css"), "w", newline="\n").write(CSS)
-    print("wrote layouts/restyle.conf, skin.css, images/")
+    print("wrote layouts/{restyle,editor,full}.conf, skin.css, images/")
 
 
 if __name__ == "__main__":

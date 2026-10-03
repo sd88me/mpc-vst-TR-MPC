@@ -65,6 +65,31 @@ int main() {
     const bool rev_ok = t1 > t0 * 2 && fabs(l - r) < l * 0.05;
     printf("%s pan hard left (centre now: L %.5f R %.5f)\n%s reverb send: tail %.6f -> %.6f\n", pan_ok ? "ok  " : "FAIL", l, r, rev_ok ? "ok  " : "FAIL", t0, t1);
     fails += !pan_ok + !rev_ok;
+    // voice-specific controls: an 808 kick has attack and tone as X1/X2, a tom has none; Dist is the voice's own enum
+    {
+        auto get = [&](const char *k) { char b[32]; return e->get_param(in, k, b, sizeof b) > 0 ? atoi(b) : -1; };
+        e->set_param(in, "s02_src", "8");            // 808 BD
+        e->set_param(in, "s02_x1", "111"); e->set_param(in, "s02_x2", "22"); e->set_param(in, "s02_dist", "5");
+        const bool kick = get("s02_x1") == 111 && get("s02_x2") == 22 && get("s02_dist") == 5;
+        e->set_param(in, "s02_src", "10");           // 808 LT: no extras
+        e->set_param(in, "s02_x1", "99");
+        const bool tom = get("s02_x1") == 0;
+        e->set_param(in, "s02_src", "38");           // 909 BD: attack, sweep depth, pitch mod
+        e->set_param(in, "s02_x1", "50"); e->set_param(in, "s02_x2", "60"); e->set_param(in, "s02_x3", "70");
+        const bool k909 = get("s02_x1") == 50 && get("s02_x2") == 60 && get("s02_x3") == 70;
+        printf("%s extras: 808 kick %d, tom ignores %d, 909 kick %d\n", kick && tom && k909 ? "ok  " : "FAIL", kick, tom, k909);
+        fails += !(kick && tom && k909);
+    }
+    // the editor's e_* controls and edit_voice act on the edit slot
+    {
+        auto get = [&](const char *k) { char b[32]; return e->get_param(in, k, b, sizeof b) > 0 ? atoi(b) : -1; };
+        e->set_param(in, "edit_slot", "4");
+        e->set_param(in, "e_pan", "12"); e->set_param(in, "edit_voice", "21");
+        const bool ok = get("s05_pan") == 12 && get("s05_src") == 21 && get("e_pan") == 12 && get("edit_voice") == 21 && get("s04_pan") != 12;
+        printf("%s editor: edit slot 5 -> pan %d voice %d (slot 4 pan %d)\n", ok ? "ok  " : "FAIL", get("s05_pan"), get("s05_src"), get("s04_pan"));
+        fails += !ok;
+        e->set_param(in, "edit_slot", "0");
+    }
     // a project chunk ("state") must restore every slot's voice and settings into a fresh instance
     {
         const char *set[][2] = {{"s03_src", "30"}, {"s03_pan", "10"}, {"s03_rev", "90"}, {"s03_level", "100"}, {"s03_tune", "20"},

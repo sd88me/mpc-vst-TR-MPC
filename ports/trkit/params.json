@@ -60,51 +60,86 @@
   {
    "key": "s01_level",
    "name": "S1 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s01_tune",
    "name": "S1 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s01_decay",
    "name": "S1 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s01_drive",
    "name": "S1 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s01_dist",
+   "name": "S1 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s01_x1",
+   "name": "S1 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s01_x2",
+   "name": "S1 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s01_x3",
+   "name": "S1 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s01_pan",
    "name": "S1 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s01_rev",
    "name": "S1 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s01_dly",
    "name": "S1 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s02_src",
@@ -165,51 +200,86 @@
   {
    "key": "s02_level",
    "name": "S2 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s02_tune",
    "name": "S2 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s02_decay",
    "name": "S2 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s02_drive",
    "name": "S2 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s02_dist",
+   "name": "S2 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s02_x1",
+   "name": "S2 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s02_x2",
+   "name": "S2 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s02_x3",
+   "name": "S2 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s02_pan",
    "name": "S2 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s02_rev",
    "name": "S2 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s02_dly",
    "name": "S2 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s03_src",
@@ -270,51 +340,86 @@
   {
    "key": "s03_level",
    "name": "S3 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s03_tune",
    "name": "S3 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s03_decay",
    "name": "S3 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s03_drive",
    "name": "S3 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s03_dist",
+   "name": "S3 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s03_x1",
+   "name": "S3 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s03_x2",
+   "name": "S3 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s03_x3",
+   "name": "S3 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s03_pan",
    "name": "S3 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s03_rev",
    "name": "S3 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s03_dly",
    "name": "S3 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s04_src",
@@ -375,51 +480,86 @@
   {
    "key": "s04_level",
    "name": "S4 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s04_tune",
    "name": "S4 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s04_decay",
    "name": "S4 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s04_drive",
    "name": "S4 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s04_dist",
+   "name": "S4 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s04_x1",
+   "name": "S4 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s04_x2",
+   "name": "S4 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s04_x3",
+   "name": "S4 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s04_pan",
    "name": "S4 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s04_rev",
    "name": "S4 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s04_dly",
    "name": "S4 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s05_src",
@@ -480,51 +620,86 @@
   {
    "key": "s05_level",
    "name": "S5 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s05_tune",
    "name": "S5 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s05_decay",
    "name": "S5 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s05_drive",
    "name": "S5 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s05_dist",
+   "name": "S5 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s05_x1",
+   "name": "S5 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s05_x2",
+   "name": "S5 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s05_x3",
+   "name": "S5 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s05_pan",
    "name": "S5 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s05_rev",
    "name": "S5 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s05_dly",
    "name": "S5 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s06_src",
@@ -585,51 +760,86 @@
   {
    "key": "s06_level",
    "name": "S6 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s06_tune",
    "name": "S6 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s06_decay",
    "name": "S6 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s06_drive",
    "name": "S6 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s06_dist",
+   "name": "S6 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s06_x1",
+   "name": "S6 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s06_x2",
+   "name": "S6 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s06_x3",
+   "name": "S6 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s06_pan",
    "name": "S6 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s06_rev",
    "name": "S6 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s06_dly",
    "name": "S6 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s07_src",
@@ -690,51 +900,86 @@
   {
    "key": "s07_level",
    "name": "S7 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s07_tune",
    "name": "S7 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s07_decay",
    "name": "S7 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s07_drive",
    "name": "S7 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s07_dist",
+   "name": "S7 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s07_x1",
+   "name": "S7 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s07_x2",
+   "name": "S7 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s07_x3",
+   "name": "S7 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s07_pan",
    "name": "S7 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s07_rev",
    "name": "S7 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s07_dly",
    "name": "S7 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s08_src",
@@ -795,51 +1040,86 @@
   {
    "key": "s08_level",
    "name": "S8 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s08_tune",
    "name": "S8 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s08_decay",
    "name": "S8 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s08_drive",
    "name": "S8 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s08_dist",
+   "name": "S8 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s08_x1",
+   "name": "S8 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s08_x2",
+   "name": "S8 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s08_x3",
+   "name": "S8 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s08_pan",
    "name": "S8 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s08_rev",
    "name": "S8 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s08_dly",
    "name": "S8 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s09_src",
@@ -900,51 +1180,86 @@
   {
    "key": "s09_level",
    "name": "S9 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s09_tune",
    "name": "S9 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s09_decay",
    "name": "S9 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s09_drive",
    "name": "S9 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s09_dist",
+   "name": "S9 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s09_x1",
+   "name": "S9 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s09_x2",
+   "name": "S9 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s09_x3",
+   "name": "S9 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s09_pan",
    "name": "S9 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s09_rev",
    "name": "S9 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s09_dly",
    "name": "S9 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s10_src",
@@ -1005,51 +1320,86 @@
   {
    "key": "s10_level",
    "name": "S10 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s10_tune",
    "name": "S10 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s10_decay",
    "name": "S10 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s10_drive",
    "name": "S10 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s10_dist",
+   "name": "S10 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s10_x1",
+   "name": "S10 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s10_x2",
+   "name": "S10 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s10_x3",
+   "name": "S10 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s10_pan",
    "name": "S10 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s10_rev",
    "name": "S10 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s10_dly",
    "name": "S10 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s11_src",
@@ -1110,51 +1460,86 @@
   {
    "key": "s11_level",
    "name": "S11 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s11_tune",
    "name": "S11 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s11_decay",
    "name": "S11 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s11_drive",
    "name": "S11 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s11_dist",
+   "name": "S11 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s11_x1",
+   "name": "S11 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s11_x2",
+   "name": "S11 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s11_x3",
+   "name": "S11 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s11_pan",
    "name": "S11 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s11_rev",
    "name": "S11 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s11_dly",
    "name": "S11 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s12_src",
@@ -1215,51 +1600,86 @@
   {
    "key": "s12_level",
    "name": "S12 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s12_tune",
    "name": "S12 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s12_decay",
    "name": "S12 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s12_drive",
    "name": "S12 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s12_dist",
+   "name": "S12 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s12_x1",
+   "name": "S12 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s12_x2",
+   "name": "S12 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s12_x3",
+   "name": "S12 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s12_pan",
    "name": "S12 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s12_rev",
    "name": "S12 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s12_dly",
    "name": "S12 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s13_src",
@@ -1320,51 +1740,86 @@
   {
    "key": "s13_level",
    "name": "S13 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s13_tune",
    "name": "S13 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s13_decay",
    "name": "S13 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s13_drive",
    "name": "S13 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s13_dist",
+   "name": "S13 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s13_x1",
+   "name": "S13 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s13_x2",
+   "name": "S13 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s13_x3",
+   "name": "S13 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s13_pan",
    "name": "S13 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s13_rev",
    "name": "S13 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s13_dly",
    "name": "S13 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s14_src",
@@ -1425,51 +1880,86 @@
   {
    "key": "s14_level",
    "name": "S14 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s14_tune",
    "name": "S14 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s14_decay",
    "name": "S14 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s14_drive",
    "name": "S14 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s14_dist",
+   "name": "S14 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s14_x1",
+   "name": "S14 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s14_x2",
+   "name": "S14 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s14_x3",
+   "name": "S14 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s14_pan",
    "name": "S14 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s14_rev",
    "name": "S14 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s14_dly",
    "name": "S14 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s15_src",
@@ -1530,51 +2020,86 @@
   {
    "key": "s15_level",
    "name": "S15 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s15_tune",
    "name": "S15 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s15_decay",
    "name": "S15 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s15_drive",
    "name": "S15 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s15_dist",
+   "name": "S15 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s15_x1",
+   "name": "S15 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s15_x2",
+   "name": "S15 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s15_x3",
+   "name": "S15 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s15_pan",
    "name": "S15 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s15_rev",
    "name": "S15 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s15_dly",
    "name": "S15 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s16_src",
@@ -1635,51 +2160,249 @@
   {
    "key": "s16_level",
    "name": "S16 Level",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s16_tune",
    "name": "S16 Tune",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s16_decay",
    "name": "S16 Decay",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s16_drive",
    "name": "S16 Drive",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
+  },
+  {
+   "key": "s16_dist",
+   "name": "S16 Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "s16_x1",
+   "name": "S16 X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s16_x2",
+   "name": "S16 X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s16_x3",
+   "name": "S16 X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "s16_pan",
    "name": "S16 Pan",
+   "default": 64,
    "min": 0,
-   "max": 127,
-   "default": 64
+   "max": 127
   },
   {
    "key": "s16_rev",
    "name": "S16 Rev",
+   "default": 0,
    "min": 0,
-   "max": 127,
-   "default": 0
+   "max": 127
   },
   {
    "key": "s16_dly",
    "name": "S16 Dly",
+   "default": 0,
    "min": 0,
-   "max": 127,
+   "max": 127
+  },
+  {
+   "key": "edit_slot",
+   "name": "Edit slot",
+   "options": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16"
+   ],
    "default": 0
+  },
+  {
+   "key": "edit_voice",
+   "name": "Edit voice",
+   "options": [
+    "606 BD",
+    "606 SD",
+    "606 LT",
+    "606 HT",
+    "606 CH",
+    "606 OH",
+    "606 CY",
+    "606 CP",
+    "808 BD",
+    "808 SD",
+    "808 LT",
+    "808 MT",
+    "808 HT",
+    "808 LC",
+    "808 MC",
+    "808 HC",
+    "808 RS",
+    "808 CL",
+    "808 MA",
+    "808 CP",
+    "808 CB",
+    "808 CH",
+    "808 OH",
+    "808 CY",
+    "CR78 BD",
+    "CR78 SD",
+    "CR78 RS",
+    "CR78 HH",
+    "CR78 CY",
+    "CR78 MA",
+    "CR78 CL",
+    "CR78 HB",
+    "CR78 LB",
+    "CR78 LC",
+    "CR78 CB",
+    "CR78 TB",
+    "CR78 GU",
+    "CR78 MB",
+    "909 BD",
+    "909 SD",
+    "909 LT",
+    "909 MT",
+    "909 HT",
+    "909 RS",
+    "909 HC",
+    "909 OHH",
+    "909 CHH",
+    "909 RC",
+    "909 CR"
+   ],
+   "default": 8
+  },
+  {
+   "key": "e_level",
+   "name": "Edit Level",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_tune",
+   "name": "Edit Tune",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_decay",
+   "name": "Edit Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_drive",
+   "name": "Edit Drive",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_dist",
+   "name": "Edit Dist",
+   "default": 0,
+   "options": [
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "e_x1",
+   "name": "Edit X1",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_x2",
+   "name": "Edit X2",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_x3",
+   "name": "Edit X3",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_pan",
+   "name": "Edit Pan",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_rev",
+   "name": "Edit Rev",
+   "default": 0,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_dly",
+   "name": "Edit Dly",
+   "default": 0,
+   "min": 0,
+   "max": 127
   },
   {
    "key": "fx_rev_decay",
@@ -1803,6 +2526,10 @@
     "s01_tune",
     "s01_decay",
     "s01_drive",
+    "s01_dist",
+    "s01_x1",
+    "s01_x2",
+    "s01_x3",
     "s01_pan",
     "s01_rev",
     "s01_dly"
@@ -1816,6 +2543,10 @@
     "s02_tune",
     "s02_decay",
     "s02_drive",
+    "s02_dist",
+    "s02_x1",
+    "s02_x2",
+    "s02_x3",
     "s02_pan",
     "s02_rev",
     "s02_dly"
@@ -1829,6 +2560,10 @@
     "s03_tune",
     "s03_decay",
     "s03_drive",
+    "s03_dist",
+    "s03_x1",
+    "s03_x2",
+    "s03_x3",
     "s03_pan",
     "s03_rev",
     "s03_dly"
@@ -1842,6 +2577,10 @@
     "s04_tune",
     "s04_decay",
     "s04_drive",
+    "s04_dist",
+    "s04_x1",
+    "s04_x2",
+    "s04_x3",
     "s04_pan",
     "s04_rev",
     "s04_dly"
@@ -1855,6 +2594,10 @@
     "s05_tune",
     "s05_decay",
     "s05_drive",
+    "s05_dist",
+    "s05_x1",
+    "s05_x2",
+    "s05_x3",
     "s05_pan",
     "s05_rev",
     "s05_dly"
@@ -1868,6 +2611,10 @@
     "s06_tune",
     "s06_decay",
     "s06_drive",
+    "s06_dist",
+    "s06_x1",
+    "s06_x2",
+    "s06_x3",
     "s06_pan",
     "s06_rev",
     "s06_dly"
@@ -1881,6 +2628,10 @@
     "s07_tune",
     "s07_decay",
     "s07_drive",
+    "s07_dist",
+    "s07_x1",
+    "s07_x2",
+    "s07_x3",
     "s07_pan",
     "s07_rev",
     "s07_dly"
@@ -1894,6 +2645,10 @@
     "s08_tune",
     "s08_decay",
     "s08_drive",
+    "s08_dist",
+    "s08_x1",
+    "s08_x2",
+    "s08_x3",
     "s08_pan",
     "s08_rev",
     "s08_dly"
@@ -1907,6 +2662,10 @@
     "s09_tune",
     "s09_decay",
     "s09_drive",
+    "s09_dist",
+    "s09_x1",
+    "s09_x2",
+    "s09_x3",
     "s09_pan",
     "s09_rev",
     "s09_dly"
@@ -1920,6 +2679,10 @@
     "s10_tune",
     "s10_decay",
     "s10_drive",
+    "s10_dist",
+    "s10_x1",
+    "s10_x2",
+    "s10_x3",
     "s10_pan",
     "s10_rev",
     "s10_dly"
@@ -1933,6 +2696,10 @@
     "s11_tune",
     "s11_decay",
     "s11_drive",
+    "s11_dist",
+    "s11_x1",
+    "s11_x2",
+    "s11_x3",
     "s11_pan",
     "s11_rev",
     "s11_dly"
@@ -1946,6 +2713,10 @@
     "s12_tune",
     "s12_decay",
     "s12_drive",
+    "s12_dist",
+    "s12_x1",
+    "s12_x2",
+    "s12_x3",
     "s12_pan",
     "s12_rev",
     "s12_dly"
@@ -1959,6 +2730,10 @@
     "s13_tune",
     "s13_decay",
     "s13_drive",
+    "s13_dist",
+    "s13_x1",
+    "s13_x2",
+    "s13_x3",
     "s13_pan",
     "s13_rev",
     "s13_dly"
@@ -1972,6 +2747,10 @@
     "s14_tune",
     "s14_decay",
     "s14_drive",
+    "s14_dist",
+    "s14_x1",
+    "s14_x2",
+    "s14_x3",
     "s14_pan",
     "s14_rev",
     "s14_dly"
@@ -1985,6 +2764,10 @@
     "s15_tune",
     "s15_decay",
     "s15_drive",
+    "s15_dist",
+    "s15_x1",
+    "s15_x2",
+    "s15_x3",
     "s15_pan",
     "s15_rev",
     "s15_dly"
@@ -1998,9 +2781,31 @@
     "s16_tune",
     "s16_decay",
     "s16_drive",
+    "s16_dist",
+    "s16_x1",
+    "s16_x2",
+    "s16_x3",
     "s16_pan",
     "s16_rev",
     "s16_dly"
+   ]
+  },
+  {
+   "label": "Editor",
+   "keys": [
+    "edit_slot",
+    "edit_voice",
+    "e_level",
+    "e_tune",
+    "e_decay",
+    "e_drive",
+    "e_dist",
+    "e_x1",
+    "e_x2",
+    "e_x3",
+    "e_pan",
+    "e_rev",
+    "e_dly"
    ]
   },
   {
