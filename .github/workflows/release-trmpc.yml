@@ -16,13 +16,13 @@ on:
 
 jobs:
   tr_mpc:
-    uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@f4e1769ca7d6a465ea50fc9dbe29c93ae895f35b
+    uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@496e38cbd7a96916ff898cb5b51d886ab96408bc
     permissions:
       contents: write
     with:
       tag: trmpc-vst-v${{ inputs.version }}
       version: ${{ inputs.version }}
-      tools_ref: f4e1769ca7d6a465ea50fc9dbe29c93ae895f35b
+      tools_ref: 496e38cbd7a96916ff898cb5b51d886ab96408bc
       vst_dir: ports/trkit
       build: bash tools/build_ci.sh trkit
       host_test: bash tools/test_ci.sh trkit
