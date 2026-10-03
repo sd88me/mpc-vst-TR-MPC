@@ -65,6 +65,25 @@ int main() {
     const bool rev_ok = t1 > t0 * 2 && fabs(l - r) < l * 0.05;
     printf("%s pan hard left (centre now: L %.5f R %.5f)\n%s reverb send: tail %.6f -> %.6f\n", pan_ok ? "ok  " : "FAIL", l, r, rev_ok ? "ok  " : "FAIL", t0, t1);
     fails += !pan_ok + !rev_ok;
+    // a project chunk ("state") must restore every slot's voice and settings into a fresh instance
+    {
+        const char *set[][2] = {{"s03_src", "30"}, {"s03_pan", "10"}, {"s03_rev", "90"}, {"s03_level", "100"}, {"s03_tune", "20"},
+                                {"s16_src", "48"}, {"s16_decay", "33"}, {"fx_rev_decay", "11"}, {"fx_dly_time", "3"},
+                                {"fx_master_dist", "4"}, {"fx_volume", "77"}};
+        for (auto &kv : set) e->set_param(in, kv[0], kv[1]);
+        static char st[8192];
+        int n = e->get_param(in, "state", st, sizeof st);
+        void *in2 = e->create(dir ? dir : "");
+        e->set_param(in2, "state", st);
+        int bad = 0;
+        for (auto &kv : set) {
+            char b[32];
+            if (e->get_param(in2, kv[0], b, sizeof b) <= 0 || strcmp(b, kv[1])) { printf("FAIL state: %s = %s, want %s\n", kv[0], b, kv[1]); ++bad; }
+        }
+        printf("%s state chunk: %d bytes, %d of %d values restored\n", bad ? "FAIL" : "ok  ", n, (int)(sizeof set / sizeof *set) - bad, (int)(sizeof set / sizeof *set));
+        fails += bad;
+        e->destroy(in2);
+    }
     e->destroy(in);
     printf(fails ? "FAILED %d\n" : "PASSED\n", fails);
     return fails != 0;

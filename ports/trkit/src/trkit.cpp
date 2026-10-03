@@ -205,10 +205,13 @@ int *owned(Inst *in, int slot, const char *rest) {
     return nullptr;
 }
 
+void set_state(Inst *in, const char *st);
+
 void set_param(void *p, const char *key, const char *val) {
     Inst *in = (Inst *)p;
     int slot; const char *rest;
     const int x = atoi(val);
+    if (!strcmp(key, "state")) { set_state(in, val); return; }
     if (parse_slot(key, &slot, &rest)) {
         if (!strcmp(rest, "src")) {
             if (x >= 0 && x < kTotalVoices) { in->slot_flat[slot] = x; int b, v; flat_to_bv(x, &b, &v); engine_for(in, b); }
@@ -224,9 +227,54 @@ void set_param(void *p, const char *key, const char *val) {
     }
 }
 
+const char *const kFxKeys[] = { "rev_decay", "rev_tone", "rev_hpf", "rev_level", "dly_time", "dly_fdbk", "dly_tone",
+                                "dly_hpf", "dly_level", "master_dist", "master_drive", "comp", "volume" };
+const char *const kSlotKeys[] = { "src", "level", "tune", "decay", "drive", "pan", "rev", "dly" };
+
+int get_param(void *p, const char *key, char *buf, int n);
+
+/* The project chunk (the wrapper stores whatever "state" returns): every slot and FX value as key=value; pairs,
+ * slot keys first within a slot so that src is applied before the voice's own pots. */
+int get_state(Inst *in, char *buf, int n) {
+    int len = snprintf(buf, n, "trmpc1;");
+    char k[24], v[16];
+    for (int s = 1; s <= kSlots; ++s)
+        for (const char *sk : kSlotKeys) {
+            snprintf(k, sizeof k, "s%02d_%s", s, sk);
+            if (get_param(in, k, v, sizeof v) < 0) continue;
+            len += snprintf(buf + len, n - len, "%s=%s;", k, v);
+            if (len >= n - 32) return len;
+        }
+    for (const char *fk : kFxKeys) {
+        snprintf(k, sizeof k, "fx_%s", fk);
+        if (get_param(in, k, v, sizeof v) < 0) continue;
+        len += snprintf(buf + len, n - len, "%s=%s;", k, v);
+        if (len >= n - 32) break;
+    }
+    return len;
+}
+
+void set_param(void *p, const char *key, const char *val);
+
+void set_state(Inst *in, const char *st) {
+    if (strncmp(st, "trmpc1;", 7)) return;
+    st += 7;
+    char k[24], v[16];
+    while (*st) {
+        const char *eq = strchr(st, '=');
+        const char *end = strchr(st, ';');
+        if (!eq || !end || eq > end) break;
+        snprintf(k, sizeof k, "%.*s", (int)(eq - st) < 23 ? (int)(eq - st) : 23, st);
+        snprintf(v, sizeof v, "%.*s", (int)(end - eq - 1) < 15 ? (int)(end - eq - 1) : 15, eq + 1);
+        set_param(in, k, v);
+        st = end + 1;
+    }
+}
+
 int get_param(void *p, const char *key, char *buf, int n) {
     Inst *in = (Inst *)p;
     int slot; const char *rest;
+    if (!strcmp(key, "state")) return get_state(in, buf, n);
     if (parse_slot(key, &slot, &rest)) {
         if (!strcmp(rest, "src")) return snprintf(buf, n, "%d", in->slot_flat[slot]);
         if (int *o = owned(in, slot, rest)) return snprintf(buf, n, "%d", *o);

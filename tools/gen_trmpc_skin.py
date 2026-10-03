@@ -19,7 +19,7 @@ EAR, MOD_W, GAP = 24, 304, 5
 MOD_X = [EAR + i * (MOD_W + GAP) for i in range(4)]   # 24, 333, 642, 951
 TOP, BOT = 136, 708                                      # module top and bottom, layout y
 NOTE_NAMES = "C C# D D# E F F# G G# A A# B".split()
-GROUPS = "6W6 TR-606:8,8W8 TR-808:16,CW-78 CR-78:14,9W9 TR-909:11"
+GROUPS = "6W6 TR-606:8:5b9bd5,8W8 TR-808:16:e8763a,CW-78 CR-78:14:d4c28a,9W9 TR-909:11:d9534f"
 
 THEME = """theme_bg=17181b
 theme_ink=e8e9ec
