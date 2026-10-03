@@ -1,0 +1,78 @@
+diff -ruN a/er99_engine.c b/er99_engine.c
+--- a/er99_engine.c	2026-10-02 10:20:07.958925122 +1000
++++ b/er99_engine.c	2026-10-03 23:13:42.672552716 +1000
+@@ -626,6 +626,7 @@
+         const float noise = wa_noise_tick(&e->noise);
+ 
+         float mix = 0.0f, rbus = 0.0f, dbus = 0.0f;
++        e->tap_i = n;
+         for(int i=0; i<ER99_NUM_INSTRUMENTS; ++i)
+         {
+             float v;
+@@ -634,15 +635,18 @@
+             else
+                 v = er99_bt_render(&e->bt[i], noise);
+             mix += v;
++            if(e->tap) e->tap[i * ER99_TAP_FRAMES + n] = v;
+             rbus += v * e->send_rev[i];
+             dbus += v * e->send_dly[i];
+         }
+         {
+             const float v = er99_rim909_render(&e->rim909, noise);
++            if(e->tap) e->tap[ER99_RS * ER99_TAP_FRAMES + n] = v;
+             mix += v; rbus += v * e->send_rev[ER99_RS]; dbus += v * e->send_dly[ER99_RS];
+         }
+         {
+             const float v = er99_clap909_render(&e->clap909, noise);
++            if(e->tap) e->tap[ER99_HC * ER99_TAP_FRAMES + n] = v;
+             mix += v; rbus += v * e->send_rev[ER99_HC]; dbus += v * e->send_dly[ER99_HC];
+         }
+         {
+@@ -651,11 +655,14 @@
+             {
+                 const float v = render_sampler(&e->sampler[i]);
+                 mix += v;
++                if(e->tap) e->tap[strig[i] * ER99_TAP_FRAMES + n] = v;
+                 rbus += v * e->send_rev[strig[i]];
+                 dbus += v * e->send_dly[strig[i]];
+             }
+         }
+ 
++        if(e->tap) { out[n] = 0.0f; continue; }   /* TR-MPC patch: voices only */
++
+         /* FX returns join the bus before the master stages, so master
+          * distortion and the Comp work on the wet signal too. */
+         mix += er99_verb_tick(&e->verb, rbus);
+@@ -670,6 +677,8 @@
+     }
+ }
+ 
++void er99_engine_set_tap(er99_engine_t *e, float *tap) { e->tap = tap; }
++
+ /* ===================================================================== */
+ /* Parameters                                                             */
+ /* ===================================================================== */
+diff -ruN a/er99_engine.h b/er99_engine.h
+--- a/er99_engine.h	2026-10-02 10:20:07.958925122 +1000
++++ b/er99_engine.h	2026-10-03 23:13:42.672424713 +1000
+@@ -154,6 +154,8 @@
+ 
+     er99_master_t master;
+     wa_noise_t    noise;
++    float        *tap;      /* TR-MPC patch: per-voice tap, see er99_engine_set_tap */
++    int           tap_i;
+ 
+ 
+     /* Pot positions (0..127) — the external parameter surface. Real
+@@ -176,6 +178,11 @@
+ /* Render mono into out (engine is mono; the plugin duplicates to stereo). */
+ void er99_engine_render(er99_engine_t *e, float *out, int frames);
+ 
++/* TR-MPC patch: per-voice tap. With a tap set (ER99_NUM_TRIGGERS x 128 floats, zeroed by the caller before each
++ * render) render writes each voice's dry sample to tap[trigger * 128 + i] and skips send FX and master stage. */
++#define ER99_TAP_FRAMES 128
++void er99_engine_set_tap(er99_engine_t *e, float *tap);
++
+ /* Raw access in engineering units (ms, Hz, ...). Internal. */
+ int er99_engine_set_raw(er99_engine_t *e, const char *key, float value);
+ int er99_engine_get_raw(const er99_engine_t *e, const char *key, float *out);

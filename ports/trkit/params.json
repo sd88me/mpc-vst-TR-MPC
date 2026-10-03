@@ -86,18 +86,25 @@
    "default": 64
   },
   {
+   "key": "s01_pan",
+   "name": "S1 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s01_rev",
    "name": "S1 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s01_dly",
    "name": "S1 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s02_src",
@@ -184,18 +191,25 @@
    "default": 64
   },
   {
+   "key": "s02_pan",
+   "name": "S2 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s02_rev",
    "name": "S2 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s02_dly",
    "name": "S2 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s03_src",
@@ -282,18 +296,25 @@
    "default": 64
   },
   {
+   "key": "s03_pan",
+   "name": "S3 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s03_rev",
    "name": "S3 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s03_dly",
    "name": "S3 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s04_src",
@@ -380,18 +401,25 @@
    "default": 64
   },
   {
+   "key": "s04_pan",
+   "name": "S4 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s04_rev",
    "name": "S4 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s04_dly",
    "name": "S4 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s05_src",
@@ -478,18 +506,25 @@
    "default": 64
   },
   {
+   "key": "s05_pan",
+   "name": "S5 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s05_rev",
    "name": "S5 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s05_dly",
    "name": "S5 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s06_src",
@@ -576,18 +611,25 @@
    "default": 64
   },
   {
+   "key": "s06_pan",
+   "name": "S6 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s06_rev",
    "name": "S6 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s06_dly",
    "name": "S6 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s07_src",
@@ -674,18 +716,25 @@
    "default": 64
   },
   {
+   "key": "s07_pan",
+   "name": "S7 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s07_rev",
    "name": "S7 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s07_dly",
    "name": "S7 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s08_src",
@@ -772,18 +821,25 @@
    "default": 64
   },
   {
+   "key": "s08_pan",
+   "name": "S8 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s08_rev",
    "name": "S8 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s08_dly",
    "name": "S8 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s09_src",
@@ -870,18 +926,25 @@
    "default": 64
   },
   {
+   "key": "s09_pan",
+   "name": "S9 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s09_rev",
    "name": "S9 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s09_dly",
    "name": "S9 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s10_src",
@@ -968,18 +1031,25 @@
    "default": 64
   },
   {
+   "key": "s10_pan",
+   "name": "S10 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s10_rev",
    "name": "S10 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s10_dly",
    "name": "S10 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s11_src",
@@ -1066,18 +1136,25 @@
    "default": 64
   },
   {
+   "key": "s11_pan",
+   "name": "S11 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s11_rev",
    "name": "S11 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s11_dly",
    "name": "S11 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s12_src",
@@ -1164,18 +1241,25 @@
    "default": 64
   },
   {
+   "key": "s12_pan",
+   "name": "S12 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s12_rev",
    "name": "S12 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s12_dly",
    "name": "S12 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s13_src",
@@ -1262,18 +1346,25 @@
    "default": 64
   },
   {
+   "key": "s13_pan",
+   "name": "S13 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s13_rev",
    "name": "S13 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s13_dly",
    "name": "S13 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s14_src",
@@ -1360,18 +1451,25 @@
    "default": 64
   },
   {
+   "key": "s14_pan",
+   "name": "S14 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s14_rev",
    "name": "S14 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s14_dly",
    "name": "S14 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s15_src",
@@ -1458,18 +1556,25 @@
    "default": 64
   },
   {
+   "key": "s15_pan",
+   "name": "S15 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s15_rev",
    "name": "S15 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s15_dly",
    "name": "S15 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s16_src",
@@ -1556,46 +1661,137 @@
    "default": 64
   },
   {
+   "key": "s16_pan",
+   "name": "S16 Pan",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
    "key": "s16_rev",
    "name": "S16 Rev",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
    "key": "s16_dly",
    "name": "S16 Dly",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 0
   },
   {
-   "key": "k0_volume",
-   "name": "606 Volume",
+   "key": "fx_rev_decay",
+   "name": "Rev Decay",
+   "default": 73,
    "min": 0,
-   "max": 127,
-   "default": 100
+   "max": 127
   },
   {
-   "key": "k1_volume",
-   "name": "808 Volume",
+   "key": "fx_rev_tone",
+   "name": "Rev Tone",
+   "default": 57,
    "min": 0,
-   "max": 127,
-   "default": 100
+   "max": 127
   },
   {
-   "key": "k2_volume",
-   "name": "CR78 Volume",
+   "key": "fx_rev_hpf",
+   "name": "Rev HPF",
+   "default": 62,
    "min": 0,
-   "max": 127,
-   "default": 100
+   "max": 127
   },
   {
-   "key": "k3_volume",
-   "name": "909 Volume",
+   "key": "fx_rev_level",
+   "name": "Rev Level",
+   "default": 85,
    "min": 0,
-   "max": 127,
-   "default": 100
+   "max": 127
+  },
+  {
+   "key": "fx_dly_time",
+   "name": "Dly Time",
+   "default": 7,
+   "options": [
+    "1/32",
+    "1/16T",
+    "1/16",
+    "1/8T",
+    "1/16.",
+    "1/8",
+    "1/4T",
+    "1/8.",
+    "1/4",
+    "1/2T",
+    "1/4.",
+    "1/2",
+    "1/2."
+   ]
+  },
+  {
+   "key": "fx_dly_fdbk",
+   "name": "Dly Fdbk",
+   "default": 52,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "fx_dly_tone",
+   "name": "Dly Tone",
+   "default": 51,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "fx_dly_hpf",
+   "name": "Dly HPF",
+   "default": 62,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "fx_dly_level",
+   "name": "Dly Level",
+   "default": 85,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "fx_master_dist",
+   "name": "Master Dist",
+   "default": 0,
+   "options": [
+    "Off",
+    "Diode",
+    "Clip",
+    "SAT",
+    "BFZ",
+    "PDIST",
+    "Fold",
+    "Crush"
+   ]
+  },
+  {
+   "key": "fx_master_drive",
+   "name": "Master Drive",
+   "default": 0,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "fx_comp",
+   "name": "Comp",
+   "default": 0,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "fx_volume",
+   "name": "Volume",
+   "default": 100,
+   "min": 0,
+   "max": 127
   }
  ],
  "sections": [
@@ -1607,6 +1803,7 @@
     "s01_tune",
     "s01_decay",
     "s01_drive",
+    "s01_pan",
     "s01_rev",
     "s01_dly"
    ]
@@ -1619,6 +1816,7 @@
     "s02_tune",
     "s02_decay",
     "s02_drive",
+    "s02_pan",
     "s02_rev",
     "s02_dly"
    ]
@@ -1631,6 +1829,7 @@
     "s03_tune",
     "s03_decay",
     "s03_drive",
+    "s03_pan",
     "s03_rev",
     "s03_dly"
    ]
@@ -1643,6 +1842,7 @@
     "s04_tune",
     "s04_decay",
     "s04_drive",
+    "s04_pan",
     "s04_rev",
     "s04_dly"
    ]
@@ -1655,6 +1855,7 @@
     "s05_tune",
     "s05_decay",
     "s05_drive",
+    "s05_pan",
     "s05_rev",
     "s05_dly"
    ]
@@ -1667,6 +1868,7 @@
     "s06_tune",
     "s06_decay",
     "s06_drive",
+    "s06_pan",
     "s06_rev",
     "s06_dly"
    ]
@@ -1679,6 +1881,7 @@
     "s07_tune",
     "s07_decay",
     "s07_drive",
+    "s07_pan",
     "s07_rev",
     "s07_dly"
    ]
@@ -1691,6 +1894,7 @@
     "s08_tune",
     "s08_decay",
     "s08_drive",
+    "s08_pan",
     "s08_rev",
     "s08_dly"
    ]
@@ -1703,6 +1907,7 @@
     "s09_tune",
     "s09_decay",
     "s09_drive",
+    "s09_pan",
     "s09_rev",
     "s09_dly"
    ]
@@ -1715,6 +1920,7 @@
     "s10_tune",
     "s10_decay",
     "s10_drive",
+    "s10_pan",
     "s10_rev",
     "s10_dly"
    ]
@@ -1727,6 +1933,7 @@
     "s11_tune",
     "s11_decay",
     "s11_drive",
+    "s11_pan",
     "s11_rev",
     "s11_dly"
    ]
@@ -1739,6 +1946,7 @@
     "s12_tune",
     "s12_decay",
     "s12_drive",
+    "s12_pan",
     "s12_rev",
     "s12_dly"
    ]
@@ -1751,6 +1959,7 @@
     "s13_tune",
     "s13_decay",
     "s13_drive",
+    "s13_pan",
     "s13_rev",
     "s13_dly"
    ]
@@ -1763,6 +1972,7 @@
     "s14_tune",
     "s14_decay",
     "s14_drive",
+    "s14_pan",
     "s14_rev",
     "s14_dly"
    ]
@@ -1775,6 +1985,7 @@
     "s15_tune",
     "s15_decay",
     "s15_drive",
+    "s15_pan",
     "s15_rev",
     "s15_dly"
    ]
@@ -1787,17 +1998,27 @@
     "s16_tune",
     "s16_decay",
     "s16_drive",
+    "s16_pan",
     "s16_rev",
     "s16_dly"
    ]
   },
   {
-   "label": "Kit volumes",
+   "label": "FX and master",
    "keys": [
-    "k0_volume",
-    "k1_volume",
-    "k2_volume",
-    "k3_volume"
+    "fx_rev_decay",
+    "fx_rev_tone",
+    "fx_rev_hpf",
+    "fx_rev_level",
+    "fx_dly_time",
+    "fx_dly_fdbk",
+    "fx_dly_tone",
+    "fx_dly_hpf",
+    "fx_dly_level",
+    "fx_master_dist",
+    "fx_master_drive",
+    "fx_comp",
+    "fx_volume"
    ]
   }
  ]

@@ -40,6 +40,31 @@ int main() {
         if (!ok) ++fails;
         printf("%s voice %2d  hit %.5f  window2 %.5f  window3 %.5f\n", ok ? "ok  " : "FAIL", v, hit, tail, after);
     }
+    // pan and sends belong to the slot: hard left silences the right channel; a reverb send adds tail
+    auto hit_lr = [&](const char *pan, const char *rev, double *l, double *r, double *tail) {
+        e->set_param(in, "s01_src", "21");   // 808 closed hat: dry tail is short, so a reverb send is obvious
+        e->set_param(in, "s01_pan", pan);
+        e->set_param(in, "s01_rev", rev);
+        rms_of(e, in, 1500);
+        const uint8_t on[3] = {0x90, 36, 110};
+        e->midi(in, on, 3);
+        int16_t buf[128 * 2];
+        double al = 0, ar = 0;
+        for (int b = 0; b < 40; ++b) {
+            e->render(in, buf, 128);
+            for (int i = 0; i < 128; ++i) { al += (buf[i * 2] / 32768.0) * (buf[i * 2] / 32768.0); ar += (buf[i * 2 + 1] / 32768.0) * (buf[i * 2 + 1] / 32768.0); }
+        }
+        *l = sqrt(al / 5120); *r = sqrt(ar / 5120);
+        *tail = rms_of(e, in, 400);
+    };
+    double l, r, t0, t1;
+    hit_lr("0", "0", &l, &r, &t0);
+    const bool pan_ok = l > 1e-3 && r < l * 0.01;
+    hit_lr("64", "0", &l, &r, &t0);
+    hit_lr("64", "127", &l, &r, &t1);
+    const bool rev_ok = t1 > t0 * 2 && fabs(l - r) < l * 0.05;
+    printf("%s pan hard left (centre now: L %.5f R %.5f)\n%s reverb send: tail %.6f -> %.6f\n", pan_ok ? "ok  " : "FAIL", l, r, rev_ok ? "ok  " : "FAIL", t0, t1);
+    fails += !pan_ok + !rev_ok;
     e->destroy(in);
     printf(fails ? "FAILED %d\n" : "PASSED\n", fails);
     return fails != 0;

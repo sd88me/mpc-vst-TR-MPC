@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write ports/trkit/params.json: 16 slots (src, level, tune, decay, drive, rev, dly) plus a volume per kit.
+"""Write ports/trkit/params.json: 16 slots (src, level, tune, decay, drive, pan, rev, dly) plus the shared FX and master stage.
 
 The voice lists must match the engines' own voice order (sd606_voice_t, sc808_voice_t, cr78_voice_t, er99_trigger_t);
 they are the flat index that trkit.cpp's `sNN_src` takes. Append only: saved projects store these by VST index.
@@ -28,15 +28,27 @@ for s in range(1, 17):
     sk = "s%02d_" % s
     params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1]})
     keys.append(sk + "src")
-    for k, label in (("level", "Level"), ("tune", "Tune"), ("decay", "Decay"), ("drive", "Drive"), ("rev", "Rev"), ("dly", "Dly")):
-        params.append({"key": sk + k, "name": "S%d %s" % (s, label), "min": 0, "max": 127, "default": 64})
+    for k, label, dflt in (("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
+                           ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)):
+        params.append({"key": sk + k, "name": "S%d %s" % (s, label), "min": 0, "max": 127, "default": dflt})
         keys.append(sk + k)
     sections.append({"label": "Slot %d" % s, "keys": keys})
-kv = []
-for b, (name, _) in enumerate(KITS):
-    params.append({"key": "k%d_volume" % b, "name": "%s Volume" % name, "min": 0, "max": 127, "default": 100})
-    kv.append("k%d_volume" % b)
-sections.append({"label": "Kit volumes", "keys": kv})
+# the shared FX and master stage: 8W8's own keys (defaults are 8W8's), prefixed fx_
+DLY_TIME = ["1/32", "1/16T", "1/16", "1/8T", "1/16.", "1/8", "1/4T", "1/8.", "1/4", "1/2T", "1/4.", "1/2", "1/2."]
+MASTER_DIST = ["Off", "Diode", "Clip", "SAT", "BFZ", "PDIST", "Fold", "Crush"]
+fx = []
+for key, name, dflt, opts in (
+        ("rev_decay", "Rev Decay", 73, None), ("rev_tone", "Rev Tone", 57, None), ("rev_hpf", "Rev HPF", 62, None),
+        ("rev_level", "Rev Level", 85, None), ("dly_time", "Dly Time", 7, DLY_TIME), ("dly_fdbk", "Dly Fdbk", 52, None),
+        ("dly_tone", "Dly Tone", 51, None), ("dly_hpf", "Dly HPF", 62, None), ("dly_level", "Dly Level", 85, None),
+        ("master_dist", "Master Dist", 0, MASTER_DIST), ("master_drive", "Master Drive", 0, None),
+        ("comp", "Comp", 0, None), ("volume", "Volume", 100, None)):
+    p = {"key": "fx_" + key, "name": name, "default": dflt}
+    if opts: p["options"] = opts
+    else: p.update({"min": 0, "max": 127})
+    params.append(p)
+    fx.append("fx_" + key)
+sections.append({"label": "FX and master", "keys": fx})
 
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ports", "trkit", "params.json")
 json.dump({"name": "TR-MPC", "params": params, "sections": sections}, open(out, "w", newline="\n"), indent=1)
