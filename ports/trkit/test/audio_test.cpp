@@ -69,14 +69,14 @@ int main() {
     {
         auto get = [&](const char *k) { char b[32]; return e->get_param(in, k, b, sizeof b) > 0 ? atoi(b) : -1; };
         e->set_param(in, "s02_src", "8");            // 808 BD
-        e->set_param(in, "s02_x1", "111"); e->set_param(in, "s02_x2", "22"); e->set_param(in, "s02_dist", "5");
-        const bool kick = get("s02_x1") == 111 && get("s02_x2") == 22 && get("s02_dist") == 5;
+        e->set_param(in, "s02_attack", "111"); e->set_param(in, "s02_tone", "22"); e->set_param(in, "s02_dist", "5");
+        const bool kick = get("s02_attack") == 111 && get("s02_tone") == 22 && get("s02_dist") == 5;
         e->set_param(in, "s02_src", "10");           // 808 LT: no extras
-        e->set_param(in, "s02_x1", "99");
-        const bool tom = get("s02_x1") == 0;
+        e->set_param(in, "s02_attack", "99");
+        const bool tom = get("s02_attack") == 0;
         e->set_param(in, "s02_src", "38");           // 909 BD: attack, sweep depth, pitch mod
-        e->set_param(in, "s02_x1", "50"); e->set_param(in, "s02_x2", "60"); e->set_param(in, "s02_x3", "70");
-        const bool k909 = get("s02_x1") == 50 && get("s02_x2") == 60 && get("s02_x3") == 70;
+        e->set_param(in, "s02_attack", "50"); e->set_param(in, "s02_sweep", "60"); e->set_param(in, "s02_pmod", "70");
+        const bool k909 = get("s02_attack") == 50 && get("s02_sweep") == 60 && get("s02_pmod") == 70;
         printf("%s extras: 808 kick %d, tom ignores %d, 909 kick %d\n", kick && tom && k909 ? "ok  " : "FAIL", kick, tom, k909);
         fails += !(kick && tom && k909);
     }

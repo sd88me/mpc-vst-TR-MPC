@@ -22,6 +22,8 @@ for b, v in [(1, 0), (1, 1), (1, 2), (1, 4), (0, 4), (0, 5), (3, 6), (3, 5),
              (1, 11), (1, 12), (2, 10), (2, 6), (0, 6), (3, 9), (2, 9), (1, 7)]:
     DEFAULT_FLAT.append(off[b] + v)
 
+EXTRA_KNOBS = [("attack", "Attack", 64), ("tone", "Tone", 64), ("snappy", "Snappy", 64), ("noise", "Noise", 64), ("rate", "Rate", 64),
+               ("sweep", "Sweep", 64), ("pmod", "Pitch Mod", 64), ("ndecay", "Noise Decay", 64), ("sat", "Saturate", 64)]
 DIST = ["Diode", "Clip", "SAT", "BFZ", "PDIST", "Fold", "Crush"]   # a voice's distortion character (0..6)
 params, sections = [], []
 for s in range(1, 17):
@@ -29,9 +31,9 @@ for s in range(1, 17):
     sk = "s%02d_" % s
     params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1]})
     keys.append(sk + "src")
-    for k, label, dflt in (("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
-                           ("dist", "Dist", 0), ("x1", "X1", 64), ("x2", "X2", 64), ("x3", "X3", 64),
-                           ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)):
+    for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
+                           ("dist", "Dist", 0)] + EXTRA_KNOBS + [
+                           ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)]):
         p = {"key": sk + k, "name": "S%d %s" % (s, label), "default": dflt}
         if k == "dist": p["options"] = DIST
         else: p.update({"min": 0, "max": 127})
@@ -44,9 +46,9 @@ params.append({"key": "edit_slot", "name": "Slot", "options": [str(i) for i in r
 ed.append("edit_slot")
 params.append({"key": "edit_voice", "name": "Voice", "options": SRC, "default": DEFAULT_FLAT[0]})
 ed.append("edit_voice")
-for k, label, dflt in (("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
-                       ("dist", "Dist", 0), ("x1", "X1", 64), ("x2", "X2", 64), ("x3", "X3", 64),
-                       ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)):
+for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
+                       ("dist", "Dist", 0)] + EXTRA_KNOBS + [
+                       ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)]):
     p = {"key": "e_" + k, "name": label, "default": dflt}
     if k == "dist": p["options"] = DIST
     else: p.update({"min": 0, "max": 127})

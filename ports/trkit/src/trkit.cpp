@@ -106,36 +106,18 @@ const Knob kKnobs[] = {
     { "decay", { "decay", nullptr, nullptr } },
     { "drive", { "drive", nullptr, nullptr } },
     { "dist",  { "dist_type", nullptr, nullptr } },   /* the voice's distortion character, an enum (0..6) */
-    { "x1",    { nullptr, nullptr, nullptr } },       /* extras: the voice's own pots beyond the four above, see kExtras */
-    { "x2",    { nullptr, nullptr, nullptr } },
-    { "x3",    { nullptr, nullptr, nullptr } },
+    /* the voice-specific pots, one control each; a voice without that pot ignores it (the skin only shows the ones it has) */
+    { "attack",  { "attack", nullptr, nullptr } },
+    { "tone",    { "tone", nullptr, nullptr } },
+    { "snappy",  { "snappy", nullptr, nullptr } },
+    { "noise",   { "noise", nullptr, nullptr } },
+    { "rate",    { "rate", nullptr, nullptr } },
+    { "sweep",   { "sweep_depth", nullptr, nullptr } },
+    { "pmod",    { "pitch_mod", nullptr, nullptr } },
+    { "ndecay",  { "noise_decay", nullptr, nullptr } },
+    { "sat",     { "saturation", nullptr, nullptr } },
 };
-constexpr int kNumKnobs = 8;
-
-/* The voice-specific pots of the voices that have any, in the order the skin labels them (X1, X2, X3) */
-struct Extra { int backend; const char *id; const char *keys[3]; };
-const Extra kExtras[] = {
-    { 0, "bd", { "attack", nullptr, nullptr } },
-    { 0, "sd", { "snappy", "tone", nullptr } },
-    { 0, "cp", { "noise", nullptr, nullptr } },
-    { 1, "bd", { "attack", "tone", nullptr } },
-    { 1, "sd", { "snappy", nullptr, nullptr } },
-    { 1, "ma", { "attack", nullptr, nullptr } },
-    { 2, "sd", { "snappy", nullptr, nullptr } },
-    { 2, "gu", { "rate", nullptr, nullptr } },
-    { 3, "bd", { "attack", "sweep_depth", "pitch_mod" } },
-    { 3, "sd", { "noise_decay", "snappy", nullptr } },
-    { 3, "lt", { "attack", nullptr, nullptr } },
-    { 3, "mt", { "attack", nullptr, nullptr } },
-    { 3, "ht", { "attack", nullptr, nullptr } },
-    { 3, "rs", { "saturation", nullptr, nullptr } },
-};
-
-const char *extra_key(int backend, const char *id, int n) {
-    for (const Extra &x : kExtras)
-        if (x.backend == backend && !strcmp(x.id, id)) return x.keys[n];
-    return nullptr;
-}
+constexpr int kNumKnobs = 14;
 
 /* Default flat voice per slot (808 kick/snare/toms, 606 hats, 909 clap/rim/cymbals, CR78 percussion) */
 int default_flat(int slot) {
@@ -179,8 +161,7 @@ bool forward(Inst *in, int slot, const Knob &k, int *val, bool set) {
     void *e = engine_for(in, b);
     if (!e) return false;
     const char *id = kBackends[b].voice_id(v);
-    const char *sfx[3] = { k.suffixes[0], k.suffixes[1], k.suffixes[2] };
-    if (k.name[0] == 'x') sfx[0] = extra_key(b, id, k.name[1] - '1');   /* a voice without that extra ignores it */
+    const char *const *sfx = k.suffixes;
     char key[48];
     for (int s = 0; s < 3 && sfx[s]; ++s) {
         const char *infix[2] = { "", "c_" };
@@ -271,7 +252,7 @@ void set_param(void *p, const char *key, const char *val) {
 
 const char *const kFxKeys[] = { "rev_decay", "rev_tone", "rev_hpf", "rev_level", "dly_time", "dly_fdbk", "dly_tone",
                                 "dly_hpf", "dly_level", "master_dist", "master_drive", "comp", "volume" };
-const char *const kSlotKeys[] = { "src", "level", "tune", "decay", "drive", "dist", "x1", "x2", "x3", "pan", "rev", "dly" };
+const char *const kSlotKeys[] = { "src", "level", "tune", "decay", "drive", "dist", "attack", "tone", "snappy", "noise", "rate", "sweep", "pmod", "ndecay", "sat", "pan", "rev", "dly" };
 
 int get_param(void *p, const char *key, char *buf, int n);
 

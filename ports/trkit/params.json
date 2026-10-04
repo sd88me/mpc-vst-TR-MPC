@@ -100,22 +100,64 @@
    ]
   },
   {
-   "key": "s01_x1",
-   "name": "S1 X1",
+   "key": "s01_attack",
+   "name": "S1 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s01_x2",
-   "name": "S1 X2",
+   "key": "s01_tone",
+   "name": "S1 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s01_x3",
-   "name": "S1 X3",
+   "key": "s01_snappy",
+   "name": "S1 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s01_noise",
+   "name": "S1 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s01_rate",
+   "name": "S1 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s01_sweep",
+   "name": "S1 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s01_pmod",
+   "name": "S1 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s01_ndecay",
+   "name": "S1 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s01_sat",
+   "name": "S1 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -240,22 +282,64 @@
    ]
   },
   {
-   "key": "s02_x1",
-   "name": "S2 X1",
+   "key": "s02_attack",
+   "name": "S2 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s02_x2",
-   "name": "S2 X2",
+   "key": "s02_tone",
+   "name": "S2 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s02_x3",
-   "name": "S2 X3",
+   "key": "s02_snappy",
+   "name": "S2 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s02_noise",
+   "name": "S2 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s02_rate",
+   "name": "S2 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s02_sweep",
+   "name": "S2 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s02_pmod",
+   "name": "S2 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s02_ndecay",
+   "name": "S2 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s02_sat",
+   "name": "S2 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -380,22 +464,64 @@
    ]
   },
   {
-   "key": "s03_x1",
-   "name": "S3 X1",
+   "key": "s03_attack",
+   "name": "S3 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s03_x2",
-   "name": "S3 X2",
+   "key": "s03_tone",
+   "name": "S3 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s03_x3",
-   "name": "S3 X3",
+   "key": "s03_snappy",
+   "name": "S3 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s03_noise",
+   "name": "S3 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s03_rate",
+   "name": "S3 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s03_sweep",
+   "name": "S3 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s03_pmod",
+   "name": "S3 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s03_ndecay",
+   "name": "S3 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s03_sat",
+   "name": "S3 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -520,22 +646,64 @@
    ]
   },
   {
-   "key": "s04_x1",
-   "name": "S4 X1",
+   "key": "s04_attack",
+   "name": "S4 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s04_x2",
-   "name": "S4 X2",
+   "key": "s04_tone",
+   "name": "S4 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s04_x3",
-   "name": "S4 X3",
+   "key": "s04_snappy",
+   "name": "S4 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s04_noise",
+   "name": "S4 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s04_rate",
+   "name": "S4 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s04_sweep",
+   "name": "S4 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s04_pmod",
+   "name": "S4 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s04_ndecay",
+   "name": "S4 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s04_sat",
+   "name": "S4 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -660,22 +828,64 @@
    ]
   },
   {
-   "key": "s05_x1",
-   "name": "S5 X1",
+   "key": "s05_attack",
+   "name": "S5 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s05_x2",
-   "name": "S5 X2",
+   "key": "s05_tone",
+   "name": "S5 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s05_x3",
-   "name": "S5 X3",
+   "key": "s05_snappy",
+   "name": "S5 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s05_noise",
+   "name": "S5 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s05_rate",
+   "name": "S5 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s05_sweep",
+   "name": "S5 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s05_pmod",
+   "name": "S5 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s05_ndecay",
+   "name": "S5 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s05_sat",
+   "name": "S5 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -800,22 +1010,64 @@
    ]
   },
   {
-   "key": "s06_x1",
-   "name": "S6 X1",
+   "key": "s06_attack",
+   "name": "S6 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s06_x2",
-   "name": "S6 X2",
+   "key": "s06_tone",
+   "name": "S6 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s06_x3",
-   "name": "S6 X3",
+   "key": "s06_snappy",
+   "name": "S6 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s06_noise",
+   "name": "S6 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s06_rate",
+   "name": "S6 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s06_sweep",
+   "name": "S6 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s06_pmod",
+   "name": "S6 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s06_ndecay",
+   "name": "S6 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s06_sat",
+   "name": "S6 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -940,22 +1192,64 @@
    ]
   },
   {
-   "key": "s07_x1",
-   "name": "S7 X1",
+   "key": "s07_attack",
+   "name": "S7 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s07_x2",
-   "name": "S7 X2",
+   "key": "s07_tone",
+   "name": "S7 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s07_x3",
-   "name": "S7 X3",
+   "key": "s07_snappy",
+   "name": "S7 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s07_noise",
+   "name": "S7 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s07_rate",
+   "name": "S7 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s07_sweep",
+   "name": "S7 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s07_pmod",
+   "name": "S7 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s07_ndecay",
+   "name": "S7 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s07_sat",
+   "name": "S7 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -1080,22 +1374,64 @@
    ]
   },
   {
-   "key": "s08_x1",
-   "name": "S8 X1",
+   "key": "s08_attack",
+   "name": "S8 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s08_x2",
-   "name": "S8 X2",
+   "key": "s08_tone",
+   "name": "S8 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s08_x3",
-   "name": "S8 X3",
+   "key": "s08_snappy",
+   "name": "S8 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s08_noise",
+   "name": "S8 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s08_rate",
+   "name": "S8 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s08_sweep",
+   "name": "S8 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s08_pmod",
+   "name": "S8 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s08_ndecay",
+   "name": "S8 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s08_sat",
+   "name": "S8 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -1220,22 +1556,64 @@
    ]
   },
   {
-   "key": "s09_x1",
-   "name": "S9 X1",
+   "key": "s09_attack",
+   "name": "S9 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s09_x2",
-   "name": "S9 X2",
+   "key": "s09_tone",
+   "name": "S9 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s09_x3",
-   "name": "S9 X3",
+   "key": "s09_snappy",
+   "name": "S9 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s09_noise",
+   "name": "S9 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s09_rate",
+   "name": "S9 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s09_sweep",
+   "name": "S9 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s09_pmod",
+   "name": "S9 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s09_ndecay",
+   "name": "S9 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s09_sat",
+   "name": "S9 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -1360,22 +1738,64 @@
    ]
   },
   {
-   "key": "s10_x1",
-   "name": "S10 X1",
+   "key": "s10_attack",
+   "name": "S10 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s10_x2",
-   "name": "S10 X2",
+   "key": "s10_tone",
+   "name": "S10 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s10_x3",
-   "name": "S10 X3",
+   "key": "s10_snappy",
+   "name": "S10 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s10_noise",
+   "name": "S10 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s10_rate",
+   "name": "S10 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s10_sweep",
+   "name": "S10 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s10_pmod",
+   "name": "S10 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s10_ndecay",
+   "name": "S10 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s10_sat",
+   "name": "S10 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -1500,22 +1920,64 @@
    ]
   },
   {
-   "key": "s11_x1",
-   "name": "S11 X1",
+   "key": "s11_attack",
+   "name": "S11 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s11_x2",
-   "name": "S11 X2",
+   "key": "s11_tone",
+   "name": "S11 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s11_x3",
-   "name": "S11 X3",
+   "key": "s11_snappy",
+   "name": "S11 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s11_noise",
+   "name": "S11 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s11_rate",
+   "name": "S11 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s11_sweep",
+   "name": "S11 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s11_pmod",
+   "name": "S11 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s11_ndecay",
+   "name": "S11 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s11_sat",
+   "name": "S11 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -1640,22 +2102,64 @@
    ]
   },
   {
-   "key": "s12_x1",
-   "name": "S12 X1",
+   "key": "s12_attack",
+   "name": "S12 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s12_x2",
-   "name": "S12 X2",
+   "key": "s12_tone",
+   "name": "S12 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s12_x3",
-   "name": "S12 X3",
+   "key": "s12_snappy",
+   "name": "S12 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s12_noise",
+   "name": "S12 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s12_rate",
+   "name": "S12 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s12_sweep",
+   "name": "S12 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s12_pmod",
+   "name": "S12 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s12_ndecay",
+   "name": "S12 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s12_sat",
+   "name": "S12 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -1780,22 +2284,64 @@
    ]
   },
   {
-   "key": "s13_x1",
-   "name": "S13 X1",
+   "key": "s13_attack",
+   "name": "S13 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s13_x2",
-   "name": "S13 X2",
+   "key": "s13_tone",
+   "name": "S13 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s13_x3",
-   "name": "S13 X3",
+   "key": "s13_snappy",
+   "name": "S13 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s13_noise",
+   "name": "S13 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s13_rate",
+   "name": "S13 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s13_sweep",
+   "name": "S13 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s13_pmod",
+   "name": "S13 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s13_ndecay",
+   "name": "S13 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s13_sat",
+   "name": "S13 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -1920,22 +2466,64 @@
    ]
   },
   {
-   "key": "s14_x1",
-   "name": "S14 X1",
+   "key": "s14_attack",
+   "name": "S14 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s14_x2",
-   "name": "S14 X2",
+   "key": "s14_tone",
+   "name": "S14 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s14_x3",
-   "name": "S14 X3",
+   "key": "s14_snappy",
+   "name": "S14 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s14_noise",
+   "name": "S14 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s14_rate",
+   "name": "S14 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s14_sweep",
+   "name": "S14 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s14_pmod",
+   "name": "S14 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s14_ndecay",
+   "name": "S14 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s14_sat",
+   "name": "S14 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -2060,22 +2648,64 @@
    ]
   },
   {
-   "key": "s15_x1",
-   "name": "S15 X1",
+   "key": "s15_attack",
+   "name": "S15 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s15_x2",
-   "name": "S15 X2",
+   "key": "s15_tone",
+   "name": "S15 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s15_x3",
-   "name": "S15 X3",
+   "key": "s15_snappy",
+   "name": "S15 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s15_noise",
+   "name": "S15 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s15_rate",
+   "name": "S15 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s15_sweep",
+   "name": "S15 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s15_pmod",
+   "name": "S15 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s15_ndecay",
+   "name": "S15 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s15_sat",
+   "name": "S15 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -2200,22 +2830,64 @@
    ]
   },
   {
-   "key": "s16_x1",
-   "name": "S16 X1",
+   "key": "s16_attack",
+   "name": "S16 Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s16_x2",
-   "name": "S16 X2",
+   "key": "s16_tone",
+   "name": "S16 Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "s16_x3",
-   "name": "S16 X3",
+   "key": "s16_snappy",
+   "name": "S16 Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s16_noise",
+   "name": "S16 Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s16_rate",
+   "name": "S16 Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s16_sweep",
+   "name": "S16 Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s16_pmod",
+   "name": "S16 Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s16_ndecay",
+   "name": "S16 Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "s16_sat",
+   "name": "S16 Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -2363,22 +3035,64 @@
    ]
   },
   {
-   "key": "e_x1",
-   "name": "X1",
+   "key": "e_attack",
+   "name": "Attack",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "e_x2",
-   "name": "X2",
+   "key": "e_tone",
+   "name": "Tone",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
-   "key": "e_x3",
-   "name": "X3",
+   "key": "e_snappy",
+   "name": "Snappy",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_noise",
+   "name": "Noise",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_rate",
+   "name": "Rate",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_sweep",
+   "name": "Sweep",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_pmod",
+   "name": "Pitch Mod",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_ndecay",
+   "name": "Noise Decay",
+   "default": 64,
+   "min": 0,
+   "max": 127
+  },
+  {
+   "key": "e_sat",
+   "name": "Saturate",
    "default": 64,
    "min": 0,
    "max": 127
@@ -2527,9 +3241,15 @@
     "s01_decay",
     "s01_drive",
     "s01_dist",
-    "s01_x1",
-    "s01_x2",
-    "s01_x3",
+    "s01_attack",
+    "s01_tone",
+    "s01_snappy",
+    "s01_noise",
+    "s01_rate",
+    "s01_sweep",
+    "s01_pmod",
+    "s01_ndecay",
+    "s01_sat",
     "s01_pan",
     "s01_rev",
     "s01_dly"
@@ -2544,9 +3264,15 @@
     "s02_decay",
     "s02_drive",
     "s02_dist",
-    "s02_x1",
-    "s02_x2",
-    "s02_x3",
+    "s02_attack",
+    "s02_tone",
+    "s02_snappy",
+    "s02_noise",
+    "s02_rate",
+    "s02_sweep",
+    "s02_pmod",
+    "s02_ndecay",
+    "s02_sat",
     "s02_pan",
     "s02_rev",
     "s02_dly"
@@ -2561,9 +3287,15 @@
     "s03_decay",
     "s03_drive",
     "s03_dist",
-    "s03_x1",
-    "s03_x2",
-    "s03_x3",
+    "s03_attack",
+    "s03_tone",
+    "s03_snappy",
+    "s03_noise",
+    "s03_rate",
+    "s03_sweep",
+    "s03_pmod",
+    "s03_ndecay",
+    "s03_sat",
     "s03_pan",
     "s03_rev",
     "s03_dly"
@@ -2578,9 +3310,15 @@
     "s04_decay",
     "s04_drive",
     "s04_dist",
-    "s04_x1",
-    "s04_x2",
-    "s04_x3",
+    "s04_attack",
+    "s04_tone",
+    "s04_snappy",
+    "s04_noise",
+    "s04_rate",
+    "s04_sweep",
+    "s04_pmod",
+    "s04_ndecay",
+    "s04_sat",
     "s04_pan",
     "s04_rev",
     "s04_dly"
@@ -2595,9 +3333,15 @@
     "s05_decay",
     "s05_drive",
     "s05_dist",
-    "s05_x1",
-    "s05_x2",
-    "s05_x3",
+    "s05_attack",
+    "s05_tone",
+    "s05_snappy",
+    "s05_noise",
+    "s05_rate",
+    "s05_sweep",
+    "s05_pmod",
+    "s05_ndecay",
+    "s05_sat",
     "s05_pan",
     "s05_rev",
     "s05_dly"
@@ -2612,9 +3356,15 @@
     "s06_decay",
     "s06_drive",
     "s06_dist",
-    "s06_x1",
-    "s06_x2",
-    "s06_x3",
+    "s06_attack",
+    "s06_tone",
+    "s06_snappy",
+    "s06_noise",
+    "s06_rate",
+    "s06_sweep",
+    "s06_pmod",
+    "s06_ndecay",
+    "s06_sat",
     "s06_pan",
     "s06_rev",
     "s06_dly"
@@ -2629,9 +3379,15 @@
     "s07_decay",
     "s07_drive",
     "s07_dist",
-    "s07_x1",
-    "s07_x2",
-    "s07_x3",
+    "s07_attack",
+    "s07_tone",
+    "s07_snappy",
+    "s07_noise",
+    "s07_rate",
+    "s07_sweep",
+    "s07_pmod",
+    "s07_ndecay",
+    "s07_sat",
     "s07_pan",
     "s07_rev",
     "s07_dly"
@@ -2646,9 +3402,15 @@
     "s08_decay",
     "s08_drive",
     "s08_dist",
-    "s08_x1",
-    "s08_x2",
-    "s08_x3",
+    "s08_attack",
+    "s08_tone",
+    "s08_snappy",
+    "s08_noise",
+    "s08_rate",
+    "s08_sweep",
+    "s08_pmod",
+    "s08_ndecay",
+    "s08_sat",
     "s08_pan",
     "s08_rev",
     "s08_dly"
@@ -2663,9 +3425,15 @@
     "s09_decay",
     "s09_drive",
     "s09_dist",
-    "s09_x1",
-    "s09_x2",
-    "s09_x3",
+    "s09_attack",
+    "s09_tone",
+    "s09_snappy",
+    "s09_noise",
+    "s09_rate",
+    "s09_sweep",
+    "s09_pmod",
+    "s09_ndecay",
+    "s09_sat",
     "s09_pan",
     "s09_rev",
     "s09_dly"
@@ -2680,9 +3448,15 @@
     "s10_decay",
     "s10_drive",
     "s10_dist",
-    "s10_x1",
-    "s10_x2",
-    "s10_x3",
+    "s10_attack",
+    "s10_tone",
+    "s10_snappy",
+    "s10_noise",
+    "s10_rate",
+    "s10_sweep",
+    "s10_pmod",
+    "s10_ndecay",
+    "s10_sat",
     "s10_pan",
     "s10_rev",
     "s10_dly"
@@ -2697,9 +3471,15 @@
     "s11_decay",
     "s11_drive",
     "s11_dist",
-    "s11_x1",
-    "s11_x2",
-    "s11_x3",
+    "s11_attack",
+    "s11_tone",
+    "s11_snappy",
+    "s11_noise",
+    "s11_rate",
+    "s11_sweep",
+    "s11_pmod",
+    "s11_ndecay",
+    "s11_sat",
     "s11_pan",
     "s11_rev",
     "s11_dly"
@@ -2714,9 +3494,15 @@
     "s12_decay",
     "s12_drive",
     "s12_dist",
-    "s12_x1",
-    "s12_x2",
-    "s12_x3",
+    "s12_attack",
+    "s12_tone",
+    "s12_snappy",
+    "s12_noise",
+    "s12_rate",
+    "s12_sweep",
+    "s12_pmod",
+    "s12_ndecay",
+    "s12_sat",
     "s12_pan",
     "s12_rev",
     "s12_dly"
@@ -2731,9 +3517,15 @@
     "s13_decay",
     "s13_drive",
     "s13_dist",
-    "s13_x1",
-    "s13_x2",
-    "s13_x3",
+    "s13_attack",
+    "s13_tone",
+    "s13_snappy",
+    "s13_noise",
+    "s13_rate",
+    "s13_sweep",
+    "s13_pmod",
+    "s13_ndecay",
+    "s13_sat",
     "s13_pan",
     "s13_rev",
     "s13_dly"
@@ -2748,9 +3540,15 @@
     "s14_decay",
     "s14_drive",
     "s14_dist",
-    "s14_x1",
-    "s14_x2",
-    "s14_x3",
+    "s14_attack",
+    "s14_tone",
+    "s14_snappy",
+    "s14_noise",
+    "s14_rate",
+    "s14_sweep",
+    "s14_pmod",
+    "s14_ndecay",
+    "s14_sat",
     "s14_pan",
     "s14_rev",
     "s14_dly"
@@ -2765,9 +3563,15 @@
     "s15_decay",
     "s15_drive",
     "s15_dist",
-    "s15_x1",
-    "s15_x2",
-    "s15_x3",
+    "s15_attack",
+    "s15_tone",
+    "s15_snappy",
+    "s15_noise",
+    "s15_rate",
+    "s15_sweep",
+    "s15_pmod",
+    "s15_ndecay",
+    "s15_sat",
     "s15_pan",
     "s15_rev",
     "s15_dly"
@@ -2782,9 +3586,15 @@
     "s16_decay",
     "s16_drive",
     "s16_dist",
-    "s16_x1",
-    "s16_x2",
-    "s16_x3",
+    "s16_attack",
+    "s16_tone",
+    "s16_snappy",
+    "s16_noise",
+    "s16_rate",
+    "s16_sweep",
+    "s16_pmod",
+    "s16_ndecay",
+    "s16_sat",
     "s16_pan",
     "s16_rev",
     "s16_dly"
@@ -2800,9 +3610,15 @@
     "e_decay",
     "e_drive",
     "e_dist",
-    "e_x1",
-    "e_x2",
-    "e_x3",
+    "e_attack",
+    "e_tone",
+    "e_snappy",
+    "e_noise",
+    "e_rate",
+    "e_sweep",
+    "e_pmod",
+    "e_ndecay",
+    "e_sat",
     "e_pan",
     "e_rev",
     "e_dly"

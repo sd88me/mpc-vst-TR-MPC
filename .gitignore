@@ -4,3 +4,4 @@ ports/*/build/
 patch/out/
 
 ports/trkit/engines/
+ports/*/fonts/
