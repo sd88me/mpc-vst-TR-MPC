@@ -92,16 +92,9 @@ def plate(x0, label, seed, blank=False, pad=None, w=None, head=True):
                  'letter-spacing="3" fill="#9a9ea8" fill-opacity="0.6">%s</text>' % (x0 + w / 2, (y0 + y1) / 2 + 28, label))
     else:
         if head: o.append('<rect x="%d" y="%d" width="%d" height="2" fill="#5ec2b7" fill-opacity="0.55"/>' % (x0 + 26 if w > 200 else x0 + 16, y0 + 40, w - 52 if w > 200 else w - 32))
-        if pad is not None and w > 200:
-            o.append('<text x="%g" y="%g" font-family="Titillium Web" font-weight="600" font-size="13" letter-spacing="3" '
-                     'fill="#9a9ea8">PAD %d  %s</text>' % (x0 + 30, y1 - 22, pad, pad_name(pad)))
-            o.append('<text x="%g" y="%g" text-anchor="end" font-family="Titillium Web" font-weight="600" font-size="13" '
-                     'letter-spacing="3" fill="#9a9ea8">OUT</text>' % (x0 + w - 66, y1 - 22))
-            o.append(jack(x0 + w - 40, y1 - 26))
-        elif pad is not None:   # compact module: pad and jack only
-            o.append('<text x="%g" y="%g" font-family="Titillium Web" font-weight="600" font-size="12" letter-spacing="1.5" '
-                     'fill="#9a9ea8">%d %s</text>' % (x0 + 28, y1 - 22, pad, pad_name(pad)))
-            o.append(jack(x0 + w - 36, y1 - 26))
+        if pad is not None:
+            o.append('<text x="%g" y="%g" text-anchor="middle" font-family="Titillium Web" font-weight="600" font-size="%d" '
+                     'letter-spacing="2" fill="#9a9ea8">PAD %d  %s</text>' % (x0 + w / 2, y1 - 22, 13 if w > 200 else 12, pad, pad_name(pad)))
     o.append('</g>')
     return "".join(o)
 

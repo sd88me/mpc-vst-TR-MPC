@@ -40,14 +40,14 @@ for s in range(1, 17):
     sections.append({"label": "Slot %d" % s, "keys": keys})
 # the editor page: edit_slot picks a slot; edit_voice and e_<knob> are that slot's voice and knobs (proxied by trkit.cpp)
 ed = []
-params.append({"key": "edit_slot", "name": "Edit slot", "options": [str(i) for i in range(1, 17)], "default": 0})
+params.append({"key": "edit_slot", "name": "Slot", "options": [str(i) for i in range(1, 17)], "default": 0})
 ed.append("edit_slot")
-params.append({"key": "edit_voice", "name": "Edit voice", "options": SRC, "default": DEFAULT_FLAT[0]})
+params.append({"key": "edit_voice", "name": "Voice", "options": SRC, "default": DEFAULT_FLAT[0]})
 ed.append("edit_voice")
 for k, label, dflt in (("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
                        ("dist", "Dist", 0), ("x1", "X1", 64), ("x2", "X2", 64), ("x3", "X3", 64),
                        ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)):
-    p = {"key": "e_" + k, "name": "Edit " + label, "default": dflt}
+    p = {"key": "e_" + k, "name": label, "default": dflt}
     if k == "dist": p["options"] = DIST
     else: p.update({"min": 0, "max": 127})
     params.append(p)

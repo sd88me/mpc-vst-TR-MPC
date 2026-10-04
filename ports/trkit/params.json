@@ -2243,7 +2243,7 @@
   },
   {
    "key": "edit_slot",
-   "name": "Edit slot",
+   "name": "Slot",
    "options": [
     "1",
     "2",
@@ -2266,7 +2266,7 @@
   },
   {
    "key": "edit_voice",
-   "name": "Edit voice",
+   "name": "Voice",
    "options": [
     "606 BD",
     "606 SD",
@@ -2322,35 +2322,35 @@
   },
   {
    "key": "e_level",
-   "name": "Edit Level",
+   "name": "Level",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_tune",
-   "name": "Edit Tune",
+   "name": "Tune",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_decay",
-   "name": "Edit Decay",
+   "name": "Decay",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_drive",
-   "name": "Edit Drive",
+   "name": "Drive",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_dist",
-   "name": "Edit Dist",
+   "name": "Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -2364,42 +2364,42 @@
   },
   {
    "key": "e_x1",
-   "name": "Edit X1",
+   "name": "X1",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_x2",
-   "name": "Edit X2",
+   "name": "X2",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_x3",
-   "name": "Edit X3",
+   "name": "X3",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_pan",
-   "name": "Edit Pan",
+   "name": "Pan",
    "default": 64,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_rev",
-   "name": "Edit Rev",
+   "name": "Rev",
    "default": 0,
    "min": 0,
    "max": 127
   },
   {
    "key": "e_dly",
-   "name": "Edit Dly",
+   "name": "Dly",
    "default": 0,
    "min": 0,
    "max": 127
