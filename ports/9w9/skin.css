@@ -4,5 +4,9 @@
 text { font-family: "Helvetica"; }
 .frame-border { fill: none; stroke: none; }
 .frame-rule { stroke: none; }
-.frame-title { font-family: "Helvetica"; font-size: 15px; letter-spacing: 0.14em; fill: #ffffff; }
+.frame-title { font-family: "Helvetica"; font-size: 15px; letter-spacing: 0.14em; fill: #ef6c1f; }
+.knob-face, .look-metal, .look-body, .look-cap-ring, .look-fader { filter: none; }
+.look-metal, .look-cap-ring { stroke: #000; stroke-opacity: 0.55; }
 .box-label { font-family: "Helvetica"; letter-spacing: 0.06em; }
+.look-cap-ring { fill: #101010; } .look-cap-top { fill: #1b1b1b; } .look-line { stroke: #ef6c1f; }
+.box { fill: #2b2c30; } .box-label { fill: #4b5566; }

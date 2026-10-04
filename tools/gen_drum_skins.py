@@ -20,49 +20,55 @@ ROOT = os.path.dirname(HERE)
 FONT_SRC = os.environ.get("FONT_SRC", os.path.join(ROOT, "..", "mpc-vst", "Assets", "fonts"))
 W, H = 1280, 628
 Y_OFF = 86
-X0, PANEL_W, TOP, BOT = 8, 300, 136, 708      # must match make_layout.py
+X0, PANEL_W, TOP, BOT = 8, 316, 136, 708      # must match make_layout.py
 HEAD_Y0, HEAD_Y1 = 92, 136
 
 FONTS = {   # family -> (source file under FONT_SRC, copied name)
     "Earth": ("Earth Normal.ttf", "Earth.ttf"),
     "Filmotype": ("FilmotypeFord.ttf", "FilmotypeFord.ttf"),
+    "Eurostile": ("EuroStyle Normal.ttf", "EuroStyle.ttf"),
     "Univers": ("Univers 53 Extended Regular.otf", "UniversExt.otf"),
     "Helvetica": ("helvetica-255/Helvetica-Bold.ttf", "HelveticaBold.ttf"),
 }
 
 STYLES = {
-    # TR-606: silver-grey aluminium, near-black printing, red LEDs/outline, cobalt accents; Eurostile titles
+    # TR-606: silver-grey aluminium, near-black printing, red LEDs/outline, cobalt accents; Helvetica titles, Univers logo
     "6w6": dict(
         theme="bg=b9bbb4 ink=1a1d24 ink_dim=4c4f55 accent=dd0000 accent_hi=ff3b30 seg_active=1a1d24 seg_inactive=d9dad4 "
               "seg_active_tx=ecd5aa lcd=1a1d24 line=6f7279 btn_bg=d9dad4 btn_text=1a1d24 box=cacbc4 display_ink=dd0000 "
               "knob_face=e4e5e1 knob_ring=7b7e84 knob_dot=1a1d24",
-        knob_look="metal", logo=("DRUMATIX", "Univers"), logo_color="1a1d24", logo_size=3.0,
+        knob_look="metal", logo=("DRUMATIX", "Eurostile"), logo_color="1a1d24", logo_size=3.0,
         tag="TR-606  COMPUTER CONTROLLED", tag_color="dd0000", fonts=("Helvetica", "Helvetica"),
         title_color="1a1d24", title_size="17px", title_spacing="0.1em"),
     # TR-808: charcoal panel, white lettering, red / orange / yellow stripes
     "8w8": dict(
         theme="bg=202020 ink=ffffff ink_dim=a8a49a accent=f8a125 accent_hi=f1f827 seg_active=f8a125 seg_inactive=3a3a3a "
               "seg_active_tx=202020 lcd=141414 line=6b6b6b btn_bg=3a3a3a btn_text=ffffff box=141414 display_ink=f8a125 "
-              "knob_face=121212 knob_ring=5c5c5c knob_dot=f8a125",
-        knob_look="cap", logo=("8W8", "Univers"), logo_color="e72e2e", logo_size=3.0,
-        tag="RHYTHM COMPOSER  TR-808 STYLE", tag_color="f8a125", fonts=("Univers", "Helvetica"),
-        title_color="ffffff", title_size="16px", title_spacing="0.12em"),
+              "knob_face=121212 knob_ring=3c3c3c knob_dot=111111",
+        knob_look="cap", logo=("8W8", "Eurostile"), logo_color="e72e2e", logo_size=3.0,
+        tag="RHYTHM COMPOSER  TR-808 STYLE", tag_color="f8a125", fonts=("Eurostile", "Helvetica"),
+        title_color="111111", title_size="18px", title_spacing="0.1em",
+        css=".look-cap-ring { fill: #121212; } .look-cap-top { fill: #f1f1ec; } .look-line { stroke: #111; }\n"
+            ".look-metal { fill: #e8b030; stroke: #5a4310; } .look-metal-top { fill: #f6cf55; } .look-notch { stroke: #111; }\n"),
     # CR-78: black panel, orange headings, cream lettering, red / avocado / yellow / blue pattern buttons, wood cheeks
     "cw78": dict(
         theme="bg=1c1d21 ink=ecd5aa ink_dim=9c9378 accent=ff5a00 accent_hi=ff8a3d seg_active=ff5a00 seg_inactive=2a2b30 "
               "seg_active_tx=1c1d21 lcd=121316 line=7a735f btn_bg=2a2b30 btn_text=ecd5aa box=121316 display_ink=ff5a00 "
-              "knob_face=101112 knob_ring=7a735f knob_dot=ff5a00",
+              "knob_face=101112 knob_ring=5a5547 knob_dot=dd0000",
         knob_look="cap", logo=("CompuRhythm", "Filmotype"), logo_color="ff5a00", logo_size=3.0,
-        tag="CW-78  CR-78 STYLE", tag_color="ecd5aa", fonts=("Filmotype", "Helvetica"),
-        title_color="ff5a00", title_size="17px", title_spacing="0.08em"),
+        tag="CW-78  CR-78 STYLE", tag_color="ecd5aa", fonts=("Helvetica", "Helvetica"),
+        title_color="ff5a00", title_size="16px", title_spacing="0.08em",
+        css=".look-cap-ring { fill: #0d0d0e; } .look-cap-top { fill: #1a1a1c; } .look-line { stroke: #dd0000; }\n"),
     # TR-909: warm grey chassis, charcoal section bars with white lettering, red-orange logo, blue rules
     "9w9": dict(
-        theme="bg=c1bdb3 ink=111111 ink_dim=55524b accent=e4002b accent_hi=ff3355 seg_active=2b2c30 seg_inactive=d1c7bd "
-              "seg_active_tx=ffffff lcd=2b2c30 line=7d7a72 btn_bg=d1c7bd btn_text=111111 box=b4b0a6 display_ink=e4002b "
-              "knob_face=1a1a1a knob_ring=8b8880 knob_dot=ff5a2a",
-        knob_look="metal", logo=("9W9", "Earth"), logo_color="e4002b", logo_size=3.4,
-        tag="RHYTHM COMPOSER", tag_color="111111", fonts=("Helvetica", "Helvetica"),
-        title_color="ffffff", title_size="15px", title_spacing="0.14em"),
+        theme="bg=e6e2d6 ink=1f1f1f ink_dim=4b5566 accent=ef6c1f accent_hi=ff8a3d seg_active=2b2c30 seg_inactive=d9d5c8 "
+              "seg_active_tx=ef6c1f lcd=2b2c30 line=8a8678 btn_bg=d9d5c8 btn_text=1f1f1f box=cfcbbd display_ink=e4002b "
+              "knob_face=151515 knob_ring=8b8880 knob_dot=ef6c1f",
+        knob_look="cap", logo=("9W9", "Earth"), logo_color="2b2c30", logo_size=3.4,
+        tag="RHYTHM COMPOSER", tag_color="4b5566", fonts=("Helvetica", "Helvetica"),
+        title_color="ef6c1f", title_size="15px", title_spacing="0.14em",
+        css=".look-cap-ring { fill: #101010; } .look-cap-top { fill: #1b1b1b; } .look-line { stroke: #ef6c1f; }\n"
+            ".box { fill: #2b2c30; } .box-label { fill: #4b5566; }\n"),
 }
 
 
@@ -75,55 +81,96 @@ def stripes(x, y, w, colors, h=3, gap=2):
                    for i, c in enumerate(colors))
 
 
-def plate_svg(kit, n):
-    """Faceplate for one page of n panels (shapes only), 1280x628 in plugin-area coordinates."""
+def screw(cx, cy):
+    return ('<circle cx="%g" cy="%g" r="6" fill="url(#screw)" stroke="#000" stroke-opacity="0.6"/>'
+            '<rect x="%g" y="%g" width="8" height="1.6" fill="#222" transform="rotate(35 %g %g)"/>' % (cx, cy, cx - 4, cy - 0.8, cx, cy))
+
+
+DEFS = (
+    '<defs>'
+    # brushed metal: stretched noise, overlaid on a base gradient (SVG filters render fine in an <image>)
+    '<filter id="brush" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.0008 1.1" numOctaves="4" seed="7"/>'
+    '<feColorMatrix type="matrix" values="1.9 0 0 0 -0.45  1.9 0 0 0 -0.45  1.9 0 0 0 -0.45  0 0 0 0 1"/></filter>'
+    '<filter id="fine" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3"/>'
+    '<feColorMatrix type="matrix" values="1.6 0 0 0 -0.3  1.6 0 0 0 -0.3  1.6 0 0 0 -0.3  0 0 0 0 1"/></filter>'
+    '<filter id="grainv" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.6" numOctaves="4" seed="11"/>'
+    '<feColorMatrix type="matrix" values="1.5 0 0 0 -0.25  1.2 0 0 0 -0.25  0.8 0 0 0 -0.25  0 0 0 0 1"/></filter>'
+    '<linearGradient id="lit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.22"/><stop offset="0.45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.18"/></linearGradient>'
+    '<radialGradient id="vig" cx="0.5" cy="0.45" r="0.8"><stop offset="0.6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.35"/></radialGradient>'
+    '<radialGradient id="screw" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#e2e4e8"/><stop offset="1" stop-color="#6a6d74"/></radialGradient>'
+    '<linearGradient id="woodh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5232"/><stop offset="1" stop-color="#4a2f1b"/></linearGradient>'
+    '<linearGradient id="wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5a3a22"/><stop offset="0.5" stop-color="#7a5232"/><stop offset="1" stop-color="#4a2f1b"/></linearGradient>'
+    '<filter id="woodg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.02 0.4" numOctaves="3" seed="5"/>'
+    '<feColorMatrix type="matrix" values="0.9 0 0 0 0.1  0.6 0 0 0 0.02  0.4 0 0 0 0  0 0 0 0 1"/></filter>'
+    '</defs>')
+
+
+def base(kit):
+    """The full-canvas chassis with its photographic texture."""
+    full = 'x="0" y="0" width="%d" height="%d"' % (W, H)
+    if kit == "6w6":     # brushed aluminium
+        g = ('<linearGradient id="b6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d5d7d2"/><stop offset="0.5" stop-color="#bfc1bb"/><stop offset="1" stop-color="#a9aca5"/></linearGradient>'
+             '<rect %s fill="url(#b6)"/><rect %s filter="url(#brush)" style="mix-blend-mode:overlay" opacity="0.5"/>'
+             '<rect %s fill="url(#lit)"/><rect %s fill="url(#vig)"/>')
+        return g % (full, full, full, full)
+    if kit == "9w9":     # cream powder-coated steel
+        g = ('<linearGradient id="b9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ece8dc"/><stop offset="1" stop-color="#dcd8ca"/></linearGradient>'
+             '<rect %s fill="url(#b9)"/><rect %s filter="url(#fine)" style="mix-blend-mode:overlay" opacity="0.28"/>'
+             '<rect %s fill="url(#lit)" opacity="0.5"/><rect %s fill="url(#vig)" opacity="0.6"/>')
+        cheek = ('<linearGradient id="silv" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8f9096"/><stop offset="0.45" stop-color="#e9eaec"/><stop offset="1" stop-color="#a3a4aa"/></linearGradient>'
+                 '<rect x="0" y="0" width="8" height="%d" fill="url(#silv)"/><rect x="%d" y="0" width="8" height="%d" fill="url(#silv)"/>'
+                 '<rect x="8" y="0" width="1" height="%d" fill="#000" opacity="0.35"/><rect x="%d" y="0" width="1" height="%d" fill="#000" opacity="0.35"/>') % (H, W - 8, H, H, W - 9, H)
+        return g % (full, full, full, full) + cheek
+    if kit == "8w8":     # black powder-coated steel
+        return ('<rect %s fill="#1f1f1f"/><rect %s filter="url(#fine)" style="mix-blend-mode:overlay" opacity="0.35"/>'
+                '<rect %s fill="url(#lit)" opacity="0.5"/><rect %s fill="url(#vig)"/>') % (full, full, full, full)
+    # cw78: satin black inside a thin wood bezel on all four sides
+    wood = '<path clip-rule="evenodd" d="M0 0H%d V%d H0Z M8 6H%d V%d H8Z"' % (W, H, W - 8, H - 6)
+    return ('<rect %(f)s fill="#1c1d21"/><rect %(f)s filter="url(#fine)" style="mix-blend-mode:overlay" opacity="0.3"/>'
+            '<rect %(f)s fill="url(#lit)" opacity="0.45"/><rect %(f)s fill="url(#vig)"/>'
+            '<clipPath id="bez">%(w)s/></clipPath>'
+            '<g clip-path="url(#bez)"><rect %(f)s fill="url(#wood)"/><rect %(f)s filter="url(#woodg)" style="mix-blend-mode:overlay" opacity="0.8"/></g>'
+            '<rect x="8" y="%(by)d" width="%(bw)d" height="1" fill="#000" opacity="0.5"/>') % dict(f=full, w=wood, by=H - 7, bw=W - 16)
+
+
+def plate_svg(kit, n, titles=()):
+    """Faceplate for one page: n voice panels, then blank plates up to 4 (shapes and textures only)."""
     y0, y1 = TOP - Y_OFF, BOT - Y_OFF
     hy0, hy1 = HEAD_Y0 - Y_OFF, HEAD_Y1 - Y_OFF
     pw = PANEL_W - 6
-    xs = panel_xs(n)
-    d = ['<defs>'
-         '<linearGradient id="g606" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c6c8c1"/><stop offset="1" stop-color="#a9aca3"/></linearGradient>'
-         '<linearGradient id="g909" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cbc7bd"/><stop offset="1" stop-color="#b3afa5"/></linearGradient>'
-         '<linearGradient id="wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5a3a22"/><stop offset="0.5" stop-color="#7a5232"/><stop offset="1" stop-color="#4a2f1b"/></linearGradient>'
-         '<linearGradient id="woodh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5232"/><stop offset="1" stop-color="#4a2f1b"/></linearGradient>'
-         '<pattern id="grain" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="1" fill="#fff" fill-opacity="0.05"/><rect y="2" width="4" height="1" fill="#000" fill-opacity="0.06"/></pattern>'
-         '</defs>']
+    xs = panel_xs(4)
+    d = [DEFS, base(kit)]
     if kit == "6w6":
-        d.append('<rect width="%d" height="%d" fill="url(#g606)"/><rect width="%d" height="%d" fill="url(#grain)"/>' % (W, H, W, H))
         d.append('<rect x="0" y="%d" width="%d" height="3" fill="#1a1d24"/>' % (hy1 - 2, W))
-        for x in xs:    # recessed panel, thin black frame, red/cobalt tick under the title
-            d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="3" fill="#000" fill-opacity="0.06" stroke="#1a1d24" stroke-width="1.5"/>' % (x, y0, pw, y1 - y0))
-            d.append('<rect x="%g" y="%d" width="%d" height="3" fill="#1a1d24"/>' % (x + 14, y0 + 36, pw - 28))
-            d.append('<rect x="%g" y="%d" width="46" height="3" fill="#dd0000"/><rect x="%g" y="%d" width="22" height="3" fill="#2f3bff"/>' % (x + 14, y0 + 41, x + 66, y0 + 41))
         cy = (hy0 + hy1) / 2
         d.append('<circle cx="1232" cy="%g" r="5" fill="#dd0000"/><circle cx="1232" cy="%g" r="9" fill="none" stroke="#1a1d24" stroke-width="2"/>' % (cy, cy))
-    elif kit == "8w8":
-        d.append('<rect width="%d" height="%d" fill="#202020"/><rect width="%d" height="%d" fill="url(#grain)"/>' % (W, H, W, H))
-        # the 808's four-colour rule across the header
-        d.append(stripes(0, hy1 - 11, W, ["e72e2e", "f8a125", "f1f827", "ffffff"], 2, 1))
-        for x in xs:
-            d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="2" fill="#262626" stroke="#4a4a4a" stroke-width="1.2"/>' % (x, y0, pw, y1 - y0))
-            d.append(stripes(x + 14, y0 + 34, pw - 28, ["e72e2e", "f8a125", "f1f827"], 2, 2))
-        # step-button colour blocks along the header, like the 808's sequencer row
+    elif kit == "8w8":   # the 808's four-colour rule sits across the top of the header only; step keys below it, right
+        d.append(stripes(0, hy0 - 4, W, ["e72e2e", "f8a125", "f1f827", "ffffff"], 2, 1))
         cols = ["e72e2e"] * 4 + ["f8a125"] * 4 + ["f1f827"] * 4 + ["ffffff"] * 4
         for i, c in enumerate(cols):
-            d.append('<rect x="%d" y="%d" width="16" height="14" rx="2" fill="#%s"/>' % (1010 + i * 15 + (i // 4) * 4, hy0 + 2, c))
+            d.append('<rect x="%d" y="%d" width="16" height="14" rx="2" fill="#%s"/>' % (1004 + i * 15 + (i // 4) * 4, hy0 + 22, c))
     elif kit == "cw78":
-        d.append('<rect width="%d" height="%d" fill="#1c1d21"/><rect width="%d" height="%d" fill="url(#grain)"/>' % (W, H, W, H))
-        d.append('<rect x="0" y="0" width="8" height="%d" fill="url(#wood)"/><rect x="%d" y="0" width="8" height="%d" fill="url(#wood)"/>' % (H, W - 8, H))
-        d.append('<rect x="0" y="%d" width="%d" height="%d" fill="#ff5a00" fill-opacity="0.9"/>' % (hy1 - 2, W, 2))
-        for x in xs:    # cream rounded outline like the CR-78 INSTRUMENTS box; four pattern-button chips under the title
-            d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="12" fill="#222328" stroke="#ecd5aa" stroke-width="2" stroke-opacity="0.7"/>' % (x, y0, pw, y1 - y0))
-            for i, c in enumerate(["dd0000", "cacb9c", "f2ff2c", "2f3bff"]):
-                d.append('<rect x="%g" y="%d" width="20" height="8" rx="2" fill="#%s"/>' % (x + pw - 14 - (4 - i) * 24, y0 + 20, c))
+        d.append('<rect x="8" y="%d" width="%d" height="2" fill="#ff5a00" fill-opacity="0.9"/>' % (hy1 - 2, W - 16))
+    for i, x in enumerate(xs):
+        if i >= n:       # blank plate: screws, no title bar; the model name is a text widget in the layout
+            d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="3" fill="#000" fill-opacity="0.08" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>' % (x, y0, pw, y1 - y0))
+            for sx, sy in ((x + 14, y0 + 14), (x + pw - 14, y0 + 14), (x + 14, y1 - 14), (x + pw - 14, y1 - 14)):
+                d.append(screw(sx, sy))
+            continue
+        if kit == "6w6":     # recessed panel, thin black frame, red/cobalt tick under the title
+            d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="3" fill="#000" fill-opacity="0.07" stroke="#1a1d24" stroke-width="1.5"/>' % (x, y0, pw, y1 - y0))
+            d.append('<rect x="%g" y="%d" width="%d" height="3" fill="#1a1d24"/>' % (x + 14, y0 + 36, pw - 28))
+        elif kit == "8w8":   # one thin white rule under the title; the colour stripes stay in the header
+            d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="2" fill="#000" fill-opacity="0.22" stroke="#4a4a4a" stroke-width="1.2"/>' % (x, y0, pw, y1 - y0))
+            d.append('<rect x="%g" y="%d" width="%d" height="26" rx="13" fill="#f3efdc"/>' % (x + 10, y0 + 7, min(pw - 20, 11.6 * len(titles[i]) + 26) if i < len(titles) else pw - 20))
+        elif kit == "cw78":
+            d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="12" fill="#000" fill-opacity="0.25" stroke="#ecd5aa" stroke-width="2" stroke-opacity="0.7"/>' % (x, y0, pw, y1 - y0))
+            for k, c in enumerate(["dd0000", "cacb9c", "f2ff2c", "2f3bff"]):
+                d.append('<rect x="%g" y="%d" width="20" height="8" rx="2" fill="#%s"/>' % (x + pw - 14 - (4 - k) * 24, y0 + 20, c))
             d.append('<rect x="%g" y="%d" width="%d" height="1.5" fill="#ff5a00"/>' % (x + 14, y0 + 40, pw - 28))
-    else:  # 9w9
-        d.append('<rect width="%d" height="%d" fill="url(#g909)"/><rect width="%d" height="%d" fill="url(#grain)"/>' % (W, H, W, H))
-        d.append('<rect x="0" y="%d" width="%d" height="3" fill="#005ca9"/>' % (hy1 - 2, W))
-        for x in xs:    # charcoal title bar over a recessed section, blue rule below
-            d.append('<rect x="%g" y="%d" width="%d" height="%d" fill="#000" fill-opacity="0.05" stroke="#7d7a72" stroke-width="1"/>' % (x, y0, pw, y1 - y0))
-            d.append('<rect x="%g" y="%d" width="%d" height="30" fill="#2b2c30"/>' % (x, y0, pw))
-            d.append('<rect x="%g" y="%d" width="%d" height="2" fill="#e4002b"/>' % (x, y0 + 30, pw))
+        else:
+            d.append('<rect x="%g" y="%d" width="%d" height="%d" fill="#000" fill-opacity="0.06" stroke="#7d7a72" stroke-width="1"/>' % (x, y0, pw, y1 - y0))
+            d.append('<rect x="%g" y="%d" width="%d" height="30" fill="#4b5566"/>' % (x, y0, pw))
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d">%s</svg>\n' % (W, H, W, H, "".join(d))
 
 
@@ -139,8 +186,10 @@ def css(kit):
             "text { font-family: \"%s\"; }\n"
             ".frame-border { fill: none; stroke: none; }\n.frame-rule { stroke: none; }\n"
             ".frame-title { font-family: \"%s\"; font-size: %s; letter-spacing: %s; fill: #%s; }\n"
+            ".knob-face, .look-metal, .look-body, .look-cap-ring, .look-fader { filter: none; }\n"
+            ".look-metal, .look-cap-ring { stroke: #000; stroke-opacity: 0.55; }\n"
             ".box-label { font-family: \"%s\"; letter-spacing: 0.06em; }\n"
-            % (kit, "\n".join(ff), f_title, f_label, f_title, s["title_size"], s["title_spacing"], s["title_color"], f_label))
+            % (kit, "\n".join(ff), f_title, f_label, f_title, s["title_size"], s["title_spacing"], s["title_color"], f_label) + s.get("css", ""))
 
 
 def build(kit):
@@ -150,10 +199,11 @@ def build(kit):
     for fam in dict.fromkeys(STYLES[kit]["fonts"] + (STYLES[kit]["logo"][1],)):
         src, dst = FONTS[fam]
         shutil.copyfile(os.path.join(FONT_SRC, src), os.path.join(port, "fonts", dst))
-    for n in (4, 3, 2, 1):
-        open(os.path.join(port, "images", "plate_%d.svg" % n), "w", newline="\n").write(plate_svg(kit, n))
+    for f in os.listdir(os.path.join(port, "images")):
+        if f.startswith("plate_"):
+            os.remove(os.path.join(port, "images", f))
     open(os.path.join(port, "skin.css"), "w", newline="\n").write(css(kit))
-    print(kit, "skin.css, fonts/, images/plate_1-4.svg")
+    print(kit, "skin.css, fonts/ (plates are written by make_layout.py)")
 
 
 if __name__ == "__main__":

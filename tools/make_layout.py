@@ -27,7 +27,7 @@ ROOT = os.path.dirname(HERE)
 X0 = 8
 Y_TOP = 92
 HEADER_H = 44
-PANEL_W = 300            # two 150 px knob columns
+PANEL_W = skins.PANEL_W   # fills the 1280 px width with 4 panels
 PER_PAGE = 4
 PANEL_H = 708 - Y_TOP - HEADER_H
 TITLE_H = 44             # frame title inside the panel
@@ -74,17 +74,15 @@ def panels(mod):
 
 
 def cells(keys, voice):
-    """key -> cell 0-7 (row = cell // 2, column = cell % 2). In a voice panel Drive, Distortion, Level, Rev and Dly each
-    keep one cell on every panel (3-7), and the voice's own controls fill 0-2 and then whatever cells are left."""
+    """key -> cell 0-7 (row = cell // 2, column = cell % 2). In a voice panel the top row is Distortion + Level, then the voice's own
+    controls and Drive fill the next cells, and Rev and Dly keep the bottom row."""
     if not voice:
         return {k: i for i, k in enumerate(keys[:ROWS * 2])}
     def tail(k):
-        if k.endswith("_drive"):
-            return 3
         if k.endswith("_dist_type") or k.endswith("_dist"):
-            return 4
+            return 0
         if k.endswith("_level") or k.endswith("_volume"):
-            return 5
+            return 1
         if k.endswith("_rev"):
             return 6
         if k.endswith("_dly"):
@@ -93,7 +91,7 @@ def cells(keys, voice):
     pos = {k: tail(k) for k in keys if tail(k) is not None}
     taken = set(pos.values())
     free = [c for c in range(ROWS * 2) if c not in taken]
-    for k in keys:
+    for k in sorted(keys, key=lambda k: k.endswith("_drive")):    # the voice's own controls first, Drive after them
         if k not in pos and free:
             pos[k] = free.pop(0)
     return pos
@@ -118,14 +116,16 @@ def build(kit):
     for pg in range(npages):
         group = cols[pg * per:(pg + 1) * per]
         rng = group[0][3] + (" - " + group[-1][3] if len(group) > 1 else "")
-        body += ["", "[tab %s]" % rng, "art file=images/plate_%d.svg fit=stretch" % len(group)]
-        hy = Y_TOP + HEADER_H // 2 + 2
+        plate = "images/plate_pg%d.svg" % (pg + 1)
+        os.makedirs(os.path.join(port, "images"), exist_ok=True)
+        open(os.path.join(port, plate), "w", newline="\n").write(skins.plate_svg(kit, len(group), [g[0] for g in group]))
+        body += ["", "[tab %s]" % rng, "art file=%s fit=stretch" % plate]
+        hy = Y_TOP + HEADER_H // 2 + 2 + (3 if kit == "8w8" else 0)
         lg, lf = st["logo"]
         lfile = "fonts/" + skins.FONTS[lf][1]
         tfile = "fonts/" + skins.FONTS[st["fonts"][1]][1]
         body.append('text cx=24 cy=%d label="%s" size=%g color=%s align=left fontfile=%s spacing=2' % (hy, lg, st["logo_size"], st["logo_color"], lfile))
         body.append('text cx=%d cy=%d label="%s" size=1.3 color=%s align=left spacing=2 fontfile=%s' % (24 + int(st["logo_size"] * 15 * len(lg)) + 40, hy + 4, st["tag"], st["tag_color"], tfile))
-        body.append('text cx=1190 cy=%d label="PAGE %d/%d" size=1.2 color=%s align=right spacing=2 fontfile=%s' % (hy + 4, pg + 1, npages, dim, tfile))
         qsets = []
         top = Y_TOP + HEADER_H
         overview = []
@@ -137,17 +137,24 @@ def build(kit):
                 if k not in pos:
                     continue
                 row, col = divmod(pos[k], 2)
-                cx = fx + 75 + col * 148
+                cx = fx + 80 + col * 154
                 ry = top + TITLE_H + row * pitch
                 nm = label(labels.get(k) or cp[k].get("name") or k, 12)
                 if cp[k].get("type") == "enum":
                     body.append('popup cx=%d cy=%d w=130 h=48 label="%s" key=%s' % (cx, ry + 66, nm, k))
                 else:
-                    body.append('knob cx=%d cy=%d r=%d label="%s" key=%s' % (cx, ry + 38, KNOB_R, nm, k))
+                    yl = " look=metal" if kit == "8w8" and k.endswith("_level") else ""   # 808: yellow level knobs
+                    body.append('knob cx=%d cy=%d r=%d label="%s" key=%s%s' % (cx, ry + 38, KNOB_R, nm, k, yl))
             qsets.append((ptitle, keys[:16]))
             # the page's first Q-Link set (it names the tab): this panel's first two controls, drive and level
             pick = [k for k in keys[:2]] + [k for k in keys if k.endswith(("_drive", "_level", "_volume"))][:2]
             overview += list(dict.fromkeys(pick))[:4]
+        for i in range(len(group), PER_PAGE):    # blank plate: the model name
+            cx = X0 + i * PANEL_W + 2 + (PANEL_W - 6) // 2
+            cy = top + PANEL_H // 2
+            bl = lg if len(lg) <= 8 else name     # a long logo (CompuRhythm) gives way to the model name
+            body.append('text cx=%d cy=%d label="%s" size=%g color=%s align=center fontfile=%s spacing=2 opacity=0.55' % (cx, cy - 10, bl, min(st["logo_size"] * 1.3, 230 / (15.0 * len(bl))), st["logo_color"], lfile))
+            body.append('text cx=%d cy=%d label="%s" size=1.0 color=%s align=center spacing=2 opacity=0.6 fontfile=%s' % (cx, cy + 34, st["tag"], dim, tfile))
         body.append('qlinks "%s" = %s' % (rng, ",".join(overview[:16])))
         for ptitle, keys in qsets:
             body.append('qlinks "%s" = %s' % (ptitle, ",".join(keys)))
