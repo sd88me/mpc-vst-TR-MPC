@@ -385,19 +385,22 @@ def family_panel_svg(fi, cells, blank=False, title_bar=44):
         d.append('<rect x="1" y="1" width="%d" height="%d" rx="12" fill="none" stroke="#ecd5aa" stroke-width="2" stroke-opacity="0.7"/>' % (PW - 2, h - 2))
         d.append('<rect x="9" y="0" width="%d" height="%d" fill="#0d0d0f"/><rect x="9" y="%d" width="%d" height="2" fill="#ff5a00"/>' % (PW - 18, title_bar, title_bar, PW - 18))
         for k, c in enumerate(["dd0000", "cacb9c", "f2ff2c", "2f3bff"]):
-            d.append('<rect x="%g" y="%d" width="16" height="8" rx="2" fill="#%s"/>' % (PW - 30 - (3 - k) * 20 - 10, 18, c))
+            d.append('<rect x="%g" y="%d" width="16" height="6" rx="2" fill="#%s"/>' % (24 + k * 20, 33, c))
     else:                 # 909: cream powder-coated steel, charcoal section bar
         d.append('<g clip-path="url(#pc)"><linearGradient id="b9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ece8dc"/>'
                  '<stop offset="1" stop-color="#dcd8ca"/></linearGradient><rect %s fill="url(#b9)"/>'
                  '<rect %s filter="url(#fine)" style="mix-blend-mode:overlay" opacity="0.28"/><rect %s fill="url(#lit)" opacity="0.5"/></g>' % (full, full, full))
         d.append('<rect x="0.5" y="0.5" width="%d" height="%g" rx="3" fill="none" stroke="#7d7a72" stroke-width="1"/>' % (PW - 1, h - 1))
         d.append('<rect x="0" y="0" width="%d" height="%d" fill="#2b2c30"/><rect x="0" y="%d" width="%d" height="2" fill="#ef6c1f"/>' % (PW, title_bar, title_bar, PW))
-    for n, (cx, cy) in enumerate(cells):
-        if n == 0:   # the Distortion popup: its caption is drawn here (the popup's own caption would sit under this art)
+    for cx, cy, kind, caption in cells:
+        if kind == "popup":   # a popup's own caption would sit under this art, so it is drawn here
             d.append('<text x="%g" y="%g" font-family="Helvetica, Arial, sans-serif" font-weight="700" font-size="14" '
-                     'letter-spacing="1.5" fill="%s">DIST</text>' % (cx - 64, cy - TOP - 14, "#1a1d24" if light else "#c9c4b3"))
+                     'letter-spacing="1.5" fill="%s">%s</text>' % (cx - 50, cy - TOP - 14, "#1a1d24" if light else "#c9c4b3", caption))
             continue
         d.append(cell_well(cx, cy - TOP, light))
+        if kind == "extra":   # an extra control's cell: a faint ring shows where a knob goes when the voice has one
+            d.append('<circle cx="%g" cy="%g" r="19" fill="none" stroke="%s" stroke-opacity="0.28" stroke-width="1.5" stroke-dasharray="3 4"/>'
+                     % (cx, cy - TOP, "#000" if light else "#fff"))
     for sx, sy in ((14, title_bar + 12), (PW - 14, title_bar + 12), (14, h - 14), (PW - 14, h - 14)):
         d.append(drum.screw(sx, sy))
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d">%s</svg>\n' % (PW, h, PW, h, "".join(d))
@@ -431,7 +434,8 @@ def build_full(pages=4):
            FULL_THEME]
     cell_xy = lambda px, col, row: (px + CELL_X[col], ROW0 + row * ROWP)
     open(os.path.join(images, "chassis.svg"), "w", newline="\n").write(full_chassis_svg())
-    sample_cells = [(CELL_X[c], ROW0 + r * ROWP) for c, r in cells.values()]
+    kinds = {"dist": ("popup", "DIST"), "x1": ("extra", ""), "x2": ("extra", ""), "x3": ("extra", "")}
+    sample_cells = [(CELL_X[c], ROW0 + r * ROWP) + kinds.get(name, ("knob", "")) for name, (c, r) in cells.items()]
     for fi, kit in enumerate(FAMILIES):
         open(os.path.join(images, "panel_%s.svg" % kit), "w", newline="\n").write(family_panel_svg(fi, sample_cells))
     for page in range(pages):
@@ -460,24 +464,30 @@ def build_full(pages=4):
             out.append('qlinks "SLOT %d" = %s' % (sl, ",".join("s%02d_%s" % (sl, kk) for kk in keys[:8])))
             out.append('qlinks "SLOT %d CHARACTER" = %s' % (sl, ",".join("s%02d_%s" % (sl, kk) for kk in (
                 "attack", "tone", "snappy", "noise", "rate", "sweep", "pmod", "ndecay"))))
-    if pages == 4:   # the FX page: neutral charcoal modules in the 808 finish
+    if pages in (0, 4):   # the FX page: neutral charcoal modules in the 808 finish
         out += ["", "[tab FX - MASTER]", "art file=images/chassis.svg fit=stretch"] + full_header()
         fx_cells = [(CELL_X[0], ROW0), (CELL_X[1], ROW0), (CELL_X[0], ROW0 + ROWP), (CELL_X[1], ROW0 + ROWP), (CELL_X[0], ROW0 + 2 * ROWP)]
         for i, (title, ctrls) in enumerate(FX_MODULES):
             px = PX0 + i * PPITCH
-            out.append("art file=images/panel_8w8.svg x=%d y=%d w=%d h=%d" % (px, TOP, PW, BOT - TOP))
-            out.append('frame x=%d y=%d w=%d h=%d title="%s"' % (px + 8, TOP, PW - 16, 44, title))
-            rows = {218: 0, 348: 1, 478: 2, 246: 0}
+            fcells, lines = [], []
             for kind, dx, cy, label, key in ctrls:
                 col = 0 if dx < 150 else 1
                 row = {218: 0, 240: 0, 246: 0, 348: 1, 478: 2}[cy]
                 x, y = cell_xy(px, col, row)
                 if kind == "popup":
-                    out.append('popup cx=%d cy=%d w=130 h=44 label="%s" key=%s' % (x, y + 14, label, key))
+                    fcells.append((x - px, y, "popup", label))
+                    lines.append('popup cx=%d cy=%d w=130 h=44 label="" key=%s' % (x, y + 14, key))
                 else:
-                    out.append('knob cx=%d cy=%d r=%d label="%s" key=%s' % (x, y, KR, label, key))
+                    fcells.append((x - px, y, "knob", ""))
+                    lines.append('knob cx=%d cy=%d r=%d label="%s" key=%s' % (x, y, KR, label, key))
+            name = "images/panel_fx%d.svg" % (i + 1)
+            open(os.path.join(PORT, name), "w", newline="\n").write(family_panel_svg(1, fcells))
+            out.append("art file=%s x=%d y=%d w=%d h=%d" % (name, px, TOP, PW, BOT - TOP))
+            out.append('frame x=%d y=%d w=%d h=%d title="%s"' % (px + 8, TOP, PW - 16, 44, title))
+            out += lines
         px = PX0 + 3 * PPITCH
-        out.append("art file=images/panel_8w8.svg x=%d y=%d w=%d h=%d" % (px, TOP, PW, BOT - TOP))
+        open(os.path.join(PORT, "images/panel_blank.svg"), "w", newline="\n").write(family_panel_svg(1, []))
+        out.append("art file=images/panel_blank.svg x=%d y=%d w=%d h=%d" % (px, TOP, PW, BOT - TOP))
         out.append('text cx=%d cy=%d label="TR-MPC" size=3 color=5ec2b7 align=center fontfile=fonts/EuroStyle.ttf spacing=2 opacity=0.55' % (px + PW // 2, (TOP + BOT) // 2 - 10))
         out += ['qlinks "FX - MASTER" = fx_rev_decay,fx_rev_tone,fx_rev_level,fx_dly_time,fx_dly_fdbk,fx_dly_level,fx_master_dist,fx_master_drive',
                 'qlinks "REVERB" = fx_rev_decay,fx_rev_tone,fx_rev_hpf,fx_rev_level',
@@ -492,6 +502,7 @@ def main():
     open(os.path.join(PORT, "layouts", "editor.conf"), "w", newline="\n").write(build_editor())
     open(os.path.join(PORT, "layouts", "full.conf"), "w", newline="\n").write(build_full())
     open(os.path.join(PORT, "layouts", "full_preview.conf"), "w", newline="\n").write(build_full(pages=1))   # one page: quick previews
+    open(os.path.join(PORT, "layouts", "full_fx_preview.conf"), "w", newline="\n").write(build_full(pages=0))   # the FX page only
     open(os.path.join(PORT, "skin.css"), "w", newline="\n").write(CSS)
     open(os.path.join(PORT, "skin_full.css"), "w", newline="\n").write(FULL_CSS)
     print("wrote layouts/{restyle,editor,full}.conf, skin.css, images/")

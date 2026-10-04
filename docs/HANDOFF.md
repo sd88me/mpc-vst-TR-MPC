@@ -3,7 +3,7 @@
 State as of 2026-10-02. Read README.md first; this is what to do next and what is known.
 
 ## Where things stand
-- 6W6, 8W8, CW-78, 9W9 v1.0.0: released (public), installed and smoke-tested on a Force (192.168.1.44, MPC OS 3.9.1.2, root SSH), benched, and in the mpc-vst-plugins catalog via PR #94 (`catalog-tr-drums`; check it merged and the catalog rebuilt). Per-port workflows `.github/workflows/release-<kit>.yml` pin mpc-vst-plugins `28f5ffd`.
+- 6W6, 8W8, CW-78, 9W9 v1.1.0: released (public; 1.1.0 = new per-family skins, text outlined by tools/gen_drum_skins.py), installed and smoke-tested on a Force (192.168.1.44, MPC OS 3.9.1.2, root SSH), benched, and in the mpc-vst-plugins catalog via PR #94 (`catalog-tr-drums`; check it merged and the catalog rebuilt). Per-port workflows `.github/workflows/release-<kit>.yml` pin mpc-vst-plugins `28f5ffd`.
 - Bench (Force, 16 voices, p99): 6W6 30.9% WARN, 8W8 13.1%, CW-78 7.7%, 9W9 21.2% WARN. Each port's `bench.txt` is the committed `-j` line.
 - TR-Kit (`ports/trkit`, `docs/TR-KIT.md`) is a prototype: builds, wrapper and audio offline tests pass, never installed on the Force, no skin, CPU unmeasured.
 - DSP in `ports/<kit>/src` is vendored unmodified from athousanddetails (see each VENDORED.md). Keep it that way; MPC-specific code goes in `mpc_pads_engine.c`, `ports/trkit`, `layout.conf`, tools.

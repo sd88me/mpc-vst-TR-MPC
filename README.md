@@ -52,8 +52,8 @@ Circuit-modelled kick, snare, three toms, rim shot and hand clap; **sampled** hi
 Needs a first-generation MPC OS standalone with root SSH (a modded unit). Take the zip from the plugin's release, unzip it, copy the folder to the device and run `install.sh` (it stops MPC, so save first):
 
 ```
-scp -r 6W6-1.0.0 root@<device-ip>:/tmp/
-ssh root@<device-ip> sh /tmp/6W6-1.0.0/install.sh
+scp -r 6W6-1.1.0 root@<device-ip>:/tmp/
+ssh root@<device-ip> sh /tmp/6W6-1.1.0/install.sh
 ```
 
 Then add the plugin to a track from the plugin browser. `INSTALL.md` in each zip has the manual steps and `uninstall.sh` removes it. Tested on a Force. Installing plugins this way is unofficial, so back up first.
@@ -69,7 +69,7 @@ Then add the plugin to a track from the plugin browser. `INSTALL.md` in each zip
 
 ## Status
 
-- v1.0.0 of each port is released and listed in the mpc-vst-plugins catalog.
+- v1.1.0 of each port is released (new per-family skins; the catalog lists them once mpc-vst-plugins PR #94 is merged).
 - The skins are auto-generated layouts (palette from the original web UIs). Knob caps, plates and the web UIs' sequencer and pad strip are not reproduced.
 - Not yet checked by ear: the pad-to-voice mapping against every MPC drum-program layout.
 - **TR-MPC is coming soon** (see below).
