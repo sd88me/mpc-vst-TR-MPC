@@ -22,6 +22,7 @@ W, H = 1280, 628
 Y_OFF = 86
 X0, PANEL_W, TOP, BOT = 8, 316, 136, 708      # must match make_layout.py
 HEAD_Y0, HEAD_Y1 = 92, 136
+HEADER_CY = 116                                # layout y of the logo's centre line
 
 FONTS = {   # family -> (source file under FONT_SRC, copied name)
     "Earth": ("Earth Normal.ttf", "Earth.ttf"),
@@ -70,6 +71,41 @@ STYLES = {
         css=".look-cap-ring { fill: #101010; } .look-cap-top { fill: #1b1b1b; } .look-line { stroke: #ef6c1f; }\n"
             ".box { fill: #2b2c30; } .box-label { fill: #4b5566; }\n"),
 }
+
+
+_FONTS = {}
+
+
+def _font(fam):
+    if fam not in _FONTS:
+        from fontTools.ttLib import TTFont
+        f = TTFont(os.path.join(FONT_SRC, FONTS[fam][0]))
+        cmap = f.getBestCmap()
+        os2 = f["OS/2"]
+        cap = getattr(os2, "sCapHeight", 0) or 0.7 * f["head"].unitsPerEm
+        _FONTS[fam] = (f, cmap, f.getGlyphSet(), f["head"].unitsPerEm, cap)
+    return _FONTS[fam]
+
+
+def text_path(fam, s, x, cy, px, fill, spacing=0.0, opacity=1.0, anchor="start", bold=0.035):
+    """Text as outline paths (no font file needed at build time). cy is the vertical centre of the capitals."""
+    from fontTools.pens.svgPathPen import SVGPathPen
+    f, cmap, gs, upem, cap = _font(fam)
+    k = px / float(upem)
+    names = [cmap[ord(c)] for c in s if ord(c) in cmap]
+    adv = [f["hmtx"][n][0] * k + spacing for n in names]
+    width = sum(adv) - spacing
+    x0 = x - (width / 2 if anchor == "middle" else width if anchor == "end" else 0)
+    base = cy + cap * k / 2
+    out, cx = [], x0
+    for n, a in zip(names, adv):
+        pen = SVGPathPen(gs)
+        gs[n].draw(pen)
+        if pen.getCommands():
+            out.append('<path transform="translate(%.2f %.2f) scale(%.5f %.5f)" d="%s"/>' % (cx, base, k, -k, pen.getCommands()))
+        cx += a
+    sw = bold * upem      # the renderer's text was synthetic-bold; a stroke in glyph units gives the same weight
+    return '<g fill="#%s" stroke="#%s" stroke-width="%g" stroke-linejoin="round" opacity="%g">%s</g>' % (fill, fill, sw, opacity, "".join(out)), width
 
 
 def panel_xs(n):
@@ -133,13 +169,21 @@ def base(kit):
             '<rect x="8" y="%(by)d" width="%(bw)d" height="1" fill="#000" opacity="0.5"/>') % dict(f=full, w=wood, by=H - 7, bw=W - 16)
 
 
-def plate_svg(kit, n, titles=()):
+def plate_svg(kit, n, titles=(), name=""):
     """Faceplate for one page: n voice panels, then blank plates up to 4 (shapes and textures only)."""
     y0, y1 = TOP - Y_OFF, BOT - Y_OFF
     hy0, hy1 = HEAD_Y0 - Y_OFF, HEAD_Y1 - Y_OFF
     pw = PANEL_W - 6
     xs = panel_xs(4)
+    st = STYLES[kit]
+    dim = dict(kv.split("=") for kv in st["theme"].split())["ink_dim"]
     d = [DEFS, base(kit)]
+    lg, lf = st["logo"]
+    hy = HEADER_CY + (3 if kit == "8w8" else 0) - Y_OFF
+    g, _ = text_path(lf, lg, 24, hy, st["logo_size"] * 10, st["logo_color"])
+    d.append(g)
+    g, _ = text_path(st["fonts"][1], st["tag"], 24 + int(st["logo_size"] * 15 * len(lg)) + 40, hy + 4, 13, st["tag_color"], spacing=2, bold=0.02)
+    d.append(g)
     if kit == "6w6":
         d.append('<rect x="0" y="%d" width="%d" height="3" fill="#1a1d24"/>' % (hy1 - 2, W))
         cy = (hy0 + hy1) / 2
@@ -151,18 +195,26 @@ def plate_svg(kit, n, titles=()):
             d.append('<rect x="%d" y="%d" width="16" height="14" rx="2" fill="#%s"/>' % (1004 + i * 15 + (i // 4) * 4, hy0 + 22, c))
     elif kit == "cw78":
         d.append('<rect x="8" y="%d" width="%d" height="2" fill="#ff5a00" fill-opacity="0.9"/>' % (hy1 - 2, W - 16))
+    tpx = float(st["title_size"].rstrip("px"))
+    title_w = [text_path(st["fonts"][0], s, 0, 0, tpx, "000", spacing=tpx * float(st["title_spacing"].rstrip("em")))[1] for s in titles]
     for i, x in enumerate(xs):
         if i >= n:       # blank plate: screws, no title bar; the model name is a text widget in the layout
             d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="3" fill="#000" fill-opacity="0.08" stroke="#000" stroke-opacity="0.35" stroke-width="1.5"/>' % (x, y0, pw, y1 - y0))
             for sx, sy in ((x + 14, y0 + 14), (x + pw - 14, y0 + 14), (x + 14, y1 - 14), (x + pw - 14, y1 - 14)):
                 d.append(screw(sx, sy))
+            bl = lg if len(lg) <= 8 else name       # a long logo (CompuRhythm) gives way to the model name
+            mid = (y0 + y1) // 2
+            g, _ = text_path(lf, bl, x + pw / 2, mid - 10, min(st["logo_size"] * 1.3, 230 / (15.0 * len(bl))) * 10, st["logo_color"], opacity=0.55, anchor="middle")
+            d.append(g)
+            g, _ = text_path(st["fonts"][1], st["tag"], x + pw / 2, mid + 34, 10, dim, spacing=2, opacity=0.6, anchor="middle", bold=0.02)
+            d.append(g)
             continue
         if kit == "6w6":     # recessed panel, thin black frame, red/cobalt tick under the title
             d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="3" fill="#000" fill-opacity="0.07" stroke="#1a1d24" stroke-width="1.5"/>' % (x, y0, pw, y1 - y0))
             d.append('<rect x="%g" y="%d" width="%d" height="3" fill="#1a1d24"/>' % (x + 14, y0 + 36, pw - 28))
         elif kit == "8w8":   # one thin white rule under the title; the colour stripes stay in the header
             d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="2" fill="#000" fill-opacity="0.22" stroke="#4a4a4a" stroke-width="1.2"/>' % (x, y0, pw, y1 - y0))
-            d.append('<rect x="%g" y="%d" width="%d" height="26" rx="13" fill="#f3efdc"/>' % (x + 10, y0 + 7, min(pw - 20, 11.6 * len(titles[i]) + 26) if i < len(titles) else pw - 20))
+            d.append('<rect x="%g" y="%d" width="%d" height="26" rx="13" fill="#f3efdc"/>' % (x + 10, y0 + 7, title_w[i] + 28))
         elif kit == "cw78":
             d.append('<rect x="%g" y="%d" width="%d" height="%d" rx="12" fill="#000" fill-opacity="0.25" stroke="#ecd5aa" stroke-width="2" stroke-opacity="0.7"/>' % (x, y0, pw, y1 - y0))
             for k, c in enumerate(["dd0000", "cacb9c", "f2ff2c", "2f3bff"]):
@@ -171,39 +223,33 @@ def plate_svg(kit, n, titles=()):
         else:
             d.append('<rect x="%g" y="%d" width="%d" height="%d" fill="#000" fill-opacity="0.06" stroke="#7d7a72" stroke-width="1"/>' % (x, y0, pw, y1 - y0))
             d.append('<rect x="%g" y="%d" width="%d" height="30" fill="#4b5566"/>' % (x, y0, pw))
+        if i < len(titles):
+            g, _ = text_path(st["fonts"][0], titles[i], x + (24 if kit == "8w8" else 18), y0 + 19, tpx, st["title_color"],
+                             spacing=tpx * float(st["title_spacing"].rstrip("em")))
+            d.append(g)
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d">%s</svg>\n' % (W, H, W, H, "".join(d))
 
 
 def css(kit):
+    """Only knob/box restyling: all lettering is outlined into the plate art, so no font files are needed."""
     s = STYLES[kit]
-    f_title, f_label = s["fonts"]
-    ff = []
-    for fam in dict.fromkeys(s["fonts"]):
-        fn = FONTS[fam][1]
-        ff.append('@font-face { font-family: "%s"; src: url("fonts/%s"); }' % (fam, fn))
-    return ("/* %s skin: generated by tools/gen_drum_skins.py. Faceplate art is images/plate_*.svg. */\n%s\n"
-            ":root { --title-font: \"%s\"; --label-size: 14px; --sheen: 0.06; }\n"
-            "text { font-family: \"%s\"; }\n"
+    return ("/* %s skin: generated by tools/gen_drum_skins.py. Faceplate art and lettering are images/plate_pg*.svg. */\n"
+            ":root { --label-size: 14px; --sheen: 0.06; }\n"
             ".frame-border { fill: none; stroke: none; }\n.frame-rule { stroke: none; }\n"
-            ".frame-title { font-family: \"%s\"; font-size: %s; letter-spacing: %s; fill: #%s; }\n"
             ".knob-face, .look-metal, .look-body, .look-cap-ring, .look-fader { filter: none; }\n"
             ".look-metal, .look-cap-ring { stroke: #000; stroke-opacity: 0.55; }\n"
-            ".box-label { font-family: \"%s\"; letter-spacing: 0.06em; }\n"
-            % (kit, "\n".join(ff), f_title, f_label, f_title, s["title_size"], s["title_spacing"], s["title_color"], f_label) + s.get("css", ""))
+            ".box-label { letter-spacing: 0.06em; }\n" % kit) + s.get("css", "")
 
 
 def build(kit):
     port = os.path.join(ROOT, "ports", kit)
     os.makedirs(os.path.join(port, "images"), exist_ok=True)
-    os.makedirs(os.path.join(port, "fonts"), exist_ok=True)
-    for fam in dict.fromkeys(STYLES[kit]["fonts"] + (STYLES[kit]["logo"][1],)):
-        src, dst = FONTS[fam]
-        shutil.copyfile(os.path.join(FONT_SRC, src), os.path.join(port, "fonts", dst))
+    shutil.rmtree(os.path.join(port, "fonts"), ignore_errors=True)
     for f in os.listdir(os.path.join(port, "images")):
         if f.startswith("plate_"):
             os.remove(os.path.join(port, "images", f))
     open(os.path.join(port, "skin.css"), "w", newline="\n").write(css(kit))
-    print(kit, "skin.css, fonts/ (plates are written by make_layout.py)")
+    print(kit, "skin.css (plates and lettering are written by make_layout.py; needs fontTools and FONT_SRC)")
 
 
 if __name__ == "__main__":

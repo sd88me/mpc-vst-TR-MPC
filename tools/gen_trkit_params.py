@@ -22,6 +22,7 @@ for b, v in [(1, 0), (1, 1), (1, 2), (1, 4), (0, 4), (0, 5), (3, 6), (3, 5),
              (1, 11), (1, 12), (2, 10), (2, 6), (0, 6), (3, 9), (2, 9), (1, 7)]:
     DEFAULT_FLAT.append(off[b] + v)
 
+KITS_ORDER = [("6W6", 0), ("8W8", 1), ("CW-78", 2), ("9W9", 3)]
 EXTRA_KNOBS = [("attack", "Attack", 64), ("tone", "Tone", 64), ("snappy", "Snappy", 64), ("noise", "Noise", 64), ("rate", "Rate", 64),
                ("sweep", "Sweep", 64), ("pmod", "Pitch Mod", 64), ("ndecay", "Noise Decay", 64), ("sat", "Saturate", 64)]
 DIST = ["Diode", "Clip", "SAT", "BFZ", "PDIST", "Fold", "Crush"]   # a voice's distortion character (0..6)
@@ -31,6 +32,9 @@ for s in range(1, 17):
     sk = "s%02d_" % s
     params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1]})
     keys.append(sk + "src")
+    # the voice's kit (read-only, derived in trkit.cpp): the skin swaps each slot's faceplate on it
+    params.append({"key": sk + "fam", "name": "S%d Kit" % s, "options": [k for k, _ in KITS_ORDER], "default": 1})
+    keys.append(sk + "fam")
     for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
                            ("dist", "Dist", 0)] + EXTRA_KNOBS + [
                            ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)]):

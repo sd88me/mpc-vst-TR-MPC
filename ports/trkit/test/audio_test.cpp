@@ -90,6 +90,21 @@ int main() {
         fails += !ok;
         e->set_param(in, "edit_slot", "0");
     }
+    // the slot's kit is derived from its voice and read-only
+    {
+        auto get = [&](const char *k) { char b[32]; return e->get_param(in, k, b, sizeof b) > 0 ? atoi(b) : -1; };
+        const int voices[4] = {3, 12, 30, 45};   // 606 HT, 808 HT/mid, CW-78, 909
+        bool ok = true;
+        for (int b = 0; b < 4; ++b) {
+            char v[8]; snprintf(v, sizeof v, "%d", voices[b]);
+            e->set_param(in, "s06_src", v);
+            ok = ok && get("s06_fam") == b;
+        }
+        e->set_param(in, "s06_fam", "0");
+        ok = ok && get("s06_fam") == 3;
+        printf("%s kit follows the voice (606/808/CW-78/909 -> 0..3, set ignored)\n", ok ? "ok  " : "FAIL");
+        fails += !ok;
+    }
     // a project chunk ("state") must restore every slot's voice and settings into a fresh instance
     {
         const char *set[][2] = {{"s03_src", "30"}, {"s03_pan", "10"}, {"s03_rev", "90"}, {"s03_level", "100"}, {"s03_tune", "20"},

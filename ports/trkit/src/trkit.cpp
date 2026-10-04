@@ -236,6 +236,7 @@ void set_param(void *p, const char *key, const char *val) {
     char ek[24];
     if (editor_key(in, key, ek, sizeof ek)) { set_param(p, ek, val); return; }
     if (parse_slot(key, &slot, &rest)) {
+        if (!strcmp(rest, "fam")) return;   /* derived from the voice; the skin only reads it */
         if (!strcmp(rest, "src")) {
             if (x >= 0 && x < kTotalVoices) { in->slot_flat[slot] = x; int b, v; flat_to_bv(x, &b, &v); engine_for(in, b); }
             return;
@@ -303,6 +304,7 @@ int get_param(void *p, const char *key, char *buf, int n) {
     if (editor_key(in, key, ek, sizeof ek)) return get_param(p, ek, buf, n);
     if (parse_slot(key, &slot, &rest)) {
         if (!strcmp(rest, "src")) return snprintf(buf, n, "%d", in->slot_flat[slot]);
+        if (!strcmp(rest, "fam")) { int b, v; flat_to_bv(in->slot_flat[slot], &b, &v); return snprintf(buf, n, "%d", b); }   /* read-only: the voice's kit */
         if (int *o = owned(in, slot, rest)) return snprintf(buf, n, "%d", *o);
         for (int i = 0; i < kNumKnobs; ++i)
             if (!strcmp(rest, kKnobs[i].name)) { int v = 0; if (!forward(in, slot, kKnobs[i], &v, false)) v = 0; return snprintf(buf, n, "%d", v); }

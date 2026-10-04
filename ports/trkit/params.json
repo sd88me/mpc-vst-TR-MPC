@@ -58,6 +58,17 @@
    "default": 8
   },
   {
+   "key": "s01_fam",
+   "name": "S1 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
+  },
+  {
    "key": "s01_level",
    "name": "S1 Level",
    "default": 64,
@@ -238,6 +249,17 @@
     "909 CR"
    ],
    "default": 9
+  },
+  {
+   "key": "s02_fam",
+   "name": "S2 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
   },
   {
    "key": "s02_level",
@@ -422,6 +444,17 @@
    "default": 10
   },
   {
+   "key": "s03_fam",
+   "name": "S3 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
+  },
+  {
    "key": "s03_level",
    "name": "S3 Level",
    "default": 64,
@@ -602,6 +635,17 @@
     "909 CR"
    ],
    "default": 12
+  },
+  {
+   "key": "s04_fam",
+   "name": "S4 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
   },
   {
    "key": "s04_level",
@@ -786,6 +830,17 @@
    "default": 4
   },
   {
+   "key": "s05_fam",
+   "name": "S5 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
+  },
+  {
    "key": "s05_level",
    "name": "S5 Level",
    "default": 64,
@@ -966,6 +1021,17 @@
     "909 CR"
    ],
    "default": 5
+  },
+  {
+   "key": "s06_fam",
+   "name": "S6 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
   },
   {
    "key": "s06_level",
@@ -1150,6 +1216,17 @@
    "default": 44
   },
   {
+   "key": "s07_fam",
+   "name": "S7 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
+  },
+  {
    "key": "s07_level",
    "name": "S7 Level",
    "default": 64,
@@ -1330,6 +1407,17 @@
     "909 CR"
    ],
    "default": 43
+  },
+  {
+   "key": "s08_fam",
+   "name": "S8 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
   },
   {
    "key": "s08_level",
@@ -1514,6 +1602,17 @@
    "default": 19
   },
   {
+   "key": "s09_fam",
+   "name": "S9 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
+  },
+  {
    "key": "s09_level",
    "name": "S9 Level",
    "default": 64,
@@ -1694,6 +1793,17 @@
     "909 CR"
    ],
    "default": 20
+  },
+  {
+   "key": "s10_fam",
+   "name": "S10 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
   },
   {
    "key": "s10_level",
@@ -1878,6 +1988,17 @@
    "default": 34
   },
   {
+   "key": "s11_fam",
+   "name": "S11 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
+  },
+  {
    "key": "s11_level",
    "name": "S11 Level",
    "default": 64,
@@ -2058,6 +2179,17 @@
     "909 CR"
    ],
    "default": 30
+  },
+  {
+   "key": "s12_fam",
+   "name": "S12 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
   },
   {
    "key": "s12_level",
@@ -2242,6 +2374,17 @@
    "default": 6
   },
   {
+   "key": "s13_fam",
+   "name": "S13 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
+  },
+  {
    "key": "s13_level",
    "name": "S13 Level",
    "default": 64,
@@ -2422,6 +2565,17 @@
     "909 CR"
    ],
    "default": 47
+  },
+  {
+   "key": "s14_fam",
+   "name": "S14 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
   },
   {
    "key": "s14_level",
@@ -2606,6 +2760,17 @@
    "default": 33
   },
   {
+   "key": "s15_fam",
+   "name": "S15 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
+  },
+  {
    "key": "s15_level",
    "name": "S15 Level",
    "default": 64,
@@ -2786,6 +2951,17 @@
     "909 CR"
    ],
    "default": 15
+  },
+  {
+   "key": "s16_fam",
+   "name": "S16 Kit",
+   "options": [
+    "6W6",
+    "8W8",
+    "CW-78",
+    "9W9"
+   ],
+   "default": 1
   },
   {
    "key": "s16_level",
@@ -3236,6 +3412,7 @@
    "label": "Slot 1",
    "keys": [
     "s01_src",
+    "s01_fam",
     "s01_level",
     "s01_tune",
     "s01_decay",
@@ -3259,6 +3436,7 @@
    "label": "Slot 2",
    "keys": [
     "s02_src",
+    "s02_fam",
     "s02_level",
     "s02_tune",
     "s02_decay",
@@ -3282,6 +3460,7 @@
    "label": "Slot 3",
    "keys": [
     "s03_src",
+    "s03_fam",
     "s03_level",
     "s03_tune",
     "s03_decay",
@@ -3305,6 +3484,7 @@
    "label": "Slot 4",
    "keys": [
     "s04_src",
+    "s04_fam",
     "s04_level",
     "s04_tune",
     "s04_decay",
@@ -3328,6 +3508,7 @@
    "label": "Slot 5",
    "keys": [
     "s05_src",
+    "s05_fam",
     "s05_level",
     "s05_tune",
     "s05_decay",
@@ -3351,6 +3532,7 @@
    "label": "Slot 6",
    "keys": [
     "s06_src",
+    "s06_fam",
     "s06_level",
     "s06_tune",
     "s06_decay",
@@ -3374,6 +3556,7 @@
    "label": "Slot 7",
    "keys": [
     "s07_src",
+    "s07_fam",
     "s07_level",
     "s07_tune",
     "s07_decay",
@@ -3397,6 +3580,7 @@
    "label": "Slot 8",
    "keys": [
     "s08_src",
+    "s08_fam",
     "s08_level",
     "s08_tune",
     "s08_decay",
@@ -3420,6 +3604,7 @@
    "label": "Slot 9",
    "keys": [
     "s09_src",
+    "s09_fam",
     "s09_level",
     "s09_tune",
     "s09_decay",
@@ -3443,6 +3628,7 @@
    "label": "Slot 10",
    "keys": [
     "s10_src",
+    "s10_fam",
     "s10_level",
     "s10_tune",
     "s10_decay",
@@ -3466,6 +3652,7 @@
    "label": "Slot 11",
    "keys": [
     "s11_src",
+    "s11_fam",
     "s11_level",
     "s11_tune",
     "s11_decay",
@@ -3489,6 +3676,7 @@
    "label": "Slot 12",
    "keys": [
     "s12_src",
+    "s12_fam",
     "s12_level",
     "s12_tune",
     "s12_decay",
@@ -3512,6 +3700,7 @@
    "label": "Slot 13",
    "keys": [
     "s13_src",
+    "s13_fam",
     "s13_level",
     "s13_tune",
     "s13_decay",
@@ -3535,6 +3724,7 @@
    "label": "Slot 14",
    "keys": [
     "s14_src",
+    "s14_fam",
     "s14_level",
     "s14_tune",
     "s14_decay",
@@ -3558,6 +3748,7 @@
    "label": "Slot 15",
    "keys": [
     "s15_src",
+    "s15_fam",
     "s15_level",
     "s15_tune",
     "s15_decay",
@@ -3581,6 +3772,7 @@
    "label": "Slot 16",
    "keys": [
     "s16_src",
+    "s16_fam",
     "s16_level",
     "s16_tune",
     "s16_decay",

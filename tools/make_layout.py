@@ -118,20 +118,14 @@ def build(kit):
         rng = group[0][3] + (" - " + group[-1][3] if len(group) > 1 else "")
         plate = "images/plate_pg%d.svg" % (pg + 1)
         os.makedirs(os.path.join(port, "images"), exist_ok=True)
-        open(os.path.join(port, plate), "w", newline="\n").write(skins.plate_svg(kit, len(group), [g[0] for g in group]))
+        open(os.path.join(port, plate), "w", newline="\n").write(skins.plate_svg(kit, len(group), [g[0] for g in group], name))
         body += ["", "[tab %s]" % rng, "art file=%s fit=stretch" % plate]
-        hy = Y_TOP + HEADER_H // 2 + 2 + (3 if kit == "8w8" else 0)
-        lg, lf = st["logo"]
-        lfile = "fonts/" + skins.FONTS[lf][1]
-        tfile = "fonts/" + skins.FONTS[st["fonts"][1]][1]
-        body.append('text cx=24 cy=%d label="%s" size=%g color=%s align=left fontfile=%s spacing=2' % (hy, lg, st["logo_size"], st["logo_color"], lfile))
-        body.append('text cx=%d cy=%d label="%s" size=1.3 color=%s align=left spacing=2 fontfile=%s' % (24 + int(st["logo_size"] * 15 * len(lg)) + 40, hy + 4, st["tag"], st["tag_color"], tfile))
         qsets = []
         top = Y_TOP + HEADER_H
         overview = []
         for i, (ptitle, keys, voice, abbr) in enumerate(group):
             fx = X0 + i * PANEL_W
-            body.append('frame x=%d y=%d w=%d h=%d title="%s"' % (fx + 2, top, PANEL_W - 6, PANEL_H, ptitle))
+            body.append('frame x=%d y=%d w=%d h=%d title=""' % (fx + 2, top, PANEL_W - 6, PANEL_H))
             pos = cells(keys, voice)
             for k in keys:
                 if k not in pos:
@@ -149,12 +143,6 @@ def build(kit):
             # the page's first Q-Link set (it names the tab): this panel's first two controls, drive and level
             pick = [k for k in keys[:2]] + [k for k in keys if k.endswith(("_drive", "_level", "_volume"))][:2]
             overview += list(dict.fromkeys(pick))[:4]
-        for i in range(len(group), PER_PAGE):    # blank plate: the model name
-            cx = X0 + i * PANEL_W + 2 + (PANEL_W - 6) // 2
-            cy = top + PANEL_H // 2
-            bl = lg if len(lg) <= 8 else name     # a long logo (CompuRhythm) gives way to the model name
-            body.append('text cx=%d cy=%d label="%s" size=%g color=%s align=center fontfile=%s spacing=2 opacity=0.55' % (cx, cy - 10, bl, min(st["logo_size"] * 1.3, 230 / (15.0 * len(bl))), st["logo_color"], lfile))
-            body.append('text cx=%d cy=%d label="%s" size=1.0 color=%s align=center spacing=2 opacity=0.6 fontfile=%s' % (cx, cy + 34, st["tag"], dim, tfile))
         body.append('qlinks "%s" = %s' % (rng, ",".join(overview[:16])))
         for ptitle, keys in qsets:
             body.append('qlinks "%s" = %s' % (ptitle, ",".join(keys)))
