@@ -13,7 +13,14 @@ KITS = [
     ("CR78", "bd sd rs hh cy ma cl hb lb lc cb tb gu mb"),
     ("909", "bd sd lt mt ht rs hc ohh chh rc cr"),
 ]
-SRC = ["%s %s" % (k, v.upper()) for k, ids in KITS for v in ids.split()]
+NAMES = {   # the voices' own names: a slot's menu and title read "SNARE", the faceplate says which kit
+    "bd": "BASS DRUM", "sd": "SNARE", "lt": "LOW TOM", "mt": "MID TOM", "ht": "HIGH TOM", "ch": "CLOSED HAT", "oh": "OPEN HAT",
+    "cy": "CYMBAL", "cp": "HAND CLAP", "lc": "LOW CONGA", "mc": "MID CONGA", "hc": "HI CONGA", "rs": "RIM SHOT", "cl": "CLAVES",
+    "ma": "MARACAS", "cb": "COWBELL", "hh": "HI-HAT", "hb": "HI BONGO", "lb": "LOW BONGO", "tb": "TAMBOURINE", "gu": "GUIRO",
+    "mb": "METAL BEAT", "ohh": "OPEN HAT", "chh": "CLOSED HAT", "rc": "RIDE", "cr": "CRASH",
+}
+NAMES909 = {"hc": "HAND CLAP", "lt": "LOW TOM", "mt": "MID TOM", "ht": "HI TOM"}
+SRC = [(NAMES909.get(v) if k == "909" and v in NAMES909 else NAMES[v]) for k, ids in KITS for v in ids.split()]
 DEFAULT_FLAT = []
 off = [0]
 for _, ids in KITS:
@@ -33,12 +40,12 @@ for s in range(1, 17):
     params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1]})
     keys.append(sk + "src")
     # the voice's kit (read-only, derived in trkit.cpp): the skin swaps each slot's faceplate on it
-    params.append({"key": sk + "fam", "name": "S%d Kit" % s, "options": [k for k, _ in KITS_ORDER], "default": 1})
+    params.append({"key": sk + "fam", "name": "Kit", "options": [k for k, _ in KITS_ORDER], "default": 1})
     keys.append(sk + "fam")
     for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
                            ("dist", "Dist", 0)] + EXTRA_KNOBS + [
                            ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)]):
-        p = {"key": sk + k, "name": "S%d %s" % (s, label), "default": dflt}
+        p = {"key": sk + k, "name": label, "default": dflt}
         if k == "dist": p["options"] = DIST
         else: p.update({"min": 0, "max": 127})
         params.append(p)
