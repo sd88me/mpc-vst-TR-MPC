@@ -100,6 +100,9 @@ int main() {
             e->set_param(in, "s06_src", v);
             ok = ok && get("s06_fam") == b;
         }
+        e->set_param(in, "s06_src", "38");   // the 909 kick has its own layout value
+        ok = ok && get("s06_fam") == 4;
+        e->set_param(in, "s06_src", "45");
         e->set_param(in, "s06_fam", "0");
         ok = ok && get("s06_fam") == 3;
         printf("%s kit follows the voice (606/808/CW-78/909 -> 0..3, set ignored)\n", ok ? "ok  " : "FAIL");
@@ -115,6 +118,34 @@ int main() {
         printf("%s limiter: 16 pads at velocity 127 peak %d of 32767\n", ok ? "ok  " : "FAIL", peak);
         fails += !ok;
         e->destroy(in3);
+    }
+    // randomise: only the selected slots move; Level stays; the voice stays in its kit; selections ride in the project chunk
+    {
+        void *in4 = e->create(dir ? dir : "");
+        e->set_param(in4, "rnd_all", "1");
+        { char b[16]; bool all = true; for (int i = 1; i <= 16; ++i) { char k[16]; snprintf(k, sizeof k, "rnd_s%02d", i); all = all && e->get_param(in4, k, b, sizeof b) > 0 && atoi(b) == 1; }
+          e->set_param(in4, "rnd_none", "1");
+          for (int i = 1; i <= 16; ++i) { char k[16]; snprintf(k, sizeof k, "rnd_s%02d", i); all = all && e->get_param(in4, k, b, sizeof b) > 0 && atoi(b) == 0; }
+          printf("%s randomise select all / clear\n", all ? "ok  " : "FAIL"); fails += !all; }
+        auto get = [&](const char *k) { char b[32]; return e->get_param(in4, k, b, sizeof b) > 0 ? atoi(b) : -1; };
+        e->set_param(in4, "s03_src", "8");   // 808 kick (attack, tone)
+        e->set_param(in4, "s04_src", "8");
+        int before[6] = { get("s03_tune"), get("s03_decay"), get("s03_attack"), get("s03_pan"), get("s03_level"), get("s04_tune") };
+        e->set_param(in4, "rnd_s03", "1"); e->set_param(in4, "rnd_amount", "127"); e->set_param(in4, "rnd_voice", "1");
+        int moved = 0;
+        for (int round = 0; round < 3; ++round) e->set_param(in4, "rnd_go", "1");
+        int after[6] = { get("s03_tune"), get("s03_decay"), get("s03_attack"), get("s03_pan"), get("s03_level"), get("s04_tune") };
+        moved = (after[0] != before[0]) + (after[1] != before[1]) + (after[2] != before[2]) + (after[3] != before[3]);
+        const int voice = get("s03_src");
+        const bool ok = moved >= 2 && after[4] == before[4] && after[5] == before[5] && voice >= 8 && voice < 24;   /* still an 808 voice */
+        static char st[8192]; e->get_param(in4, "state", st, sizeof st);
+        void *in5 = e->create(dir ? dir : "");
+        e->set_param(in5, "state", st);
+        char b2[16]; const bool kept = e->get_param(in5, "rnd_s03", b2, sizeof b2) > 0 && atoi(b2) == 1;
+        printf("%s randomise: %d of 4 controls moved, level and slot 4 untouched, voice %d (808 range), selection kept in state: %d\n",
+               ok && kept ? "ok  " : "FAIL", moved, voice, kept);
+        fails += !(ok && kept);
+        e->destroy(in5); e->destroy(in4);
     }
     // a project chunk ("state") must restore every slot's voice and settings into a fresh instance
     {

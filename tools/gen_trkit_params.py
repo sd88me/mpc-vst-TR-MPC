@@ -40,7 +40,7 @@ for s in range(1, 17):
     params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1]})
     keys.append(sk + "src")
     # the voice's kit (read-only, derived in trkit.cpp): the skin swaps each slot's faceplate on it
-    params.append({"key": sk + "fam", "name": "Kit", "options": [k for k, _ in KITS_ORDER], "default": 1})
+    params.append({"key": sk + "fam", "name": "Kit", "options": [k for k, _ in KITS_ORDER] + ["9W9 BD"], "default": 1})
     keys.append(sk + "fam")
     for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
                            ("dist", "Dist", 0)] + EXTRA_KNOBS + [
@@ -66,6 +66,17 @@ for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", 
     params.append(p)
     ed.append("e_" + k)
 sections.append({"label": "Editor", "keys": ed})
+
+# the randomise module (last page): which slots, how far, whether the voice may change, and the button
+rn = []
+params.append({"key": "rnd_amount", "name": "Random Amount", "min": 0, "max": 127, "default": 64}); rn.append("rnd_amount")
+params.append({"key": "rnd_voice", "name": "Random Voice", "options": ["OFF", "ON"], "default": 0}); rn.append("rnd_voice")
+params.append({"key": "rnd_go", "name": "Randomise", "momentary": True}); rn.append("rnd_go")
+params.append({"key": "rnd_all", "name": "Select All", "momentary": True}); rn.append("rnd_all")
+params.append({"key": "rnd_none", "name": "Clear", "momentary": True}); rn.append("rnd_none")
+for sl in range(1, 17):
+    params.append({"key": "rnd_s%02d" % sl, "name": "Slot %d" % sl, "options": ["OFF", "ON"], "default": 0}); rn.append("rnd_s%02d" % sl)
+sections.append({"label": "Randomise", "keys": rn})
 
 # the shared FX and master stage: 8W8's own keys (defaults are 8W8's), prefixed fx_
 DLY_TIME = ["1/32", "1/16T", "1/16", "1/8T", "1/16.", "1/8", "1/4T", "1/8.", "1/4", "1/2T", "1/4.", "1/2", "1/2."]

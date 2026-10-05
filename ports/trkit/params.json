@@ -64,7 +64,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -257,7 +258,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -450,7 +452,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -643,7 +646,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -836,7 +840,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -1029,7 +1034,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -1222,7 +1228,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -1415,7 +1422,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -1608,7 +1616,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -1801,7 +1810,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -1994,7 +2004,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -2187,7 +2198,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -2380,7 +2392,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -2573,7 +2586,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -2766,7 +2780,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -2959,7 +2974,8 @@
     "6W6",
     "8W8",
     "CW-78",
-    "9W9"
+    "9W9",
+    "9W9 BD"
    ],
    "default": 1
   },
@@ -3293,6 +3309,181 @@
    "default": 0,
    "min": 0,
    "max": 127
+  },
+  {
+   "key": "rnd_amount",
+   "name": "Random Amount",
+   "min": 0,
+   "max": 127,
+   "default": 64
+  },
+  {
+   "key": "rnd_voice",
+   "name": "Random Voice",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_go",
+   "name": "Randomise",
+   "momentary": true
+  },
+  {
+   "key": "rnd_all",
+   "name": "Select All",
+   "momentary": true
+  },
+  {
+   "key": "rnd_none",
+   "name": "Clear",
+   "momentary": true
+  },
+  {
+   "key": "rnd_s01",
+   "name": "Slot 1",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s02",
+   "name": "Slot 2",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s03",
+   "name": "Slot 3",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s04",
+   "name": "Slot 4",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s05",
+   "name": "Slot 5",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s06",
+   "name": "Slot 6",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s07",
+   "name": "Slot 7",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s08",
+   "name": "Slot 8",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s09",
+   "name": "Slot 9",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s10",
+   "name": "Slot 10",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s11",
+   "name": "Slot 11",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s12",
+   "name": "Slot 12",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s13",
+   "name": "Slot 13",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s14",
+   "name": "Slot 14",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s15",
+   "name": "Slot 15",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
+  },
+  {
+   "key": "rnd_s16",
+   "name": "Slot 16",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 0
   },
   {
    "key": "fx_rev_decay",
@@ -3814,6 +4005,32 @@
     "e_pan",
     "e_rev",
     "e_dly"
+   ]
+  },
+  {
+   "label": "Randomise",
+   "keys": [
+    "rnd_amount",
+    "rnd_voice",
+    "rnd_go",
+    "rnd_all",
+    "rnd_none",
+    "rnd_s01",
+    "rnd_s02",
+    "rnd_s03",
+    "rnd_s04",
+    "rnd_s05",
+    "rnd_s06",
+    "rnd_s07",
+    "rnd_s08",
+    "rnd_s09",
+    "rnd_s10",
+    "rnd_s11",
+    "rnd_s12",
+    "rnd_s13",
+    "rnd_s14",
+    "rnd_s15",
+    "rnd_s16"
    ]
   },
   {

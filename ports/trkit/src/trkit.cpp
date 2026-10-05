@@ -142,6 +142,9 @@ struct Inst {
     int fx_quiet;              /* same for the shared FX stage's output */
     int slot_flat[kSlots];
     int edit_slot;             /* 0..15: the slot the editor page's e_* controls (and edit_voice) act on */
+    int rnd_sel[kSlots];       /* the randomise module: which slots it acts on, how far, and whether it may change the voice */
+    int rnd_amount, rnd_voice;
+    uint32_t rng;
     int pan[kSlots], rev[kSlots], dly[kSlots];   /* 0..127; pan 64 = centre */
 };
 
@@ -179,6 +182,7 @@ void *create(const char *dir) {
     snprintf(in->dir, sizeof in->dir, "%s", dir ? dir : "");
     for (int s = 0; s < kSlots; ++s) in->slot_flat[s] = default_flat(s);
     for (int s = 0; s < kSlots; ++s) { in->pan[s] = 64; in->rev[s] = 0; in->dly[s] = 0; }
+    in->rnd_amount = 64; in->rng = 0x9e3779b9u ^ (uint32_t)(uintptr_t)in;
     engine_for(in, kFxBackend);
     for (int s = 0; s < kSlots; ++s) { int b, v; flat_to_bv(in->slot_flat[s], &b, &v); engine_for(in, b); }
     return in;
@@ -220,6 +224,54 @@ int *owned(Inst *in, int slot, const char *rest) {
 
 void set_state(Inst *in, const char *st);
 
+uint32_t next_rand(Inst *in) {   /* xorshift32 */
+    uint32_t x = in->rng ? in->rng : 0x1234567u;
+    x ^= x << 13; x ^= x >> 17; x ^= x << 5;
+    return in->rng = x;
+}
+float unit(Inst *in) { return (next_rand(in) >> 8) * (1.0f / 16777216.0f); }   /* 0..1 */
+
+/* Randomise the selected slots around where they are: each control moves by up to its range x the amount (0..127),
+ * Level is left alone, Drive and the sends stay on the quiet side. With the voice option on, a slot also swaps to another voice of its own kit. */
+void randomise(Inst *in) {
+    const float amt = in->rnd_amount / 127.0f;
+    for (int sl = 0; sl < kSlots; ++sl) {
+        if (!in->rnd_sel[sl]) continue;
+        if (in->rnd_voice) {
+            int b, v;
+            flat_to_bv(in->slot_flat[sl], &b, &v);
+            int first = 0;
+            for (int i = 0; i < b; ++i) first += kBackends[i].nvoices;
+            in->slot_flat[sl] = first + (int)(unit(in) * kBackends[b].nvoices) % kBackends[b].nvoices;
+            engine_for(in, b);
+        }
+        auto wander = [&](const char *name, float range, float lo, float hi, float bias) {
+            for (int i = 0; i < kNumKnobs; ++i) {
+                if (strcmp(kKnobs[i].name, name)) continue;
+                int cur = 0;
+                if (!forward(in, sl, kKnobs[i], &cur, false)) return;   /* the voice has no such control */
+                float nv = cur + (unit(in) * 2.0f - 1.0f) * range * amt + bias * amt;
+                nv = nv < lo ? lo : (nv > hi ? hi : nv);
+                int iv = (int)(nv + 0.5f);
+                forward(in, sl, kKnobs[i], &iv, true);
+            }
+        };
+        wander("tune", 50, 0, 127, 0); wander("decay", 60, 0, 127, 0); wander("drive", 70, 0, 100, 10);
+        wander("attack", 60, 0, 127, 0); wander("tone", 60, 0, 127, 0); wander("snappy", 60, 0, 127, 0);
+        wander("noise", 60, 0, 127, 0); wander("rate", 60, 0, 127, 0); wander("sweep", 60, 0, 127, 0);
+        wander("pmod", 60, 0, 127, 0); wander("ndecay", 60, 0, 127, 0); wander("sat", 60, 0, 127, 0);
+        if (amt > 0.25f) {   /* a different distortion character */
+            int d = (int)(unit(in) * 7) % 7;
+            for (int i = 0; i < kNumKnobs; ++i) if (!strcmp(kKnobs[i].name, "dist")) forward(in, sl, kKnobs[i], &d, true);
+        }
+        auto nudge = [&](int &val, float range, float lo, float hi) {
+            float nv = val + (unit(in) * 2.0f - 1.0f) * range * amt;
+            val = (int)((nv < lo ? lo : (nv > hi ? hi : nv)) + 0.5f);
+        };
+        nudge(in->pan[sl], 64, 0, 127); nudge(in->rev[sl], 45, 0, 100); nudge(in->dly[sl], 45, 0, 100);
+    }
+}
+
 /* The editor page's controls act on the edit slot: edit_voice -> sNN_src, e_<knob> -> sNN_<knob> */
 bool editor_key(const Inst *in, const char *key, char *out, size_t n) {
     if (!strcmp(key, "edit_voice")) { snprintf(out, n, "s%02d_src", in->edit_slot + 1); return true; }
@@ -233,6 +285,17 @@ void set_param(void *p, const char *key, const char *val) {
     const int x = atoi(val);
     if (!strcmp(key, "state")) { set_state(in, val); return; }
     if (!strcmp(key, "edit_slot")) { in->edit_slot = x < 0 ? 0 : (x >= kSlots ? kSlots - 1 : x); return; }
+    if (!strncmp(key, "rnd_", 4)) {
+        if (!strcmp(key, "rnd_go")) { if (x) randomise(in); }
+        else if (!strcmp(key, "rnd_all") || !strcmp(key, "rnd_none")) { if (x) for (int sl = 0; sl < kSlots; ++sl) in->rnd_sel[sl] = key[4] == 'a'; }
+        else if (!strcmp(key, "rnd_amount")) in->rnd_amount = x < 0 ? 0 : (x > 127 ? 127 : x);
+        else if (!strcmp(key, "rnd_voice")) in->rnd_voice = x != 0;
+        else if (key[4] == 's' && key[5] >= '0' && key[5] <= '9' && key[6] >= '0' && key[6] <= '9') {
+            const int sl = (key[5] - '0') * 10 + (key[6] - '0') - 1;
+            if (sl >= 0 && sl < kSlots) in->rnd_sel[sl] = x != 0;
+        }
+        return;
+    }
     char ek[24];
     if (editor_key(in, key, ek, sizeof ek)) { set_param(p, ek, val); return; }
     if (parse_slot(key, &slot, &rest)) {
@@ -260,7 +323,8 @@ int get_param(void *p, const char *key, char *buf, int n);
 /* The project chunk (the wrapper stores whatever "state" returns): every slot and FX value as key=value; pairs,
  * slot keys first within a slot so that src is applied before the voice's own pots. */
 int get_state(Inst *in, char *buf, int n) {
-    int len = snprintf(buf, n, "trmpc1;edit_slot=%d;", in->edit_slot);
+    int len = snprintf(buf, n, "trmpc1;edit_slot=%d;rnd_amount=%d;rnd_voice=%d;", in->edit_slot, in->rnd_amount, in->rnd_voice);
+    for (int sl = 0; sl < kSlots; ++sl) len += snprintf(buf + len, n - len, "rnd_s%02d=%d;", sl + 1, in->rnd_sel[sl]);
     char k[24], v[16];
     for (int s = 1; s <= kSlots; ++s)
         for (const char *sk : kSlotKeys) {
@@ -300,11 +364,21 @@ int get_param(void *p, const char *key, char *buf, int n) {
     int slot; const char *rest;
     if (!strcmp(key, "state")) return get_state(in, buf, n);
     if (!strcmp(key, "edit_slot")) return snprintf(buf, n, "%d", in->edit_slot);
+    if (!strncmp(key, "rnd_", 4)) {
+        if (!strcmp(key, "rnd_go") || !strcmp(key, "rnd_all") || !strcmp(key, "rnd_none")) return snprintf(buf, n, "0");
+        if (!strcmp(key, "rnd_amount")) return snprintf(buf, n, "%d", in->rnd_amount);
+        if (!strcmp(key, "rnd_voice")) return snprintf(buf, n, "%d", in->rnd_voice);
+        if (key[4] == 's' && key[5] >= '0' && key[5] <= '9' && key[6] >= '0' && key[6] <= '9') {
+            const int sl = (key[5] - '0') * 10 + (key[6] - '0') - 1;
+            if (sl >= 0 && sl < kSlots) return snprintf(buf, n, "%d", in->rnd_sel[sl]);
+        }
+        return -1;
+    }
     char ek[24];
     if (editor_key(in, key, ek, sizeof ek)) return get_param(p, ek, buf, n);
     if (parse_slot(key, &slot, &rest)) {
         if (!strcmp(rest, "src")) return snprintf(buf, n, "%d", in->slot_flat[slot]);
-        if (!strcmp(rest, "fam")) { int b, v; flat_to_bv(in->slot_flat[slot], &b, &v); return snprintf(buf, n, "%d", b); }   /* read-only: the voice's kit */
+        if (!strcmp(rest, "fam")) { int b, v; flat_to_bv(in->slot_flat[slot], &b, &v); return snprintf(buf, n, "%d", (b == 3 && v == 0) ? 4 : b); }   /* read-only: the voice's kit; the 909 kick (three extra controls) is 4 */
         if (int *o = owned(in, slot, rest)) return snprintf(buf, n, "%d", *o);
         for (int i = 0; i < kNumKnobs; ++i)
             if (!strcmp(rest, kKnobs[i].name)) { int v = 0; if (!forward(in, slot, kKnobs[i], &v, false)) v = 0; return snprintf(buf, n, "%d", v); }
