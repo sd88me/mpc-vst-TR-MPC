@@ -397,6 +397,7 @@ def family_panel_svg(fi, cells, blank=False):
         add.append('<text x="%g" y="%g" font-family="Titillium Web" font-weight="600" font-size="14" letter-spacing="1.2" fill="#%s">%s</text>'
                    % (cx - 65, cy - TOP - 28, f["ink"], caption))
         add.append('<rect x="%g" y="%g" width="130" height="44" fill="#%s"/>' % (cx - 65, cy - TOP - 22, f["field"]))
+        add.append('<path d="M%g %g L%g %g L%g %g Z" fill="#%s"/>' % (cx + 35, cy - TOP - 4, cx + 51, cy - TOP - 4, cx + 43, cy - TOP + 5, f["dist"]))
     # the title menu's arrow
     add.append('<path d="M%d 15 L%d 15 L%d 23 Z" fill="#%s"/>' % (PW - 34, PW - 18, PW - 26, f["title"]))
     return svg.replace("</svg>", "".join(add) + "</svg>")
@@ -446,9 +447,9 @@ def build_full(pages=4):
                 f, w = FAM[kit], "when=%sfam:%d" % (k, fi)
                 out.append("art file=images/panel_%s.svg x=%d y=%d w=%d h=%d %s" % (kit, px, TOP, PW, BOT - TOP, w))
                 # the voice menu doubles as the module's title: the voice's name, in the kit's colour
-                out.append('popup cx=%d cy=%d w=200 h=34 label="" key=%ssrc groups="%s" accent=%s %s' % (px + 108, TOP + 19, k, GROUPS, f["title"], w))
+                out.append('popup cx=%d cy=%d w=200 h=34 label="" key=%ssrc groups="%s" accent=%s field=none %s' % (px + 108, TOP + 19, k, GROUPS, f["title"], w))
                 c = cell_xy(px, *cells["dist"])
-                out.append('popup cx=%d cy=%d w=130 h=44 label="" key=%sdist accent=%s %s' % (c[0], c[1] + 14, k, f["dist"], w))
+                out.append('popup cx=%d cy=%d w=130 h=44 label="" key=%sdist accent=%s field=none %s' % (c[0], c[1] + 14, k, f["dist"], w))
                 for name, label in (("level", "LEVEL"), ("tune", "TUNE"), ("decay", "DECAY"), ("drive", "DRIVE"), ("pan", "PAN"),
                                     ("rev", "REV"), ("dly", "DLY")):
                     c = cell_xy(px, *cells[name])
