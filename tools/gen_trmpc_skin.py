@@ -400,7 +400,8 @@ def family_panel_svg(fi, cells, blank=False):
         add.append('<path d="M%g %g L%g %g L%g %g Z" fill="#%s"/>' % (cx + 35, cy - TOP - 4, cx + 51, cy - TOP - 4, cx + 43, cy - TOP + 5, f["dist"]))
     # the title menu's arrow
     add.append('<path d="M%d 15 L%d 15 L%d 23 Z" fill="#%s"/>' % (PW - 34, PW - 18, PW - 26, f["title"]))
-    return svg.replace("</svg>", "".join(add) + "</svg>")
+    ox, oy = drum.panel_xs(1)[0], TOP - Y_OFF   # the cropped drawing keeps the plate's page coordinates: move ours to the panel
+    return svg.replace("</svg>", '<g transform="translate(%g %g)">%s</g></svg>' % (ox, oy, "".join(add)))
 
 
 def full_chassis_svg():
