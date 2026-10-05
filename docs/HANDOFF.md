@@ -37,10 +37,9 @@ One VST2 instrument (`ports/trkit`, uid `TRMP`, vendor sd88me, file `trmpc.so`).
 - Five-row layout (r=22, label scale 0.95); the 9W9 kick has three extra controls so it gets a six-row layout (`fam` = 4).
   The voice menu is the module title (live text in the kit's colour); its open list is grouped and coloured per kit.
 - Global page (`FX - RANDOMISE`): REVERB / DELAY, MASTER, SELECT SLOTS (16 LED toggles), RANDOMISE. Lettering there is orange.
-- **Needs mpc-vst-plugins** features that live on the local branch `control-colours` (NOT yet pushed or merged; HEAD 801da07 and
-  earlier): per-control `ink=`/`ink_dim=` (knob label colours), popup `accent=<hex|none>`, `field=none`, `cw=` (list cell width) and
-  `groups="Title:count[:headFill[:headInk[:optFill[:optInk]]]]"`. Merge/push that branch, then update the `uses:` and `tools_ref:` pin in
-  `.github/workflows/release-trmpc.yml` (it pins an older commit that lacks them).
+- **Needs mpc-vst-plugins** features (merged and pushed to its main; `release-trmpc.yml` pins 73d5dfd5912b): per-control `ink=`/`ink_dim=`
+  (knob label colours), popup `accent=<hex|none>`, `field=none`, `cw=` (list cell width) and
+  `groups="Title:count[:headFill[:headInk[:optFill[:optInk]]]]"`.
 - Cost: `TUI.json` is ~20 MB (about 1,100 conditional components); the zip is ~20 MB. Pages load a little slowly; watch memory (the
   Force had ~50 MB free with the add-ons running). Possible savings: fewer conditional pieces, or the editor style.
 
