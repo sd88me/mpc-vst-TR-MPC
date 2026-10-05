@@ -337,6 +337,18 @@ inline void flush_denormals() {
 #endif
 }
 
+/* Output limiter: sixteen pads add up (a kick, a snare and a clap together exceed full scale), and a hard clip is what
+ * crackles. Below kKnee the signal is untouched; above it the peak is rounded off toward 1.0 (the slope is 1 at the
+ * knee and it never exceeds full scale). */
+constexpr float kKnee = 0.5f;
+inline float soft_limit(float x) {
+    const float a = x < 0 ? -x : x;
+    if (a <= kKnee) return x;
+    const float u = (a - kKnee) * (1.0f / (1.0f - kKnee));
+    const float y = kKnee + (1.0f - kKnee) * (u / (1.0f + u));
+    return x < 0 ? -y : y;
+}
+
 void render(void *p, int16_t *out, int frames) {
     Inst *in = (Inst *)p;
     flush_denormals();
@@ -378,7 +390,7 @@ void render(void *p, int16_t *out, int frames) {
             memset(ol, 0, sizeof(float) * n); memset(orr, 0, sizeof(float) * n);
         }
         for (int i = 0; i < n; ++i) {
-            float l = ol[i] * 32767.0f, r = orr[i] * 32767.0f;
+            float l = soft_limit(ol[i]) * 32767.0f, r = soft_limit(orr[i]) * 32767.0f;
             l = l > 32767.0f ? 32767.0f : (l < -32768.0f ? -32768.0f : l);
             r = r > 32767.0f ? 32767.0f : (r < -32768.0f ? -32768.0f : r);
             out[(done + i) * 2] = (int16_t)l;

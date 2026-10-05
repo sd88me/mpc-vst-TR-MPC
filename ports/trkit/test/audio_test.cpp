@@ -105,6 +105,17 @@ int main() {
         printf("%s kit follows the voice (606/808/CW-78/909 -> 0..3, set ignored)\n", ok ? "ok  " : "FAIL");
         fails += !ok;
     }
+    // sixteen pads at once must not hard-clip (that crackles): the output limiter keeps every sample below full scale
+    {
+        void *in3 = e->create(dir ? dir : "");
+        for (int i = 0; i < 16; ++i) { uint8_t m[3] = {0x90, (uint8_t)(36 + i), 127}; e->midi(in3, m, 3); }
+        int16_t buf[256]; int peak = 0;
+        for (int b = 0; b < 400; ++b) { e->render(in3, buf, 128); for (int i = 0; i < 256; ++i) { int a = abs(buf[i]); if (a > peak) peak = a; } }
+        const bool ok = peak < 32767 && peak > 8000;
+        printf("%s limiter: 16 pads at velocity 127 peak %d of 32767\n", ok ? "ok  " : "FAIL", peak);
+        fails += !ok;
+        e->destroy(in3);
+    }
     // a project chunk ("state") must restore every slot's voice and settings into a fresh instance
     {
         const char *set[][2] = {{"s03_src", "30"}, {"s03_pan", "10"}, {"s03_rev", "90"}, {"s03_level", "100"}, {"s03_tune", "20"},
