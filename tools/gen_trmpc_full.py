@@ -234,10 +234,10 @@ def voice_page(out, page):
     out.append('qlinks "S%d - S%d" = %s' % (slots[0], slots[-1], ",".join(
         "s%02d_%s" % (s, kk) for s in slots for kk in ("src", "level", "tune", "decay"))))
     for sl in slots:
-        keys = ["src", "level", "tune", "decay", "drive", "dist", "pan", "rev", "dly"]
-        out.append('qlinks "SLOT %d" = %s' % (sl, ",".join("s%02d_%s" % (sl, kk) for kk in keys[:8])))
-        out.append('qlinks "SLOT %d CHARACTER" = %s' % (sl, ",".join("s%02d_%s" % (sl, kk) for kk in (
-            "attack", "tone", "snappy", "noise", "rate", "sweep", "pmod", "ndecay"))))
+        # one page per slot, all sixteen Q-Links: bank 1 the main controls, bank 2 the voice's own character pots
+        keys = ("src", "level", "tune", "decay", "drive", "dist", "pan", "rev",
+                "attack", "tone", "snappy", "noise", "rate", "sweep", "pmod", "ndecay")
+        out.append('qlinks "SLOT %d" = %s' % (sl, ",".join("s%02d_%s" % (sl, kk) for kk in keys)))
 
 
 def knob8(out, cx, cy, label, key, r=None):
@@ -252,7 +252,7 @@ def popup8(out, cx, cy, key):
 def fx_page(out):
     """FX tab: REVERB, DELAY and MASTER modules, each with a key that switches the kit's own stage off (the sends then only
     leave through TR-MPC Tap FX); and a RANDOMISE tab: the sixteen slot keys over two modules, the amount and the two buttons."""
-    out += ["", "[tab FX]", "art file=images/chassis_fx.svg fit=stretch"]
+    out += ["", "[tab FX/MASTER]", "art file=images/chassis_fx.svg fit=stretch"]
     mods = [("REVERB", "int_rev", "REVERB", [("knob", 0, 0, "DECAY", "fx_rev_decay"), ("knob", 1, 0, "TONE", "fx_rev_tone"),
                                          ("knob", 0, 1, "HPF", "fx_rev_hpf"), ("knob", 1, 1, "LEVEL", "fx_rev_level")]),
             ("DELAY", "int_dly", "DELAY", [("popup", 0, 0, "TIME", "fx_dly_time"), ("knob", 1, 0, "FEEDBACK", "fx_dly_fdbk"),
@@ -274,10 +274,8 @@ def fx_page(out):
     px = PX0 + 3 * PPITCH
     _write("images/panel_fx4.svg", blank_plate())
     out.append("art file=images/panel_fx4.svg x=%d y=%d w=%d h=%d" % (px, TOP, PW, BOT - TOP))
-    out += ['qlinks "FX" = fx_rev_decay,fx_rev_tone,fx_rev_level,fx_dly_time,fx_dly_fdbk,fx_dly_level,fx_master_dist,fx_master_drive',
-            'qlinks "REVERB" = fx_rev_decay,fx_rev_tone,fx_rev_hpf,fx_rev_level,int_rev',
-            'qlinks "DELAY" = fx_dly_time,fx_dly_fdbk,fx_dly_tone,fx_dly_hpf,fx_dly_level,int_dly',
-            'qlinks "MASTER" = fx_master_dist,fx_master_drive,fx_comp,fx_volume,int_comp']
+    out.append('qlinks "FX/MASTER" = fx_rev_decay,fx_rev_tone,fx_rev_hpf,fx_rev_level,int_rev,fx_dly_time,fx_dly_fdbk,fx_dly_tone,'
+               'fx_dly_hpf,fx_dly_level,int_dly,fx_master_dist,fx_master_drive,fx_comp,int_comp,fx_volume')
     # RANDOMISE tab
     out += ["", "[tab RANDOMISE]", "art file=images/chassis_fx.svg fit=stretch"]
     for i, title in enumerate(("SELECT SLOTS 1-8", "SELECT SLOTS 9-16")):
@@ -299,15 +297,13 @@ def fx_page(out):
     knob8(out, px + PW // 2 - 3, 232, "AMOUNT", "rnd_amount", r=30)
     out.append('button cx=%d cy=%d label="" key=rnd_go %s' % (px + PW // 2, 420, write_button("btn_rnd_go", 260, 130, "PARAMETERS", ORANGE, 30)))
     out.append('button cx=%d cy=%d label="" key=rnd_go_voice %s' % (px + PW // 2, 590, write_button("btn_rnd_voice", 260, 130, "VOICES", ORANGE, 38)))
-    out += ['qlinks "RANDOMISE" = rnd_amount,rnd_go,rnd_go_voice,rnd_all,rnd_none',   # the first page names the tab
-            'qlinks "SELECT SLOTS 1-8" = rnd_s01,rnd_s02,rnd_s03,rnd_s04,rnd_s05,rnd_s06,rnd_s07,rnd_s08',
-            'qlinks "SELECT SLOTS 9-16" = rnd_s09,rnd_s10,rnd_s11,rnd_s12,rnd_s13,rnd_s14,rnd_s15,rnd_s16']
+    out.append('qlinks "RANDOMISE" = rnd_amount,rnd_go,rnd_go_voice,rnd_all,rnd_none')
 
 
 def build(pages=(0, 1, 2, 3), fx=True, rnd=True):
     images = os.path.join(PORT, "images")
     vendor_knobs()
-    _write("images/chassis.svg", chassis_svg("5ec2b7"))
+    _write("images/chassis.svg", chassis_svg(ORANGE))
     _write("images/chassis_fx.svg", chassis_svg(ORANGE))
     for kit in FAMILIES:
         cx, cy = CELL_X[0], REG["row0"] + 22 + TOP * 0

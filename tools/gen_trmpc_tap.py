@@ -59,8 +59,7 @@ def build():
     for lit in (0, 1):
         write("images/through_%s.svg" % ("on" if lit else "off"), full.button_svg(260, 220, "THRU", "5ec2b7", lit, 52))
     out.append('toggle cx=%d cy=305 label="" key=through img=images/through_off.svg img_on=images/through_on.svg w=260 h=220' % (px + full.PW // 2))
-    out.append('qlinks "SLOTS 1-8" = src1,src2,src3,src4,src5,src6,src7,src8')
-    out.append('qlinks "SLOTS 9-16" = src9,src10,src11,src12,src13,src14,src15,src16')
+    out.append('qlinks "SLOTS" = ' + ",".join("src%d" % n for n in range(1, 17)))
     out.append('qlinks "SENDS" = src_rev,src_del,through')
     write("layout.conf", "\n".join(out) + "\n")
     write("skin_tap.css", full.CSS.replace("gen_trmpc_full.py", "gen_trmpc_tap.py"))
