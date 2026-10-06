@@ -2,7 +2,7 @@
   "name": "CW-78",
   "vendor": "athousanddetails",
   "uid": "TC78",
-  "version": 1100,
+  "version": 1101,
   "so": "trcw78.so",
   "art": "html",
   "build": {
@@ -24,5 +24,9 @@
     ]
   },
   "layout": "layout.conf",
-  "params": "module.mpc.json"
+  "params": "module.mpc.json",
+  "defines": {
+    "HAS_TRANSPORT": 1,
+    "HAS_LFO_BPM": 1
+  }
 }

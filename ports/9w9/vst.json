@@ -2,7 +2,7 @@
   "name": "9W9",
   "vendor": "athousanddetails",
   "uid": "T9W9",
-  "version": 1100,
+  "version": 1101,
   "so": "tr9w9.so",
   "art": "html",
   "build": {
@@ -23,7 +23,9 @@
     ]
   },
   "defines": {
-    "MODULE_SUBDIR": "\"engine\""
+    "MODULE_SUBDIR": "\"engine\"",
+    "HAS_TRANSPORT": 1,
+    "HAS_LFO_BPM": 1
   },
   "layout": "layout.conf",
   "params": "module.mpc.json"

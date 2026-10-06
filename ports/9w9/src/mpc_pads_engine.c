@@ -9,25 +9,31 @@
  * that only sees its own folder). tools/sync_common.py refreshes them.
  */
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 #include "engine.h"
+#include "host/plugin_api_v1.h"
 
-typedef struct {
-    uint32_t api_version;
-    void *(*create_instance)(const char *module_dir, const char *json_defaults);
-    void (*destroy_instance)(void *instance);
-    void (*on_midi)(void *instance, const uint8_t *msg, int len, int source);
-    void (*set_param)(void *instance, const char *key, const char *val);
-    int (*get_param)(void *instance, const char *key, char *buf, int buf_len);
-    int (*get_error)(void *instance, char *buf, int buf_len);
-    void (*render_block)(void *instance, int16_t *out_lr, int frames);
-} plugin_api_v2_t;
-extern plugin_api_v2_t *move_plugin_init_v2(const void *host);
+extern plugin_api_v2_t *move_plugin_init_v2(const host_api_v1_t *host);
 
 #define MIDI_SOURCE_EXTERNAL 2
 #define DRUM_PAD_BASE_NOTE 36
 #define DRUM_PAD_COUNT 16
 
 static plugin_api_v2_t *api;
+
+/* The kits read the host transport through Schwung's host_api_v1 (get_clock_status for "is the transport running",
+ * get_bpm for the synced delay and the CW-78 preset rhythms). MPC has one transport for every plugin instance and these
+ * callbacks take no instance, so the state is process-wide. vst2_wrap.c (vst.json "defines": HAS_TRANSPORT, HAS_LFO_BPM)
+ * delivers it as the params "transport" ("1"/"0"; "1" again = the song position jumped back) and "lfo_bpm". */
+static volatile int g_playing;
+static volatile int g_restart;          /* transport restarted while playing: report "stopped" for one block so the DSP resets its clock */
+static volatile float g_bpm = 120.0f;
+static host_api_v1_t g_host;
+
+static int host_clock(void) { return (g_playing && !g_restart) ? MOVE_CLOCK_STATUS_RUNNING : MOVE_CLOCK_STATUS_STOPPED; }
+static float host_bpm(void) { return g_bpm; }
+static double host_beat(void) { return -1.0; }   /* the DSPs fall back to counting samples from the transport start */
 
 static void *create(const char *dir) { return api->create_instance(dir ? dir : "", NULL); }
 static void destroy(void *i) { api->destroy_instance(i); }
@@ -40,13 +46,30 @@ static void midi(void *i, const uint8_t *m, int n) {
     }
     api->on_midi(i, m, n, MIDI_SOURCE_EXTERNAL);
 }
-static void set_param(void *i, const char *k, const char *v) { api->set_param(i, k, v); }
+static void set_param(void *i, const char *k, const char *v) {
+    if (!strcmp(k, "transport")) {
+        int on = v[0] == '1';
+        if (on && g_playing) g_restart = 1;
+        g_playing = on;
+        return;
+    }
+    if (!strcmp(k, "lfo_bpm")) { float b = (float)atof(v); if (b > 20.0f) g_bpm = b; return; }
+    api->set_param(i, k, v);
+}
 static int get_param(void *i, const char *k, char *b, int n) { return api->get_param(i, k, b, n); }
-static void render(void *i, int16_t *out, int frames) { api->render_block(i, out, frames); }
+static void render(void *i, int16_t *out, int frames) { api->render_block(i, out, frames); g_restart = 0; }
 
 static const mpc_engine_t engine = { create, destroy, midi, set_param, get_param, render, NULL };
 
 const mpc_engine_t *mpc_engine(void) {
-    if (!api) api = move_plugin_init_v2(NULL);
+    if (!api) {
+        g_host.api_version = 1;
+        g_host.sample_rate = 44100;
+        g_host.frames_per_block = 128;
+        g_host.get_clock_status = host_clock;
+        g_host.get_bpm = host_bpm;
+        g_host.get_beat_position = host_beat;
+        api = move_plugin_init_v2(&g_host);
+    }
     return api ? &engine : NULL;
 }

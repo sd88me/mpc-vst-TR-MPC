@@ -2,9 +2,9 @@
 
 💬 Questions or feedback? Join the [Open MPC Discord](https://discord.gg/sRRysZSgu3).
 
-> **MPC OS.** This release works on **MPC OS 3.x**. On MPC OS 2.x it loads and plays from the Q-Links, but its touchscreen
-> page stays empty until a release with a compatible skin is published. The [catalog](https://sd88me.github.io/mpc-vst-plugins/)
-> shows which MPC OS each release works on, and the installers warn before putting a 3.x-only plugin on a 2.x device.
+> **MPC OS.** The 6W6, 8W8, CW-78 and 9W9 releases from 1.1.1 are built for **MPC OS 2.x and 3.x**: the plugin library needs glibc 2.32 or less
+> and the skin uses the version 2.15.1's own skins use (the [catalog](https://sd88me.github.io/mpc-vst-plugins/) checks both). They are tested on
+> MPC OS 3.x (a Force); **not yet tested on a 2.x unit**, so the catalog does not show them as tested on 2.x. TR-MPC itself still works on MPC OS 3.x only.
 > See [MPC OS 2.x vs 3.x](https://github.com/sd88me/mpc-vst-plugins#mpc-os-2x-vs-3x) in the main repo.
 
 Four classic drum machines as native VST2 instruments for Akai MPC OS standalone devices (Force, MPC Live / Live II, One, X, Key 61), each with its own MPC touchscreen skin and Q-Link mapping:
