@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <algorithm>
+#include <chrono>
 #if defined(__SSE__)
 #include <xmmintrin.h>
 #endif
@@ -26,6 +28,7 @@ extern "C" {
 #include "engine.h"   /* vendored: mpc-vst-plugins/wrapper/engine.h */
 }
 
+#include "trkit_tap.h"
 #include "sd606_engine.h"
 #include "sc808_engine.h"
 #include "cr78_engine.h"
@@ -34,6 +37,8 @@ extern "C" {
 }
 
 namespace {
+
+trtap::Shared g_tap;   /* see trkit_tap.h; the first Inst to claim g_tap.owner publishes into it */
 
 constexpr int kSlots = 16;
 constexpr int kBlock = 128;
@@ -144,8 +149,14 @@ struct Inst {
     int edit_slot;             /* 0..15: the slot the editor page's e_* controls (and edit_voice) act on */
     int rnd_sel[kSlots];       /* the randomise module: which slots it acts on, how far, and whether it may change the voice */
     int rnd_amount, rnd_voice;
+    int int_rev, int_dly, int_comp;   /* the kit's own reverb / delay / compressor on (1) or off (0: the sends then only leave through a tap) */
+    int voice_owner[kNumBackends][32];   /* per engine voice: the slot it was last triggered from; only that slot gets its sound */
+    int comp_saved;                   /* the Comp value while int_comp is off (the engine's own is set to 0) */
     uint32_t rng;
     int pan[kSlots], rev[kSlots], dly[kSlots];   /* 0..127; pan 64 = centre */
+    bool tap_owner;            /* this Inst publishes the slot planes for the Tap plugins */
+    int16_t pending[kBlock * 2];   /* the owner outputs one block behind what it publishes, so a tap called before it in a period still finds its block */
+    bool have_pending;
 };
 
 void *engine_for(Inst *in, int b) {
@@ -182,7 +193,9 @@ void *create(const char *dir) {
     snprintf(in->dir, sizeof in->dir, "%s", dir ? dir : "");
     for (int s = 0; s < kSlots; ++s) in->slot_flat[s] = default_flat(s);
     for (int s = 0; s < kSlots; ++s) { in->pan[s] = 64; in->rev[s] = 0; in->dly[s] = 0; }
+    in->int_rev = in->int_dly = in->int_comp = 1;
     in->rnd_amount = 64; in->rng = 0x9e3779b9u ^ (uint32_t)(uintptr_t)in;
+    { const void *none = nullptr; in->tap_owner = g_tap.owner.compare_exchange_strong(none, in); }
     engine_for(in, kFxBackend);
     for (int s = 0; s < kSlots; ++s) { int b, v; flat_to_bv(in->slot_flat[s], &b, &v); engine_for(in, b); }
     return in;
@@ -191,6 +204,7 @@ void *create(const char *dir) {
 void destroy(void *p) {
     Inst *in = (Inst *)p;
     if (!in) return;
+    { const void *me = in; g_tap.owner.compare_exchange_strong(me, nullptr); }
     for (int b = 0; b < kNumBackends; ++b) { if (in->eng[b]) kBackends[b].destroy(in->eng[b]); free(in->tap[b]); }
     free(in);
 }
@@ -203,7 +217,7 @@ void midi(void *p, const uint8_t *m, int len) {
     if (slot < 0 || slot >= kSlots) return;
     int b, v;
     flat_to_bv(in->slot_flat[slot], &b, &v);
-    if (void *e = engine_for(in, b)) { kBackends[b].trigger(e, v, m[2]); in->quiet[b] = 0; }
+    if (void *e = engine_for(in, b)) { in->voice_owner[b][v] = slot; kBackends[b].trigger(e, v, m[2]); in->quiet[b] = 0; }
 }
 
 /* keys: sNN_src (flat voice index), sNN_level/tune/decay/drive (the voice's pots), sNN_pan/rev/dly (the slot's),
@@ -232,19 +246,20 @@ uint32_t next_rand(Inst *in) {   /* xorshift32 */
 float unit(Inst *in) { return (next_rand(in) >> 8) * (1.0f / 16777216.0f); }   /* 0..1 */
 
 /* Randomise the selected slots around where they are: each control moves by up to its range x the amount (0..127),
- * Level is left alone, Drive and the sends stay on the quiet side. With the voice option on, a slot also swaps to another voice of its own kit. */
-void randomise(Inst *in) {
+ * Level is left alone, Drive and the sends stay on the quiet side. With the voice option on, a slot also swaps to another voice (of any kit). */
+void randomise(Inst *in, bool voices_only = false) {
     const float amt = in->rnd_amount / 127.0f;
     for (int sl = 0; sl < kSlots; ++sl) {
         if (!in->rnd_sel[sl]) continue;
-        if (in->rnd_voice) {
+        if (in->rnd_voice || voices_only) {   /* any voice of any kit (the slot then reskins to that kit), never the one it already has */
+            int nv = (int)(unit(in) * kTotalVoices) % kTotalVoices;
+            if (nv == in->slot_flat[sl]) nv = (nv + 1 + (int)(unit(in) * (kTotalVoices - 1)) % (kTotalVoices - 1)) % kTotalVoices;
+            in->slot_flat[sl] = nv;
             int b, v;
-            flat_to_bv(in->slot_flat[sl], &b, &v);
-            int first = 0;
-            for (int i = 0; i < b; ++i) first += kBackends[i].nvoices;
-            in->slot_flat[sl] = first + (int)(unit(in) * kBackends[b].nvoices) % kBackends[b].nvoices;
+            flat_to_bv(nv, &b, &v);
             engine_for(in, b);
         }
+        if (voices_only) continue;
         auto wander = [&](const char *name, float range, float lo, float hi, float bias) {
             for (int i = 0; i < kNumKnobs; ++i) {
                 if (strcmp(kKnobs[i].name, name)) continue;
@@ -287,12 +302,25 @@ void set_param(void *p, const char *key, const char *val) {
     if (!strcmp(key, "edit_slot")) { in->edit_slot = x < 0 ? 0 : (x >= kSlots ? kSlots - 1 : x); return; }
     if (!strncmp(key, "rnd_", 4)) {
         if (!strcmp(key, "rnd_go")) { if (x) randomise(in); }
+        else if (!strcmp(key, "rnd_go_voice")) { if (x) randomise(in, true); }
         else if (!strcmp(key, "rnd_all") || !strcmp(key, "rnd_none")) { if (x) for (int sl = 0; sl < kSlots; ++sl) in->rnd_sel[sl] = key[4] == 'a'; }
         else if (!strcmp(key, "rnd_amount")) in->rnd_amount = x < 0 ? 0 : (x > 127 ? 127 : x);
         else if (!strcmp(key, "rnd_voice")) in->rnd_voice = x != 0;
         else if (key[4] == 's' && key[5] >= '0' && key[5] <= '9' && key[6] >= '0' && key[6] <= '9') {
             const int sl = (key[5] - '0') * 10 + (key[6] - '0') - 1;
             if (sl >= 0 && sl < kSlots) in->rnd_sel[sl] = x != 0;
+        }
+        return;
+    }
+    if (!strncmp(key, "int_", 4)) {
+        const int on = x != 0;
+        if (!strcmp(key, "int_rev")) in->int_rev = on;
+        else if (!strcmp(key, "int_dly")) in->int_dly = on;
+        else if (!strcmp(key, "int_comp") && on != in->int_comp) {
+            in->int_comp = on;
+            void *e = in->eng[kFxBackend];
+            if (!on) { int v = 0; kBackends[kFxBackend].get(e, "comp", &v); in->comp_saved = v; kBackends[kFxBackend].set(e, "comp", 0); }
+            else kBackends[kFxBackend].set(e, "comp", in->comp_saved);
         }
         return;
     }
@@ -308,6 +336,7 @@ void set_param(void *p, const char *key, const char *val) {
         for (int i = 0; i < kNumKnobs; ++i)
             if (!strcmp(rest, kKnobs[i].name)) { int v = x; forward(in, slot, kKnobs[i], &v, true); return; }
     } else if (!strncmp(key, "fx_", 3)) {
+        if (!in->int_comp && !strcmp(key + 3, "comp")) { in->comp_saved = x; return; }   /* held until the compressor is switched back on */
         kBackends[kFxBackend].set(in->eng[kFxBackend], key + 3, x);
     } else if (!strcmp(key, "lfo_bpm")) {   /* host tempo, for the synced delay */
         sc808_set_param((sc808_engine_t *)in->eng[kFxBackend], "dly_bpm", val);
@@ -339,6 +368,8 @@ int get_state(Inst *in, char *buf, int n) {
         len += snprintf(buf + len, n - len, "%s=%s;", k, v);
         if (len >= n - 32) break;
     }
+    /* after the fx values: switching the compressor off saves the Comp value set above */
+    len += snprintf(buf + len, n - len, "int_rev=%d;int_dly=%d;int_comp=%d;", in->int_rev, in->int_dly, in->int_comp);
     return len;
 }
 
@@ -365,7 +396,7 @@ int get_param(void *p, const char *key, char *buf, int n) {
     if (!strcmp(key, "state")) return get_state(in, buf, n);
     if (!strcmp(key, "edit_slot")) return snprintf(buf, n, "%d", in->edit_slot);
     if (!strncmp(key, "rnd_", 4)) {
-        if (!strcmp(key, "rnd_go") || !strcmp(key, "rnd_all") || !strcmp(key, "rnd_none")) return snprintf(buf, n, "0");
+        if (!strcmp(key, "rnd_go") || !strcmp(key, "rnd_go_voice") || !strcmp(key, "rnd_all") || !strcmp(key, "rnd_none")) return snprintf(buf, n, "0");
         if (!strcmp(key, "rnd_amount")) return snprintf(buf, n, "%d", in->rnd_amount);
         if (!strcmp(key, "rnd_voice")) return snprintf(buf, n, "%d", in->rnd_voice);
         if (key[4] == 's' && key[5] >= '0' && key[5] <= '9' && key[6] >= '0' && key[6] <= '9') {
@@ -374,6 +405,9 @@ int get_param(void *p, const char *key, char *buf, int n) {
         }
         return -1;
     }
+    if (!strcmp(key, "int_rev")) return snprintf(buf, n, "%d", in->int_rev);
+    if (!strcmp(key, "int_dly")) return snprintf(buf, n, "%d", in->int_dly);
+    if (!strcmp(key, "int_comp")) return snprintf(buf, n, "%d", in->int_comp);
     char ek[24];
     if (editor_key(in, key, ek, sizeof ek)) return get_param(p, ek, buf, n);
     if (parse_slot(key, &slot, &rest)) {
@@ -383,6 +417,7 @@ int get_param(void *p, const char *key, char *buf, int n) {
         for (int i = 0; i < kNumKnobs; ++i)
             if (!strcmp(rest, kKnobs[i].name)) { int v = 0; if (!forward(in, slot, kKnobs[i], &v, false)) v = 0; return snprintf(buf, n, "%d", v); }
     } else if (!strncmp(key, "fx_", 3)) {
+        if (!in->int_comp && !strcmp(key + 3, "comp")) return snprintf(buf, n, "%d", in->comp_saved);
         int v = 0;
         if (kBackends[kFxBackend].get(in->eng[kFxBackend], key + 3, &v)) return snprintf(buf, n, "%d", v);
     }
@@ -431,6 +466,17 @@ void render(void *p, int16_t *out, int frames) {
         const int n = frames - done < kBlock ? frames - done : kBlock;
         memset(dl, 0, sizeof(float) * n); memset(dr, 0, sizeof(float) * n);
         memset(sr, 0, sizeof(float) * n); memset(sd, 0, sizeof(float) * n);
+        const bool pub = in->tap_owner && n == kBlock;
+        const uint32_t wr = g_tap.written.load(std::memory_order_relaxed);
+        int16_t (*planes)[trtap::kFrames] = g_tap.data[wr % trtap::kRing];
+        /* the planes are only filled while some tap reads something (the latency scheme runs regardless) */
+        bool tapping = false;
+        if (pub) {
+            tapping = g_tap.tapsRev.load(std::memory_order_relaxed) > 0 || g_tap.tapsDel.load(std::memory_order_relaxed) > 0;
+            for (int s = 0; s < kSlots && !tapping; ++s) tapping = g_tap.tapped[s].load(std::memory_order_relaxed) > 0;
+            if (tapping) memset(planes, 0, sizeof(g_tap.data[0]));
+        }
+        auto q = [](float x) { x *= 32767.0f; return (int16_t)(x > 32767.0f ? 32767.0f : (x < -32768.0f ? -32768.0f : x)); };
         bool awake = false;
         for (int b = 0; b < kNumBackends; ++b) {
             if (!in->eng[b] || !in->tap[b] || in->quiet[b] >= kSleepAfter) continue;
@@ -441,21 +487,31 @@ void render(void *p, int16_t *out, int frames) {
             for (int s = 0; s < kSlots; ++s) {
                 int sb, v;
                 flat_to_bv(in->slot_flat[s], &sb, &v);
-                if (sb != b) continue;
+                if (sb != b || in->voice_owner[b][v] != s) continue;   /* two slots on one voice: the one that was hit */
                 const float *src = in->tap[b] + v * kBlock;
                 pk = peak_of(src, n, pk);
                 /* constant-power pan, unity at the centre */
                 const float ang = (float)in->pan[s] * (1.5707963f / 127.0f);
                 const float gl = cosf(ang) * 1.41421356f, gr = sinf(ang) * 1.41421356f;
                 const float rv = (float)in->rev[s] * (1.0f / 127.0f), dy = (float)in->dly[s] * (1.0f / 127.0f);
+                const bool tapped = tapping && g_tap.tapped[s].load(std::memory_order_relaxed) > 0;   /* its dry goes out through a tap, not the main mix */
                 for (int i = 0; i < n; ++i) {
                     const float x = src[i];
-                    dl[i] += x * gl; dr[i] += x * gr;
+                    if (tapping) { planes[2 * s][i] = q(x * gl); planes[2 * s + 1][i] = q(x * gr); }
+                    if (!tapped) { dl[i] += x * gl; dr[i] += x * gr; }
                     sr[i] += x * rv; sd[i] += x * dy;
                 }
             }
             in->quiet[b] = pk > kSilence ? 0 : in->quiet[b] + n;
         }
+        if (tapping) {
+            for (int i = 0; i < n; ++i) { planes[trtap::kPlaneRev][i] = q(sr[i]); planes[trtap::kPlaneDel][i] = q(sd[i]); }
+            /* a send that leaves through a tap no longer feeds the kit's own reverb / delay */
+            if (g_tap.tapsRev.load(std::memory_order_relaxed) > 0) memset(sr, 0, sizeof(float) * n);
+            if (g_tap.tapsDel.load(std::memory_order_relaxed) > 0) memset(sd, 0, sizeof(float) * n);
+        }
+        if (!in->int_rev) memset(sr, 0, sizeof(float) * n);
+        if (!in->int_dly) memset(sd, 0, sizeof(float) * n);
         if (awake || in->fx_quiet < kSleepAfter) {
             sc808_fx_stereo((sc808_engine_t *)in->eng[kFxBackend], dl, dr, sr, sd, ol, orr, n);
             const float pk = peak_of(orr, n, peak_of(ol, n, 0.0f));
@@ -463,14 +519,25 @@ void render(void *p, int16_t *out, int frames) {
         } else {
             memset(ol, 0, sizeof(float) * n); memset(orr, 0, sizeof(float) * n);
         }
+        int16_t *dst = out + done * 2;
+        int16_t cur[kBlock * 2];
         for (int i = 0; i < n; ++i) {
-            float l = soft_limit(ol[i]) * 32767.0f, r = soft_limit(orr[i]) * 32767.0f;
-            l = l > 32767.0f ? 32767.0f : (l < -32768.0f ? -32768.0f : l);
-            r = r > 32767.0f ? 32767.0f : (r < -32768.0f ? -32768.0f : r);
-            out[(done + i) * 2] = (int16_t)l;
-            out[(done + i) * 2 + 1] = (int16_t)r;
+            cur[2 * i] = q(soft_limit(ol[i]));
+            cur[2 * i + 1] = q(soft_limit(orr[i]));
+        }
+        if (pub) {
+            g_tap.written.store(wr + 1, std::memory_order_release);
+            /* one block of latency: output the block published last time, keep this one */
+            if (in->have_pending) memcpy(dst, in->pending, sizeof(int16_t) * n * 2); else memset(dst, 0, sizeof(int16_t) * n * 2);
+            memcpy(in->pending, cur, sizeof(int16_t) * n * 2);
+            in->have_pending = true;
+            g_tap.hostRead.store(wr, std::memory_order_release);   /* blocks the host has taken (the one just output is wr - 1) */
+        } else {
+            memcpy(dst, cur, sizeof(int16_t) * n * 2);
         }
     }
+    if (in->tap_owner)
+        g_tap.hostCallUs.store(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(), std::memory_order_release);
 }
 
 const mpc_engine_t kEngine = { create, destroy, midi, set_param, get_param, render, nullptr };
@@ -478,3 +545,4 @@ const mpc_engine_t kEngine = { create, destroy, midi, set_param, get_param, rend
 }  // namespace
 
 extern "C" const mpc_engine_t *mpc_engine(void) { return &kEngine; }
+extern "C" __attribute__((visibility("default"))) trtap::Shared *trmpc_tap_shared(void) { return &g_tap; }

@@ -74,28 +74,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_dist",
@@ -116,84 +120,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s01_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_src",
@@ -268,28 +284,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_dist",
@@ -310,84 +330,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s02_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_src",
@@ -462,28 +494,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_dist",
@@ -504,84 +540,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s03_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_src",
@@ -656,28 +704,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_dist",
@@ -698,84 +750,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s04_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_src",
@@ -850,28 +914,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_dist",
@@ -892,84 +960,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s05_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_src",
@@ -1044,28 +1124,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_dist",
@@ -1086,84 +1170,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s06_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_src",
@@ -1238,28 +1334,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_dist",
@@ -1280,84 +1380,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s07_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_src",
@@ -1432,28 +1544,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_dist",
@@ -1474,84 +1590,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s08_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_src",
@@ -1626,28 +1754,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_dist",
@@ -1668,84 +1800,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s09_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_src",
@@ -1820,28 +1964,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_dist",
@@ -1862,84 +2010,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s10_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_src",
@@ -2014,28 +2174,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_dist",
@@ -2056,84 +2220,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s11_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_src",
@@ -2208,28 +2384,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_dist",
@@ -2250,84 +2430,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s12_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_src",
@@ -2402,28 +2594,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_dist",
@@ -2444,84 +2640,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s13_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_src",
@@ -2596,28 +2804,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_dist",
@@ -2638,84 +2850,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s14_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_src",
@@ -2790,28 +3014,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_dist",
@@ -2832,84 +3060,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s15_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_src",
@@ -2984,28 +3224,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_dist",
@@ -3026,84 +3270,96 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "s16_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "edit_slot",
@@ -3189,28 +3445,32 @@
    "name": "Level",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_tune",
    "name": "Tune",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_decay",
    "name": "Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_drive",
    "name": "Drive",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_dist",
@@ -3231,91 +3491,104 @@
    "name": "Attack",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_tone",
    "name": "Tone",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_snappy",
    "name": "Snappy",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_noise",
    "name": "Noise",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_rate",
    "name": "Rate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_sweep",
    "name": "Sweep",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_pmod",
    "name": "Pitch Mod",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_ndecay",
    "name": "Noise Decay",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_sat",
    "name": "Saturate",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_pan",
    "name": "Pan",
    "default": 64,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_rev",
    "name": "Rev",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "e_dly",
    "name": "Dly",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "rnd_amount",
    "name": "Random Amount",
    "min": 0,
    "max": 127,
-   "default": 64
+   "default": 64,
+   "nudge_gain": 3
   },
   {
    "key": "rnd_voice",
@@ -3490,28 +3763,32 @@
    "name": "Rev Decay",
    "default": 73,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_rev_tone",
    "name": "Rev Tone",
    "default": 57,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_rev_hpf",
    "name": "Rev HPF",
    "default": 62,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_rev_level",
    "name": "Rev Level",
    "default": 85,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_dly_time",
@@ -3538,28 +3815,32 @@
    "name": "Dly Fdbk",
    "default": 52,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_dly_tone",
    "name": "Dly Tone",
    "default": 51,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_dly_hpf",
    "name": "Dly HPF",
    "default": 62,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_dly_level",
    "name": "Dly Level",
    "default": 85,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_master_dist",
@@ -3581,21 +3862,56 @@
    "name": "Master Drive",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_comp",
    "name": "Comp",
    "default": 0,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
   },
   {
    "key": "fx_volume",
    "name": "Volume",
    "default": 100,
    "min": 0,
-   "max": 127
+   "max": 127,
+   "nudge_gain": 3
+  },
+  {
+   "key": "int_rev",
+   "name": "Internal Reverb",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 1
+  },
+  {
+   "key": "int_dly",
+   "name": "Internal Delay",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 1
+  },
+  {
+   "key": "int_comp",
+   "name": "Internal Comp",
+   "options": [
+    "OFF",
+    "ON"
+   ],
+   "default": 1
+  },
+  {
+   "key": "rnd_go_voice",
+   "name": "Random Voices",
+   "momentary": true
   }
  ],
  "sections": [
@@ -4030,7 +4346,8 @@
     "rnd_s13",
     "rnd_s14",
     "rnd_s15",
-    "rnd_s16"
+    "rnd_s16",
+    "rnd_go_voice"
    ]
   },
   {
@@ -4049,6 +4366,14 @@
     "fx_master_drive",
     "fx_comp",
     "fx_volume"
+   ]
+  },
+  {
+   "label": "Internal FX",
+   "keys": [
+    "int_rev",
+    "int_dly",
+    "int_comp"
    ]
   }
  ]

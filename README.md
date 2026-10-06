@@ -74,13 +74,13 @@ Then add the plugin to a track from the plugin browser. `INSTALL.md` in each zip
 - v1.1.0 of each port is released (new per-family skins; the catalog lists them once mpc-vst-plugins PR #94 is merged).
 - The skins are auto-generated layouts (palette from the original web UIs). Knob caps, plates and the web UIs' sequencer and pad strip are not reproduced.
 - Not yet checked by ear: the pad-to-voice mapping against every MPC drum-program layout.
-- **TR-MPC is coming soon** (see below).
+- **TR-MPC** (modular 16-slot kit) and its **Tap FX** companion: built, not yet released (see below).
 
-## Coming soon: TR-MPC
+## TR-MPC
 
-TR-MPC is intended to be one modular drum kit that combines all four machines: 16 pad slots, where each slot picks any of the 49 voices from 6W6, 8W8, CW-78 and 9W9 (a 606 kick next to an 808 snare and 909 hats, for example). Each slot gets its own Level, Tune, Decay, Drive and Reverb/Delay sends, mapped to the MPC pads (notes 36-51 or the drum-pad patch's notes 0-15), with one MPC skin and Q-Links for the whole kit. It reuses the same unmodified engines, so the sound stays the original author's.
+One modular drum kit that combines all four machines: 16 pad slots, where each slot picks any of the 49 voices from 6W6, 8W8, CW-78 and 9W9 (a 606 kick next to an 808 snare and 909 hats, for example). Each slot has its own Level, Tune, Decay, Drive, Pan and Reverb/Delay sends, mapped to the MPC pads (notes 36-51 or the drum-pad patch's notes 0-15). One shared reverb, delay and master chain serves the kit, there is a randomise module, and every slot panel reskins itself to the kit of its voice. It reuses the same unmodified engines, so the sound stays the original author's. Not yet released: see `docs/HANDOFF.md`.
 
-A prototype exists (`ports/trkit`, `docs/TR-KIT.md`), but it has no skin yet, its CPU cost on the Force is unmeasured, and it isn't released. The four plugins above are the finished, standalone versions.
+**TR-MPC Tap FX** is a companion effect plugin. Put it on an MPC track, switch on any slots (and/or the reverb or delay send) and that track receives them, sample-aligned with the kit, so MPC's own mixer, submixes and insert effects can process them. A slot that a tap reads leaves TR-MPC's own main mix; a send that a tap reads stops feeding TR-MPC's own reverb or delay. THRU adds the effect's input. Both plugins must be in the same project.
 
 ## Building
 

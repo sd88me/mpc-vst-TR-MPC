@@ -23,7 +23,7 @@ One VST2 instrument (`ports/trkit`, uid `TRMP`, vendor sd88me, file `trmpc.so`).
   values, edit slot and the randomise settings as `trmpc1;key=value;...` (about 3.8 KB of the 8 KB chunk).
 - **Randomise.** `rnd_s01..16` pick slots, `rnd_amount` how far, `rnd_voice` also swaps to another voice of the same kit,
   `rnd_go` (momentary) does it, `rnd_all`/`rnd_none` select. Level is never touched.
-- Known limits: two slots on the same voice share it (pan and sends still differ); only Level/Tune/Decay/Drive/Dist plus the nine
+- Two slots on the same voice share one engine voice, but only the slot that was last hit gets its sound (so a tapped slot's twin cannot leak it into the main mix); only Level/Tune/Decay/Drive/Dist plus the nine
   extras of a voice are saved, other engine pots keep defaults.
 
 ### Skins (`tools/gen_trmpc_skin.py`, `tools/gen_trmpc_full.py`)
@@ -37,7 +37,7 @@ One VST2 instrument (`ports/trkit`, uid `TRMP`, vendor sd88me, file `trmpc.so`).
 - Five-row layout (r=22, label scale 0.95); the 9W9 kick has three extra controls so it gets a six-row layout (`fam` = 4).
   The voice menu is the module title (live text in the kit's colour); its open list is grouped and coloured per kit.
 - Global page (`FX - RANDOMISE`): REVERB / DELAY, MASTER, SELECT SLOTS (16 LED toggles), RANDOMISE. Lettering there is orange.
-- **Needs mpc-vst-plugins** features (merged and pushed to its main; `release-trmpc.yml` pins 73d5dfd5912b): per-control `ink=`/`ink_dim=`
+- **Needs mpc-vst-plugins** features (merged and pushed to its main; `release-trmpc.yml` pins e15ce126d3a5): per-control `ink=`/`ink_dim=`
   (knob label colours), popup `accent=<hex|none>`, `field=none`, `cw=` (list cell width) and
   `groups="Title:count[:headFill[:headInk[:optFill[:optInk]]]]"`.
 - Cost: `TUI.json` is ~20 MB (about 1,100 conditional components); the zip is ~20 MB. Pages load a little slowly; watch memory (the
@@ -72,13 +72,24 @@ voices (done per engine here), and the Tap design below.
 ## Next steps
 1. **Install and check the latest skin** on the Force (global page with randomise, bigger knobs, watermark bottom-left, screws on all
    panels, kit-coloured voice lists). Fix whatever looks off; send screenshots.
-2. **Tap / insert modules (the user wants this).** Model it on Machinemodule's Tap plugins (`mpc-vst-machinedrum/vst/tap_shared.h`,
-   `vst/tap/`, `vst/tapfx/`): the primary plugin owns the engine and publishes per-source audio planes into a shared struct that the tap
-   plugins (in the same MPC process) find via an exported `md_tap_shared()` (`dlopen(RTLD_NOLOAD)`); each tap has a source mask, taps
-   are sample-aligned, and a tapped track leaves the primary's main mix. For TR-MPC: publish 16 slot planes (mono post-voice, or stereo
-   post-pan) plus reverb and delay send planes; add "TR-MPC Tap" (instrument) and "TR-MPC Tap FX" (effect, with THRU) so slots can be
-   routed to their own MPC tracks, submixes and insert chains. Needs: shared header, exported symbol in `trmpc.so`, two small vst.json
-   ports, pluginlist entries, installer bundling, and a bench of the extra cost.
+2. **Tap FX (built, installed on the Force 2026-10-06, routing not yet auditioned).** One companion effect plugin, "TR-MPC Tap FX"
+   (`ports/trkit/tapfx`, uid `TRTf`, `trmpc_tapfx.so`; the instrument tap was dropped by decision). Modelled on Machinemodule's taps.
+   `src/trkit_tap.h` is the shared state; `trmpc.so` exports `trmpc_tap_shared()`; the tap finds it with `dlopen("trmpc.so", RTLD_NOLOAD)`
+   (so both must be in the same project/process). Planes: per slot post-pan stereo (int16), plus mono reverb and delay send buses; the
+   primary publishes a block and outputs the previous one (one block, 2.9 ms latency) so a tap called before it in a period finds its
+   block (hostRead / hostCallUs, same scheme as MD). Planes are only filled while a tap is registered. A tapped slot leaves the main
+   dry mix; a tapped send stops feeding the kit's own reverb/delay. Params: `src1..16`, `src_rev`, `src_del`, `through`.
+   Skin: `tools/gen_trmpc_tap.py` (TR-MPC look from gen_trmpc_full; `bash tools/gen_skins_docker.sh gen_trmpc_tap.py`), 3.x only like the
+   main skin. Package/install: `bash tools/package_trmpc.sh <version> <dist> [device-ip]`. Offline test: "taps" in `test/audio_test.cpp`.
+   Release: `release-trmpc.yml` has a second job (`tr_mpc_tap_fx`, its own tag/zip). To do: listen on the Force (route a slot to a track,
+   the sends to a return track), check alignment with `/tmp/trmpc-stats-on` -> `/tmp/trmpc-tap-stats.<pid>`.
+2b. **2026-10-06 later changes (uncommitted, not yet installed):** knob names and values bigger (`label_scale=1.2`, `scale_names=1`);
+   light kits (6W6, 9W9) now get dark knob names (needs the `shadow_skin.py` one-word fix in mpc-vst-plugins, `_name_label(..., ink)`);
+   the global page is two tabs, **FX** (REVERB / DELAY / MASTER modules, each with a lit/dark key for the new `int_rev` / `int_dly` /
+   `int_comp` params: off = the kit's own stage is bypassed and that send only leaves through a tap; params appended last) and
+   **RANDOMISE** (two modules of grey slot keys, AMOUNT + PARAMETERS (`rnd_go`) + VOICES (new `rnd_go_voice`, voices only), SELECT ALL / CLEAR).
+   Slot keys are grey in Tap FX too. Jog wheel: new opt-in wrapper field `nudge_gain` (mpc-vst-plugins `gen_vst.py` + `vst2_wrap.c`; a wheel
+   click or Q-Link event under 2% of the range is multiplied); every continuous TR-MPC knob has `nudge_gain: 3`. The mpc-vst-plugins edits are pushed (main e15ce12) and `release-trmpc.yml` is pinned to it.
 3. **Baked per-voice titles** (exact drum-port lettering instead of live text): one small art line per voice per slot (~800 pieces);
    only if the skin has headroom.
 4. **Release:** merge/push the plugins branch and re-pin the workflow; dry run `Release TR-MPC (draft)`; add the catalog entry

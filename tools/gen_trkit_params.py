@@ -95,6 +95,19 @@ for key, name, dflt, opts in (
     fx.append("fx_" + key)
 sections.append({"label": "FX and master", "keys": fx})
 
+# appended last (the list is append-only): the kit's own reverb, delay and compressor can be switched off so that the sends
+# only leave through TR-MPC Tap FX; and a second randomise button that only swaps voices
+ix = []
+for key, name in (("int_rev", "Internal Reverb"), ("int_dly", "Internal Delay"), ("int_comp", "Internal Comp")):
+    params.append({"key": key, "name": name, "options": ["OFF", "ON"], "default": 1}); ix.append(key)
+sections.append({"label": "Internal FX", "keys": ix})
+params.append({"key": "rnd_go_voice", "name": "Random Voices", "momentary": True})
+sections[[s["label"] for s in sections].index("Randomise")]["keys"].append("rnd_go_voice")
+
+for p in params:   # the jog wheel: a click moves a knob three steps (wrapper "nudge_gain", mpc-vst-plugins)
+    if "options" not in p and not p.get("momentary") and "min" in p and "max" in p:
+        p["nudge_gain"] = 3
+
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ports", "trkit", "params.json")
 json.dump({"name": "TR-MPC", "params": params, "sections": sections}, open(out, "w", newline="\n"), indent=1)
 print(len(params), "params,", len(SRC), "voices")
