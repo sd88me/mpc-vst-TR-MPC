@@ -4,6 +4,7 @@
   "uid": "TC78",
   "version": 1101,
   "so": "trcw78.so",
+  "targets": ["armv7", "aarch64"],
   "art": "html",
   "build": {
     "root": ".",

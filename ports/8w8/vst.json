@@ -4,6 +4,7 @@
   "uid": "T8W8",
   "version": 1101,
   "so": "tr8w8.so",
+  "targets": ["armv7", "aarch64"],
   "art": "html",
   "build": {
     "root": ".",

@@ -4,6 +4,7 @@
   "uid": "T9W9",
   "version": 1101,
   "so": "tr9w9.so",
+  "targets": ["armv7", "aarch64"],
   "art": "html",
   "build": {
     "root": ".",
