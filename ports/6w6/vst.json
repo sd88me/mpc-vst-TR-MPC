@@ -4,6 +4,7 @@
   "uid": "T6W6",
   "version": 1101,
   "so": "tr6w6.so",
+  "targets": ["armv7", "aarch64"],
   "art": "html",
   "build": {
     "root": ".",
