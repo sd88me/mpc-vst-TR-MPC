@@ -55,7 +55,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 8
+   "default": 8,
+   "refresh_display": true
   },
   {
    "key": "s01_fam",
@@ -265,7 +266,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 9
+   "default": 9,
+   "refresh_display": true
   },
   {
    "key": "s02_fam",
@@ -475,7 +477,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 10
+   "default": 10,
+   "refresh_display": true
   },
   {
    "key": "s03_fam",
@@ -685,7 +688,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 12
+   "default": 12,
+   "refresh_display": true
   },
   {
    "key": "s04_fam",
@@ -895,7 +899,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 4
+   "default": 4,
+   "refresh_display": true
   },
   {
    "key": "s05_fam",
@@ -1105,7 +1110,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 5
+   "default": 5,
+   "refresh_display": true
   },
   {
    "key": "s06_fam",
@@ -1315,7 +1321,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 44
+   "default": 44,
+   "refresh_display": true
   },
   {
    "key": "s07_fam",
@@ -1525,7 +1532,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 43
+   "default": 43,
+   "refresh_display": true
   },
   {
    "key": "s08_fam",
@@ -1735,7 +1743,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 19
+   "default": 19,
+   "refresh_display": true
   },
   {
    "key": "s09_fam",
@@ -1945,7 +1954,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 20
+   "default": 20,
+   "refresh_display": true
   },
   {
    "key": "s10_fam",
@@ -2155,7 +2165,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 34
+   "default": 34,
+   "refresh_display": true
   },
   {
    "key": "s11_fam",
@@ -2365,7 +2376,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 30
+   "default": 30,
+   "refresh_display": true
   },
   {
    "key": "s12_fam",
@@ -2575,7 +2587,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 6
+   "default": 6,
+   "refresh_display": true
   },
   {
    "key": "s13_fam",
@@ -2785,7 +2798,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 47
+   "default": 47,
+   "refresh_display": true
   },
   {
    "key": "s14_fam",
@@ -2995,7 +3009,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 33
+   "default": 33,
+   "refresh_display": true
   },
   {
    "key": "s15_fam",
@@ -3205,7 +3220,8 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 15
+   "default": 15,
+   "refresh_display": true
   },
   {
    "key": "s16_fam",
