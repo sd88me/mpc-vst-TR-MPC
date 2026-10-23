@@ -37,7 +37,9 @@ params, sections = [], []
 for s in range(1, 17):
     keys = []
     sk = "s%02d_" % s
-    params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1]})
+    # refresh_display: picking a voice changes sNN_fam (derived in trkit.cpp), and the skin's `when=` panels follow it; MPC only re-reads
+    # the host's values on an UpdateDisplay, which the wrapper no longer sends on a plain write
+    params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1], "refresh_display": True})
     keys.append(sk + "src")
     # the voice's kit (read-only, derived in trkit.cpp): the skin swaps each slot's faceplate on it
     params.append({"key": sk + "fam", "name": "Kit", "options": [k for k, _ in KITS_ORDER] + ["9W9 BD"], "default": 1})
