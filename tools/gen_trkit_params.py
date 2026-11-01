@@ -47,7 +47,7 @@ for s in range(1, 17):
     for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
                            ("dist", "Dist", 0)] + EXTRA_KNOBS + [
                            ("pan", "Pan", 64), ("rev", "Rev", 0), ("dly", "Dly", 0)]):
-        p = {"key": sk + k, "name": label, "default": dflt}
+        p = {"key": sk + k, "name": "S%d %s" % (s, label), "default": dflt}   # "S1 Level": four slots share an overview page
         if k == "dist": p["options"] = DIST
         else: p.update({"min": 0, "max": 127})
         params.append(p)

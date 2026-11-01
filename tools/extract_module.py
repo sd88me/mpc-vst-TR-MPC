@@ -31,6 +31,8 @@ def main():
     pages = re.search(r"static const char (\w+_ui_(?:pages|hierarchy)_json)\[\]", h).group(1)
     mod = json.load(open(a.module_json, encoding="utf-8"))
     mod["chain_params"] = json.loads(literal(h, chain))
+    for cp in mod["chain_params"]:   # the Q-Link / automation name: one spelling for the send FX in every kit ("Rev Level")
+        cp["name"] = re.sub(r"^(REV|DLY) ", lambda m: m.group(1).title() + " ", cp.get("name", ""))
     mod["ui_hierarchy"] = json.loads(literal(h, pages))
     json.dump(mod, open(a.o, "w", encoding="utf-8"), indent=1)
     print("%s: %d chain_params, levels: %s" % (a.o, len(mod["chain_params"]), list(mod["ui_hierarchy"].get("levels", {}))[:8]))
