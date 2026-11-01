@@ -158,4 +158,7 @@ def build(kit):
 
 
 for k in (sys.argv[1:] or THEMES):
+    if os.path.exists(os.path.join(ROOT, "ports", k, "skin", "style.py")):   # drawn by tools/drum_skin.py now
+        print(k, "skipped: its layout.conf comes from tools/drum_skin.py (ports/%s/skin/style.py)" % k)
+        continue
     build(k)
