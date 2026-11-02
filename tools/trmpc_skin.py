@@ -34,6 +34,7 @@ SS, W, H, Y_OFF, FRAMES = ds.SS, ds.W, ds.H, ds.Y_OFF, ds.FRAMES
 PX0, PW, PPITCH = 10, 310, 316            # module x, width, pitch: 4 modules across
 MT, MB = 50, 622                          # module top and bottom (plugin y)
 TITLE_Y = 84                              # the module heading's centre line, under the top screws
+TITLE_CW78 = (104, 176)                    # CW-78's voice menu: centre and width, clear of its coloured keys on the right
 XM = 330                                  # where a module is drawn on its kit's full panel before it is cut out
 CX = (80, 230)                            # knob cell centres in a module
 FAMILIES = ["6w6", "8w8", "cw78", "9w9", "9w9"]          # sNN_fam order; 4 = the 9W9 kick (six rows)
@@ -152,7 +153,7 @@ def family_module(out, fam):
     g, cells = geo(fam)
     t = kit_tab(kit, g)
     module_edges(t, XM)
-    ax = XM + PW - (128 if kit == "cw78" else 44)          # the voice menu's arrow (CW-78: left of its coloured keys)
+    ax = XM + (TITLE_CW78[0] + TITLE_CW78[1] // 2 - 4 if kit == "cw78" else PW - 44)   # the voice menu's arrow (CW-78: clear of its keys)
     ink = tuple(int(TITLE_INK[kit][i:i + 2], 16) for i in (0, 2, 4))
     t.d.polygon([((ax - 7) * SS, (TITLE_Y - 4) * SS), ((ax + 7) * SS, (TITLE_Y - 4) * SS), (ax * SS, (TITLE_Y + 5) * SS)], fill=ink)
     for name, label in FIXED:
@@ -198,8 +199,9 @@ def slot_lines(out, mods, s, px):
         m = mods[fam]
         w = "when=%sfam:%d" % (k, fam)
         out.lines.append("art file=%s x=%d y=%d w=%d h=%d %s" % (m["art"], px, MT + Y_OFF, PW, MB - MT, w))
-        out.lines.append('popup cx=%d cy=%d w=250 cw=118 h=34 label="" key=%ssrc groups="%s" accent=%s field=none %s' % (
-            px + PW // 2, TITLE_Y + Y_OFF, k, GROUPS, TITLE_INK[kit], w))
+        tcx, tw = TITLE_CW78 if kit == "cw78" else (PW // 2, 250)
+        out.lines.append('popup cx=%d cy=%d w=%d cw=118 h=34 label="" key=%ssrc groups="%s" accent=%s field=none %s' % (
+            px + tcx, TITLE_Y + Y_OFF, tw, k, GROUPS, TITLE_INK[kit], w))
         for name, _ in FIXED:
             cx, cy = cell_xy(g, cells, name)
             f, side = m["strips"][name]

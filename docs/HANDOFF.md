@@ -27,16 +27,22 @@ One VST2 instrument (`ports/trkit`, uid `TRMP`, vendor sd88me, file `trmpc.so`).
 - Two slots on the same voice share one engine voice, but only the slot that was last hit gets its sound (so a tapped slot's twin cannot leak it into the main mix); only Level/Tune/Decay/Drive/Dist plus the nine
   extras of a voice are saved, other engine pots keep defaults.
 
-### Skins (`tools/gen_trmpc_skin.py`, `tools/gen_trmpc_full.py`)
-- `layouts/restyle.conf`, `layouts/editor.conf`: earlier experiments (rack look; rack overview + one editor). `layouts/full.conf` is the
-  chosen one and is what `ports/trkit/layout.conf` is (build_ci.sh copies `layouts/<style>.conf` over it when you pass a style).
-- **Full style:** each slot panel reskins itself to the kit of the selected voice (`sNN_fam` + `when=` lines). Everything visual comes
-  from the drum ports: faceplates are `gen_drum_skins.plate_svg` cropped to one panel, knobs are the ports' built filmstrips (copied
-  from `_build/<kit>/skin/*/Plugin Skins/sh_knob_r26_<look>.png` into `ports/trkit/images/knob_*.png`; run `tools/build_all.sh` to refresh),
-  colours come from `gen_drum_skins.STYLES`, lettering is outlined (`text_path`, needs fontTools + `../mpc-vst/Assets/fonts`).
-  Run the generators with `bash tools/gen_skins_docker.sh gen_trmpc_full.py` (and `gen_trmpc_skin.py`).
-- Five-row layout (r=22, label scale 0.95); the 9W9 kick has three extra controls so it gets a six-row layout (`fam` = 4).
-  The voice menu is the module title (live text in the kit's colour); its open list is grouped and coloured per kit.
+### Skins (`tools/trmpc_skin.py`, from 2026-11; drum kits: `tools/drum_skin.py`)
+- The drum kits and TR-MPC are drawn after the hardware by Pillow scripts that write `layout.conf` and `art/*.png` (both committed):
+  `python3 tools/drum_skin.py <kit>` and `python3 tools/trmpc_skin.py`. Each kit's look (plate, header, heading, knob) is its own
+  `ports/<kit>/skin/style.py`; drum_skin.py does what must match across kits (control placement, Q-Link columns, filmstrips).
+  Fonts: URW Gothic and Michroma ship in `tools/assets` with their licences; Helvetica, Earth and FilmotypeFord are baked from
+  `../mpc-vst-plugins/Assets/fonts` (FONT_SRC) and never shipped. Pillow's noise texture is random per run, so regenerating rewrites
+  every PNG: commit the art you tested.
+- **TR-MPC modules:** each slot module is cut from its kit's panel (`style.panel()`), with the kit's heading behind the voice menu (plus a
+  menu arrow), its knobs and corner screws; `sNN_fam` + `when=` lines switch it per kit (`fam` 4: the 9W9 kick, six rows). A voice's own
+  extra controls are knobs whose filmstrips carry their scale and name: separate `when=` name images were merged by MPC's skin builder
+  into one picture per mode and showed black gaps/edges on the device.
+- **Q-Links:** a page's overview is Level/Tune/Decay/Drive per slot (`qlink_bounds=column` outlines each slot's top 2x2), `VOICES n-m`
+  has the four voice menus, `SLOT n` all of one slot. Defaults mix the four kits per page (`default_flat()` in trkit.cpp and
+  `DEFAULT_FLAT` in gen_trkit_params.py must match).
+- Earlier styles (`tools/gen_trmpc_skin.py`, `tools/gen_trmpc_full.py`, `layouts/*.conf`) are kept for reference; `build_ci.sh trkit
+  <style>` would copy one of them over `layout.conf`, so build releases with plain `build_ci.sh trkit`.
 - Global page (`FX - RANDOMISE`): REVERB / DELAY, MASTER, SELECT SLOTS (16 LED toggles), RANDOMISE. Lettering there is orange.
 - **Needs mpc-vst-plugins** features (merged and pushed to its main; `release-trmpc.yml` pins e15ce126d3a5): per-control `ink=`/`ink_dim=`
   (knob label colours), popup `accent=<hex|none>`, `field=none`, `cw=` (list cell width) and
@@ -52,7 +58,7 @@ One VST2 instrument (`ports/trkit`, uid `TRMP`, vendor sd88me, file `trmpc.so`).
 
 ```
 B=ports/trkit/build
-bash tools/build_ci.sh trkit full          # patches + generators + skin + .so   (copies layouts/full.conf over layout.conf)
+bash tools/build_ci.sh trkit               # patches + skin + .so from the committed layout.conf (python3 tools/trmpc_skin.py redraws it)
 python3 ../mpc-vst-plugins/tools/release.py --so $B/trmpc.so --skin "$B/skin/sd88me - VST - TR-MPC" --entry $B/pluginlist-entry.xml \
   --version <version> --extra ports/9w9/src/samples:engine/samples --bench ports/trkit/bench.txt --license GPL-3.0-only -o <dist dir>
 bash ports/trkit/test/run.sh               # offline audio/wrapper tests (ASan); build_ci + bench.sh for the CPU number
