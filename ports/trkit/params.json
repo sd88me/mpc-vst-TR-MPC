@@ -72,7 +72,7 @@
   },
   {
    "key": "s01_level",
-   "name": "Level",
+   "name": "S1 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -80,7 +80,7 @@
   },
   {
    "key": "s01_tune",
-   "name": "Tune",
+   "name": "S1 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -88,7 +88,7 @@
   },
   {
    "key": "s01_decay",
-   "name": "Decay",
+   "name": "S1 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -96,7 +96,7 @@
   },
   {
    "key": "s01_drive",
-   "name": "Drive",
+   "name": "S1 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -104,7 +104,7 @@
   },
   {
    "key": "s01_dist",
-   "name": "Dist",
+   "name": "S1 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -118,7 +118,7 @@
   },
   {
    "key": "s01_attack",
-   "name": "Attack",
+   "name": "S1 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -126,7 +126,7 @@
   },
   {
    "key": "s01_tone",
-   "name": "Tone",
+   "name": "S1 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -134,7 +134,7 @@
   },
   {
    "key": "s01_snappy",
-   "name": "Snappy",
+   "name": "S1 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -142,7 +142,7 @@
   },
   {
    "key": "s01_noise",
-   "name": "Noise",
+   "name": "S1 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -150,7 +150,7 @@
   },
   {
    "key": "s01_rate",
-   "name": "Rate",
+   "name": "S1 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -158,7 +158,7 @@
   },
   {
    "key": "s01_sweep",
-   "name": "Sweep",
+   "name": "S1 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -166,7 +166,7 @@
   },
   {
    "key": "s01_pmod",
-   "name": "Pitch Mod",
+   "name": "S1 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -174,7 +174,7 @@
   },
   {
    "key": "s01_ndecay",
-   "name": "Noise Decay",
+   "name": "S1 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -182,7 +182,7 @@
   },
   {
    "key": "s01_sat",
-   "name": "Saturate",
+   "name": "S1 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -190,7 +190,7 @@
   },
   {
    "key": "s01_pan",
-   "name": "Pan",
+   "name": "S1 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -198,7 +198,7 @@
   },
   {
    "key": "s01_rev",
-   "name": "Rev",
+   "name": "S1 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -206,7 +206,7 @@
   },
   {
    "key": "s01_dly",
-   "name": "Dly",
+   "name": "S1 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -266,7 +266,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 9,
+   "default": 39,
    "refresh_display": true
   },
   {
@@ -279,11 +279,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 3
   },
   {
    "key": "s02_level",
-   "name": "Level",
+   "name": "S2 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -291,7 +291,7 @@
   },
   {
    "key": "s02_tune",
-   "name": "Tune",
+   "name": "S2 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -299,7 +299,7 @@
   },
   {
    "key": "s02_decay",
-   "name": "Decay",
+   "name": "S2 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -307,7 +307,7 @@
   },
   {
    "key": "s02_drive",
-   "name": "Drive",
+   "name": "S2 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -315,7 +315,7 @@
   },
   {
    "key": "s02_dist",
-   "name": "Dist",
+   "name": "S2 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -329,7 +329,7 @@
   },
   {
    "key": "s02_attack",
-   "name": "Attack",
+   "name": "S2 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -337,7 +337,7 @@
   },
   {
    "key": "s02_tone",
-   "name": "Tone",
+   "name": "S2 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -345,7 +345,7 @@
   },
   {
    "key": "s02_snappy",
-   "name": "Snappy",
+   "name": "S2 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -353,7 +353,7 @@
   },
   {
    "key": "s02_noise",
-   "name": "Noise",
+   "name": "S2 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -361,7 +361,7 @@
   },
   {
    "key": "s02_rate",
-   "name": "Rate",
+   "name": "S2 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -369,7 +369,7 @@
   },
   {
    "key": "s02_sweep",
-   "name": "Sweep",
+   "name": "S2 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -377,7 +377,7 @@
   },
   {
    "key": "s02_pmod",
-   "name": "Pitch Mod",
+   "name": "S2 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -385,7 +385,7 @@
   },
   {
    "key": "s02_ndecay",
-   "name": "Noise Decay",
+   "name": "S2 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -393,7 +393,7 @@
   },
   {
    "key": "s02_sat",
-   "name": "Saturate",
+   "name": "S2 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -401,7 +401,7 @@
   },
   {
    "key": "s02_pan",
-   "name": "Pan",
+   "name": "S2 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -409,7 +409,7 @@
   },
   {
    "key": "s02_rev",
-   "name": "Rev",
+   "name": "S2 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -417,7 +417,7 @@
   },
   {
    "key": "s02_dly",
-   "name": "Dly",
+   "name": "S2 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -477,7 +477,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 10,
+   "default": 4,
    "refresh_display": true
   },
   {
@@ -490,11 +490,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 0
   },
   {
    "key": "s03_level",
-   "name": "Level",
+   "name": "S3 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -502,7 +502,7 @@
   },
   {
    "key": "s03_tune",
-   "name": "Tune",
+   "name": "S3 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -510,7 +510,7 @@
   },
   {
    "key": "s03_decay",
-   "name": "Decay",
+   "name": "S3 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -518,7 +518,7 @@
   },
   {
    "key": "s03_drive",
-   "name": "Drive",
+   "name": "S3 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -526,7 +526,7 @@
   },
   {
    "key": "s03_dist",
-   "name": "Dist",
+   "name": "S3 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -540,7 +540,7 @@
   },
   {
    "key": "s03_attack",
-   "name": "Attack",
+   "name": "S3 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -548,7 +548,7 @@
   },
   {
    "key": "s03_tone",
-   "name": "Tone",
+   "name": "S3 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -556,7 +556,7 @@
   },
   {
    "key": "s03_snappy",
-   "name": "Snappy",
+   "name": "S3 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -564,7 +564,7 @@
   },
   {
    "key": "s03_noise",
-   "name": "Noise",
+   "name": "S3 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -572,7 +572,7 @@
   },
   {
    "key": "s03_rate",
-   "name": "Rate",
+   "name": "S3 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -580,7 +580,7 @@
   },
   {
    "key": "s03_sweep",
-   "name": "Sweep",
+   "name": "S3 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -588,7 +588,7 @@
   },
   {
    "key": "s03_pmod",
-   "name": "Pitch Mod",
+   "name": "S3 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -596,7 +596,7 @@
   },
   {
    "key": "s03_ndecay",
-   "name": "Noise Decay",
+   "name": "S3 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -604,7 +604,7 @@
   },
   {
    "key": "s03_sat",
-   "name": "Saturate",
+   "name": "S3 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -612,7 +612,7 @@
   },
   {
    "key": "s03_pan",
-   "name": "Pan",
+   "name": "S3 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -620,7 +620,7 @@
   },
   {
    "key": "s03_rev",
-   "name": "Rev",
+   "name": "S3 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -628,7 +628,7 @@
   },
   {
    "key": "s03_dly",
-   "name": "Dly",
+   "name": "S3 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -688,7 +688,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 12,
+   "default": 27,
    "refresh_display": true
   },
   {
@@ -701,11 +701,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 2
   },
   {
    "key": "s04_level",
-   "name": "Level",
+   "name": "S4 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -713,7 +713,7 @@
   },
   {
    "key": "s04_tune",
-   "name": "Tune",
+   "name": "S4 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -721,7 +721,7 @@
   },
   {
    "key": "s04_decay",
-   "name": "Decay",
+   "name": "S4 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -729,7 +729,7 @@
   },
   {
    "key": "s04_drive",
-   "name": "Drive",
+   "name": "S4 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -737,7 +737,7 @@
   },
   {
    "key": "s04_dist",
-   "name": "Dist",
+   "name": "S4 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -751,7 +751,7 @@
   },
   {
    "key": "s04_attack",
-   "name": "Attack",
+   "name": "S4 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -759,7 +759,7 @@
   },
   {
    "key": "s04_tone",
-   "name": "Tone",
+   "name": "S4 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -767,7 +767,7 @@
   },
   {
    "key": "s04_snappy",
-   "name": "Snappy",
+   "name": "S4 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -775,7 +775,7 @@
   },
   {
    "key": "s04_noise",
-   "name": "Noise",
+   "name": "S4 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -783,7 +783,7 @@
   },
   {
    "key": "s04_rate",
-   "name": "Rate",
+   "name": "S4 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -791,7 +791,7 @@
   },
   {
    "key": "s04_sweep",
-   "name": "Sweep",
+   "name": "S4 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -799,7 +799,7 @@
   },
   {
    "key": "s04_pmod",
-   "name": "Pitch Mod",
+   "name": "S4 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -807,7 +807,7 @@
   },
   {
    "key": "s04_ndecay",
-   "name": "Noise Decay",
+   "name": "S4 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -815,7 +815,7 @@
   },
   {
    "key": "s04_sat",
-   "name": "Saturate",
+   "name": "S4 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -823,7 +823,7 @@
   },
   {
    "key": "s04_pan",
-   "name": "Pan",
+   "name": "S4 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -831,7 +831,7 @@
   },
   {
    "key": "s04_rev",
-   "name": "Rev",
+   "name": "S4 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -839,7 +839,7 @@
   },
   {
    "key": "s04_dly",
-   "name": "Dly",
+   "name": "S4 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -899,7 +899,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 4,
+   "default": 38,
    "refresh_display": true
   },
   {
@@ -912,11 +912,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 4
   },
   {
    "key": "s05_level",
-   "name": "Level",
+   "name": "S5 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -924,7 +924,7 @@
   },
   {
    "key": "s05_tune",
-   "name": "Tune",
+   "name": "S5 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -932,7 +932,7 @@
   },
   {
    "key": "s05_decay",
-   "name": "Decay",
+   "name": "S5 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -940,7 +940,7 @@
   },
   {
    "key": "s05_drive",
-   "name": "Drive",
+   "name": "S5 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -948,7 +948,7 @@
   },
   {
    "key": "s05_dist",
-   "name": "Dist",
+   "name": "S5 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -962,7 +962,7 @@
   },
   {
    "key": "s05_attack",
-   "name": "Attack",
+   "name": "S5 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -970,7 +970,7 @@
   },
   {
    "key": "s05_tone",
-   "name": "Tone",
+   "name": "S5 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -978,7 +978,7 @@
   },
   {
    "key": "s05_snappy",
-   "name": "Snappy",
+   "name": "S5 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -986,7 +986,7 @@
   },
   {
    "key": "s05_noise",
-   "name": "Noise",
+   "name": "S5 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -994,7 +994,7 @@
   },
   {
    "key": "s05_rate",
-   "name": "Rate",
+   "name": "S5 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1002,7 +1002,7 @@
   },
   {
    "key": "s05_sweep",
-   "name": "Sweep",
+   "name": "S5 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1010,7 +1010,7 @@
   },
   {
    "key": "s05_pmod",
-   "name": "Pitch Mod",
+   "name": "S5 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1018,7 +1018,7 @@
   },
   {
    "key": "s05_ndecay",
-   "name": "Noise Decay",
+   "name": "S5 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1026,7 +1026,7 @@
   },
   {
    "key": "s05_sat",
-   "name": "Saturate",
+   "name": "S5 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1034,7 +1034,7 @@
   },
   {
    "key": "s05_pan",
-   "name": "Pan",
+   "name": "S5 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1042,7 +1042,7 @@
   },
   {
    "key": "s05_rev",
-   "name": "Rev",
+   "name": "S5 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1050,7 +1050,7 @@
   },
   {
    "key": "s05_dly",
-   "name": "Dly",
+   "name": "S5 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1110,7 +1110,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 5,
+   "default": 1,
    "refresh_display": true
   },
   {
@@ -1123,11 +1123,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 0
   },
   {
    "key": "s06_level",
-   "name": "Level",
+   "name": "S6 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1135,7 +1135,7 @@
   },
   {
    "key": "s06_tune",
-   "name": "Tune",
+   "name": "S6 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1143,7 +1143,7 @@
   },
   {
    "key": "s06_decay",
-   "name": "Decay",
+   "name": "S6 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1151,7 +1151,7 @@
   },
   {
    "key": "s06_drive",
-   "name": "Drive",
+   "name": "S6 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1159,7 +1159,7 @@
   },
   {
    "key": "s06_dist",
-   "name": "Dist",
+   "name": "S6 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -1173,7 +1173,7 @@
   },
   {
    "key": "s06_attack",
-   "name": "Attack",
+   "name": "S6 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1181,7 +1181,7 @@
   },
   {
    "key": "s06_tone",
-   "name": "Tone",
+   "name": "S6 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1189,7 +1189,7 @@
   },
   {
    "key": "s06_snappy",
-   "name": "Snappy",
+   "name": "S6 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1197,7 +1197,7 @@
   },
   {
    "key": "s06_noise",
-   "name": "Noise",
+   "name": "S6 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1205,7 +1205,7 @@
   },
   {
    "key": "s06_rate",
-   "name": "Rate",
+   "name": "S6 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1213,7 +1213,7 @@
   },
   {
    "key": "s06_sweep",
-   "name": "Sweep",
+   "name": "S6 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1221,7 +1221,7 @@
   },
   {
    "key": "s06_pmod",
-   "name": "Pitch Mod",
+   "name": "S6 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1229,7 +1229,7 @@
   },
   {
    "key": "s06_ndecay",
-   "name": "Noise Decay",
+   "name": "S6 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1237,7 +1237,7 @@
   },
   {
    "key": "s06_sat",
-   "name": "Saturate",
+   "name": "S6 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1245,7 +1245,7 @@
   },
   {
    "key": "s06_pan",
-   "name": "Pan",
+   "name": "S6 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1253,7 +1253,7 @@
   },
   {
    "key": "s06_rev",
-   "name": "Rev",
+   "name": "S6 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1261,7 +1261,7 @@
   },
   {
    "key": "s06_dly",
-   "name": "Dly",
+   "name": "S6 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1321,7 +1321,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 44,
+   "default": 19,
    "refresh_display": true
   },
   {
@@ -1338,7 +1338,7 @@
   },
   {
    "key": "s07_level",
-   "name": "Level",
+   "name": "S7 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1346,7 +1346,7 @@
   },
   {
    "key": "s07_tune",
-   "name": "Tune",
+   "name": "S7 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1354,7 +1354,7 @@
   },
   {
    "key": "s07_decay",
-   "name": "Decay",
+   "name": "S7 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1362,7 +1362,7 @@
   },
   {
    "key": "s07_drive",
-   "name": "Drive",
+   "name": "S7 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1370,7 +1370,7 @@
   },
   {
    "key": "s07_dist",
-   "name": "Dist",
+   "name": "S7 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -1384,7 +1384,7 @@
   },
   {
    "key": "s07_attack",
-   "name": "Attack",
+   "name": "S7 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1392,7 +1392,7 @@
   },
   {
    "key": "s07_tone",
-   "name": "Tone",
+   "name": "S7 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1400,7 +1400,7 @@
   },
   {
    "key": "s07_snappy",
-   "name": "Snappy",
+   "name": "S7 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1408,7 +1408,7 @@
   },
   {
    "key": "s07_noise",
-   "name": "Noise",
+   "name": "S7 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1416,7 +1416,7 @@
   },
   {
    "key": "s07_rate",
-   "name": "Rate",
+   "name": "S7 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1424,7 +1424,7 @@
   },
   {
    "key": "s07_sweep",
-   "name": "Sweep",
+   "name": "S7 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1432,7 +1432,7 @@
   },
   {
    "key": "s07_pmod",
-   "name": "Pitch Mod",
+   "name": "S7 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1440,7 +1440,7 @@
   },
   {
    "key": "s07_ndecay",
-   "name": "Noise Decay",
+   "name": "S7 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1448,7 +1448,7 @@
   },
   {
    "key": "s07_sat",
-   "name": "Saturate",
+   "name": "S7 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1456,7 +1456,7 @@
   },
   {
    "key": "s07_pan",
-   "name": "Pan",
+   "name": "S7 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1464,7 +1464,7 @@
   },
   {
    "key": "s07_rev",
-   "name": "Rev",
+   "name": "S7 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1472,7 +1472,7 @@
   },
   {
    "key": "s07_dly",
-   "name": "Dly",
+   "name": "S7 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1532,7 +1532,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 43,
+   "default": 26,
    "refresh_display": true
   },
   {
@@ -1545,11 +1545,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 2
   },
   {
    "key": "s08_level",
-   "name": "Level",
+   "name": "S8 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1557,7 +1557,7 @@
   },
   {
    "key": "s08_tune",
-   "name": "Tune",
+   "name": "S8 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1565,7 +1565,7 @@
   },
   {
    "key": "s08_decay",
-   "name": "Decay",
+   "name": "S8 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1573,7 +1573,7 @@
   },
   {
    "key": "s08_drive",
-   "name": "Drive",
+   "name": "S8 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1581,7 +1581,7 @@
   },
   {
    "key": "s08_dist",
-   "name": "Dist",
+   "name": "S8 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -1595,7 +1595,7 @@
   },
   {
    "key": "s08_attack",
-   "name": "Attack",
+   "name": "S8 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1603,7 +1603,7 @@
   },
   {
    "key": "s08_tone",
-   "name": "Tone",
+   "name": "S8 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1611,7 +1611,7 @@
   },
   {
    "key": "s08_snappy",
-   "name": "Snappy",
+   "name": "S8 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1619,7 +1619,7 @@
   },
   {
    "key": "s08_noise",
-   "name": "Noise",
+   "name": "S8 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1627,7 +1627,7 @@
   },
   {
    "key": "s08_rate",
-   "name": "Rate",
+   "name": "S8 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1635,7 +1635,7 @@
   },
   {
    "key": "s08_sweep",
-   "name": "Sweep",
+   "name": "S8 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1643,7 +1643,7 @@
   },
   {
    "key": "s08_pmod",
-   "name": "Pitch Mod",
+   "name": "S8 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1651,7 +1651,7 @@
   },
   {
    "key": "s08_ndecay",
-   "name": "Noise Decay",
+   "name": "S8 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1659,7 +1659,7 @@
   },
   {
    "key": "s08_sat",
-   "name": "Saturate",
+   "name": "S8 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1667,7 +1667,7 @@
   },
   {
    "key": "s08_pan",
-   "name": "Pan",
+   "name": "S8 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1675,7 +1675,7 @@
   },
   {
    "key": "s08_rev",
-   "name": "Rev",
+   "name": "S8 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1683,7 +1683,7 @@
   },
   {
    "key": "s08_dly",
-   "name": "Dly",
+   "name": "S8 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1743,7 +1743,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 19,
+   "default": 2,
    "refresh_display": true
   },
   {
@@ -1756,11 +1756,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 0
   },
   {
    "key": "s09_level",
-   "name": "Level",
+   "name": "S9 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1768,7 +1768,7 @@
   },
   {
    "key": "s09_tune",
-   "name": "Tune",
+   "name": "S9 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1776,7 +1776,7 @@
   },
   {
    "key": "s09_decay",
-   "name": "Decay",
+   "name": "S9 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1784,7 +1784,7 @@
   },
   {
    "key": "s09_drive",
-   "name": "Drive",
+   "name": "S9 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1792,7 +1792,7 @@
   },
   {
    "key": "s09_dist",
-   "name": "Dist",
+   "name": "S9 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -1806,7 +1806,7 @@
   },
   {
    "key": "s09_attack",
-   "name": "Attack",
+   "name": "S9 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1814,7 +1814,7 @@
   },
   {
    "key": "s09_tone",
-   "name": "Tone",
+   "name": "S9 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1822,7 +1822,7 @@
   },
   {
    "key": "s09_snappy",
-   "name": "Snappy",
+   "name": "S9 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1830,7 +1830,7 @@
   },
   {
    "key": "s09_noise",
-   "name": "Noise",
+   "name": "S9 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1838,7 +1838,7 @@
   },
   {
    "key": "s09_rate",
-   "name": "Rate",
+   "name": "S9 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1846,7 +1846,7 @@
   },
   {
    "key": "s09_sweep",
-   "name": "Sweep",
+   "name": "S9 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1854,7 +1854,7 @@
   },
   {
    "key": "s09_pmod",
-   "name": "Pitch Mod",
+   "name": "S9 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1862,7 +1862,7 @@
   },
   {
    "key": "s09_ndecay",
-   "name": "Noise Decay",
+   "name": "S9 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1870,7 +1870,7 @@
   },
   {
    "key": "s09_sat",
-   "name": "Saturate",
+   "name": "S9 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1878,7 +1878,7 @@
   },
   {
    "key": "s09_pan",
-   "name": "Pan",
+   "name": "S9 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1886,7 +1886,7 @@
   },
   {
    "key": "s09_rev",
-   "name": "Rev",
+   "name": "S9 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1894,7 +1894,7 @@
   },
   {
    "key": "s09_dly",
-   "name": "Dly",
+   "name": "S9 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -1954,7 +1954,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 20,
+   "default": 11,
    "refresh_display": true
   },
   {
@@ -1971,7 +1971,7 @@
   },
   {
    "key": "s10_level",
-   "name": "Level",
+   "name": "S10 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1979,7 +1979,7 @@
   },
   {
    "key": "s10_tune",
-   "name": "Tune",
+   "name": "S10 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1987,7 +1987,7 @@
   },
   {
    "key": "s10_decay",
-   "name": "Decay",
+   "name": "S10 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -1995,7 +1995,7 @@
   },
   {
    "key": "s10_drive",
-   "name": "Drive",
+   "name": "S10 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2003,7 +2003,7 @@
   },
   {
    "key": "s10_dist",
-   "name": "Dist",
+   "name": "S10 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -2017,7 +2017,7 @@
   },
   {
    "key": "s10_attack",
-   "name": "Attack",
+   "name": "S10 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2025,7 +2025,7 @@
   },
   {
    "key": "s10_tone",
-   "name": "Tone",
+   "name": "S10 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2033,7 +2033,7 @@
   },
   {
    "key": "s10_snappy",
-   "name": "Snappy",
+   "name": "S10 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2041,7 +2041,7 @@
   },
   {
    "key": "s10_noise",
-   "name": "Noise",
+   "name": "S10 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2049,7 +2049,7 @@
   },
   {
    "key": "s10_rate",
-   "name": "Rate",
+   "name": "S10 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2057,7 +2057,7 @@
   },
   {
    "key": "s10_sweep",
-   "name": "Sweep",
+   "name": "S10 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2065,7 +2065,7 @@
   },
   {
    "key": "s10_pmod",
-   "name": "Pitch Mod",
+   "name": "S10 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2073,7 +2073,7 @@
   },
   {
    "key": "s10_ndecay",
-   "name": "Noise Decay",
+   "name": "S10 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2081,7 +2081,7 @@
   },
   {
    "key": "s10_sat",
-   "name": "Saturate",
+   "name": "S10 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2089,7 +2089,7 @@
   },
   {
    "key": "s10_pan",
-   "name": "Pan",
+   "name": "S10 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2097,7 +2097,7 @@
   },
   {
    "key": "s10_rev",
-   "name": "Rev",
+   "name": "S10 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2105,7 +2105,7 @@
   },
   {
    "key": "s10_dly",
-   "name": "Dly",
+   "name": "S10 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2165,7 +2165,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 34,
+   "default": 42,
    "refresh_display": true
   },
   {
@@ -2178,11 +2178,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 3
   },
   {
    "key": "s11_level",
-   "name": "Level",
+   "name": "S11 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2190,7 +2190,7 @@
   },
   {
    "key": "s11_tune",
-   "name": "Tune",
+   "name": "S11 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2198,7 +2198,7 @@
   },
   {
    "key": "s11_decay",
-   "name": "Decay",
+   "name": "S11 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2206,7 +2206,7 @@
   },
   {
    "key": "s11_drive",
-   "name": "Drive",
+   "name": "S11 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2214,7 +2214,7 @@
   },
   {
    "key": "s11_dist",
-   "name": "Dist",
+   "name": "S11 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -2228,7 +2228,7 @@
   },
   {
    "key": "s11_attack",
-   "name": "Attack",
+   "name": "S11 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2236,7 +2236,7 @@
   },
   {
    "key": "s11_tone",
-   "name": "Tone",
+   "name": "S11 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2244,7 +2244,7 @@
   },
   {
    "key": "s11_snappy",
-   "name": "Snappy",
+   "name": "S11 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2252,7 +2252,7 @@
   },
   {
    "key": "s11_noise",
-   "name": "Noise",
+   "name": "S11 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2260,7 +2260,7 @@
   },
   {
    "key": "s11_rate",
-   "name": "Rate",
+   "name": "S11 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2268,7 +2268,7 @@
   },
   {
    "key": "s11_sweep",
-   "name": "Sweep",
+   "name": "S11 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2276,7 +2276,7 @@
   },
   {
    "key": "s11_pmod",
-   "name": "Pitch Mod",
+   "name": "S11 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2284,7 +2284,7 @@
   },
   {
    "key": "s11_ndecay",
-   "name": "Noise Decay",
+   "name": "S11 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2292,7 +2292,7 @@
   },
   {
    "key": "s11_sat",
-   "name": "Saturate",
+   "name": "S11 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2300,7 +2300,7 @@
   },
   {
    "key": "s11_pan",
-   "name": "Pan",
+   "name": "S11 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2308,7 +2308,7 @@
   },
   {
    "key": "s11_rev",
-   "name": "Rev",
+   "name": "S11 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2316,7 +2316,7 @@
   },
   {
    "key": "s11_dly",
-   "name": "Dly",
+   "name": "S11 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2376,7 +2376,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 30,
+   "default": 31,
    "refresh_display": true
   },
   {
@@ -2389,11 +2389,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 2
   },
   {
    "key": "s12_level",
-   "name": "Level",
+   "name": "S12 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2401,7 +2401,7 @@
   },
   {
    "key": "s12_tune",
-   "name": "Tune",
+   "name": "S12 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2409,7 +2409,7 @@
   },
   {
    "key": "s12_decay",
-   "name": "Decay",
+   "name": "S12 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2417,7 +2417,7 @@
   },
   {
    "key": "s12_drive",
-   "name": "Drive",
+   "name": "S12 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2425,7 +2425,7 @@
   },
   {
    "key": "s12_dist",
-   "name": "Dist",
+   "name": "S12 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -2439,7 +2439,7 @@
   },
   {
    "key": "s12_attack",
-   "name": "Attack",
+   "name": "S12 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2447,7 +2447,7 @@
   },
   {
    "key": "s12_tone",
-   "name": "Tone",
+   "name": "S12 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2455,7 +2455,7 @@
   },
   {
    "key": "s12_snappy",
-   "name": "Snappy",
+   "name": "S12 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2463,7 +2463,7 @@
   },
   {
    "key": "s12_noise",
-   "name": "Noise",
+   "name": "S12 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2471,7 +2471,7 @@
   },
   {
    "key": "s12_rate",
-   "name": "Rate",
+   "name": "S12 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2479,7 +2479,7 @@
   },
   {
    "key": "s12_sweep",
-   "name": "Sweep",
+   "name": "S12 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2487,7 +2487,7 @@
   },
   {
    "key": "s12_pmod",
-   "name": "Pitch Mod",
+   "name": "S12 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2495,7 +2495,7 @@
   },
   {
    "key": "s12_ndecay",
-   "name": "Noise Decay",
+   "name": "S12 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2503,7 +2503,7 @@
   },
   {
    "key": "s12_sat",
-   "name": "Saturate",
+   "name": "S12 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2511,7 +2511,7 @@
   },
   {
    "key": "s12_pan",
-   "name": "Pan",
+   "name": "S12 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2519,7 +2519,7 @@
   },
   {
    "key": "s12_rev",
-   "name": "Rev",
+   "name": "S12 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2527,7 +2527,7 @@
   },
   {
    "key": "s12_dly",
-   "name": "Dly",
+   "name": "S12 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2587,7 +2587,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 6,
+   "default": 47,
    "refresh_display": true
   },
   {
@@ -2600,11 +2600,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 3
   },
   {
    "key": "s13_level",
-   "name": "Level",
+   "name": "S13 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2612,7 +2612,7 @@
   },
   {
    "key": "s13_tune",
-   "name": "Tune",
+   "name": "S13 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2620,7 +2620,7 @@
   },
   {
    "key": "s13_decay",
-   "name": "Decay",
+   "name": "S13 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2628,7 +2628,7 @@
   },
   {
    "key": "s13_drive",
-   "name": "Drive",
+   "name": "S13 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2636,7 +2636,7 @@
   },
   {
    "key": "s13_dist",
-   "name": "Dist",
+   "name": "S13 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -2650,7 +2650,7 @@
   },
   {
    "key": "s13_attack",
-   "name": "Attack",
+   "name": "S13 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2658,7 +2658,7 @@
   },
   {
    "key": "s13_tone",
-   "name": "Tone",
+   "name": "S13 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2666,7 +2666,7 @@
   },
   {
    "key": "s13_snappy",
-   "name": "Snappy",
+   "name": "S13 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2674,7 +2674,7 @@
   },
   {
    "key": "s13_noise",
-   "name": "Noise",
+   "name": "S13 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2682,7 +2682,7 @@
   },
   {
    "key": "s13_rate",
-   "name": "Rate",
+   "name": "S13 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2690,7 +2690,7 @@
   },
   {
    "key": "s13_sweep",
-   "name": "Sweep",
+   "name": "S13 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2698,7 +2698,7 @@
   },
   {
    "key": "s13_pmod",
-   "name": "Pitch Mod",
+   "name": "S13 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2706,7 +2706,7 @@
   },
   {
    "key": "s13_ndecay",
-   "name": "Noise Decay",
+   "name": "S13 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2714,7 +2714,7 @@
   },
   {
    "key": "s13_sat",
-   "name": "Saturate",
+   "name": "S13 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2722,7 +2722,7 @@
   },
   {
    "key": "s13_pan",
-   "name": "Pan",
+   "name": "S13 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2730,7 +2730,7 @@
   },
   {
    "key": "s13_rev",
-   "name": "Rev",
+   "name": "S13 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2738,7 +2738,7 @@
   },
   {
    "key": "s13_dly",
-   "name": "Dly",
+   "name": "S13 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2798,7 +2798,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 47,
+   "default": 6,
    "refresh_display": true
   },
   {
@@ -2811,11 +2811,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 0
   },
   {
    "key": "s14_level",
-   "name": "Level",
+   "name": "S14 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2823,7 +2823,7 @@
   },
   {
    "key": "s14_tune",
-   "name": "Tune",
+   "name": "S14 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2831,7 +2831,7 @@
   },
   {
    "key": "s14_decay",
-   "name": "Decay",
+   "name": "S14 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2839,7 +2839,7 @@
   },
   {
    "key": "s14_drive",
-   "name": "Drive",
+   "name": "S14 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2847,7 +2847,7 @@
   },
   {
    "key": "s14_dist",
-   "name": "Dist",
+   "name": "S14 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -2861,7 +2861,7 @@
   },
   {
    "key": "s14_attack",
-   "name": "Attack",
+   "name": "S14 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2869,7 +2869,7 @@
   },
   {
    "key": "s14_tone",
-   "name": "Tone",
+   "name": "S14 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2877,7 +2877,7 @@
   },
   {
    "key": "s14_snappy",
-   "name": "Snappy",
+   "name": "S14 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2885,7 +2885,7 @@
   },
   {
    "key": "s14_noise",
-   "name": "Noise",
+   "name": "S14 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2893,7 +2893,7 @@
   },
   {
    "key": "s14_rate",
-   "name": "Rate",
+   "name": "S14 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2901,7 +2901,7 @@
   },
   {
    "key": "s14_sweep",
-   "name": "Sweep",
+   "name": "S14 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2909,7 +2909,7 @@
   },
   {
    "key": "s14_pmod",
-   "name": "Pitch Mod",
+   "name": "S14 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2917,7 +2917,7 @@
   },
   {
    "key": "s14_ndecay",
-   "name": "Noise Decay",
+   "name": "S14 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2925,7 +2925,7 @@
   },
   {
    "key": "s14_sat",
-   "name": "Saturate",
+   "name": "S14 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2933,7 +2933,7 @@
   },
   {
    "key": "s14_pan",
-   "name": "Pan",
+   "name": "S14 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -2941,7 +2941,7 @@
   },
   {
    "key": "s14_rev",
-   "name": "Rev",
+   "name": "S14 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -2949,7 +2949,7 @@
   },
   {
    "key": "s14_dly",
-   "name": "Dly",
+   "name": "S14 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -3009,7 +3009,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 33,
+   "default": 20,
    "refresh_display": true
   },
   {
@@ -3026,7 +3026,7 @@
   },
   {
    "key": "s15_level",
-   "name": "Level",
+   "name": "S15 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3034,7 +3034,7 @@
   },
   {
    "key": "s15_tune",
-   "name": "Tune",
+   "name": "S15 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3042,7 +3042,7 @@
   },
   {
    "key": "s15_decay",
-   "name": "Decay",
+   "name": "S15 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3050,7 +3050,7 @@
   },
   {
    "key": "s15_drive",
-   "name": "Drive",
+   "name": "S15 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3058,7 +3058,7 @@
   },
   {
    "key": "s15_dist",
-   "name": "Dist",
+   "name": "S15 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -3072,7 +3072,7 @@
   },
   {
    "key": "s15_attack",
-   "name": "Attack",
+   "name": "S15 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3080,7 +3080,7 @@
   },
   {
    "key": "s15_tone",
-   "name": "Tone",
+   "name": "S15 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3088,7 +3088,7 @@
   },
   {
    "key": "s15_snappy",
-   "name": "Snappy",
+   "name": "S15 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3096,7 +3096,7 @@
   },
   {
    "key": "s15_noise",
-   "name": "Noise",
+   "name": "S15 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3104,7 +3104,7 @@
   },
   {
    "key": "s15_rate",
-   "name": "Rate",
+   "name": "S15 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3112,7 +3112,7 @@
   },
   {
    "key": "s15_sweep",
-   "name": "Sweep",
+   "name": "S15 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3120,7 +3120,7 @@
   },
   {
    "key": "s15_pmod",
-   "name": "Pitch Mod",
+   "name": "S15 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3128,7 +3128,7 @@
   },
   {
    "key": "s15_ndecay",
-   "name": "Noise Decay",
+   "name": "S15 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3136,7 +3136,7 @@
   },
   {
    "key": "s15_sat",
-   "name": "Saturate",
+   "name": "S15 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3144,7 +3144,7 @@
   },
   {
    "key": "s15_pan",
-   "name": "Pan",
+   "name": "S15 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3152,7 +3152,7 @@
   },
   {
    "key": "s15_rev",
-   "name": "Rev",
+   "name": "S15 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -3160,7 +3160,7 @@
   },
   {
    "key": "s15_dly",
-   "name": "Dly",
+   "name": "S15 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -3220,7 +3220,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 15,
+   "default": 36,
    "refresh_display": true
   },
   {
@@ -3233,11 +3233,11 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 2
   },
   {
    "key": "s16_level",
-   "name": "Level",
+   "name": "S16 Level",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3245,7 +3245,7 @@
   },
   {
    "key": "s16_tune",
-   "name": "Tune",
+   "name": "S16 Tune",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3253,7 +3253,7 @@
   },
   {
    "key": "s16_decay",
-   "name": "Decay",
+   "name": "S16 Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3261,7 +3261,7 @@
   },
   {
    "key": "s16_drive",
-   "name": "Drive",
+   "name": "S16 Drive",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3269,7 +3269,7 @@
   },
   {
    "key": "s16_dist",
-   "name": "Dist",
+   "name": "S16 Dist",
    "default": 0,
    "options": [
     "Diode",
@@ -3283,7 +3283,7 @@
   },
   {
    "key": "s16_attack",
-   "name": "Attack",
+   "name": "S16 Attack",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3291,7 +3291,7 @@
   },
   {
    "key": "s16_tone",
-   "name": "Tone",
+   "name": "S16 Tone",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3299,7 +3299,7 @@
   },
   {
    "key": "s16_snappy",
-   "name": "Snappy",
+   "name": "S16 Snappy",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3307,7 +3307,7 @@
   },
   {
    "key": "s16_noise",
-   "name": "Noise",
+   "name": "S16 Noise",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3315,7 +3315,7 @@
   },
   {
    "key": "s16_rate",
-   "name": "Rate",
+   "name": "S16 Rate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3323,7 +3323,7 @@
   },
   {
    "key": "s16_sweep",
-   "name": "Sweep",
+   "name": "S16 Sweep",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3331,7 +3331,7 @@
   },
   {
    "key": "s16_pmod",
-   "name": "Pitch Mod",
+   "name": "S16 Pitch Mod",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3339,7 +3339,7 @@
   },
   {
    "key": "s16_ndecay",
-   "name": "Noise Decay",
+   "name": "S16 Noise Decay",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3347,7 +3347,7 @@
   },
   {
    "key": "s16_sat",
-   "name": "Saturate",
+   "name": "S16 Saturate",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3355,7 +3355,7 @@
   },
   {
    "key": "s16_pan",
-   "name": "Pan",
+   "name": "S16 Pan",
    "default": 64,
    "min": 0,
    "max": 127,
@@ -3363,7 +3363,7 @@
   },
   {
    "key": "s16_rev",
-   "name": "Rev",
+   "name": "S16 Rev",
    "default": 0,
    "min": 0,
    "max": 127,
@@ -3371,7 +3371,7 @@
   },
   {
    "key": "s16_dly",
-   "name": "Dly",
+   "name": "S16 Dly",
    "default": 0,
    "min": 0,
    "max": 127,
