@@ -16,13 +16,13 @@ on:
 
 jobs:
   tr_mpc:
-    uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@e15ce126d3a523f76f9e099ce5bc9bdc542e0cc3
+    uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@70c162311387475f0942d9944acfc73e1fad4f95
     permissions:
       contents: write
     with:
       tag: trmpc-vst-v${{ inputs.version }}
       version: ${{ inputs.version }}
-      tools_ref: e15ce126d3a523f76f9e099ce5bc9bdc542e0cc3
+      tools_ref: 70c162311387475f0942d9944acfc73e1fad4f95
       vst_dir: ports/trkit
       build: bash tools/build_ci.sh trkit
       host_test: bash tools/test_ci.sh trkit
@@ -34,13 +34,13 @@ jobs:
 
   tr_mpc_tap_fx:
     # The Tap FX plugin: puts TR-MPC's slots and its reverb/delay sends on their own MPC tracks. Ships as its own zip and draft.
-    uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@e15ce126d3a523f76f9e099ce5bc9bdc542e0cc3
+    uses: sd88me/mpc-vst-plugins/.github/workflows/vst-release.yml@70c162311387475f0942d9944acfc73e1fad4f95
     permissions:
       contents: write
     with:
       tag: trmpc-tap-fx-vst-v${{ inputs.version }}
       version: ${{ inputs.version }}
-      tools_ref: e15ce126d3a523f76f9e099ce5bc9bdc542e0cc3
+      tools_ref: 70c162311387475f0942d9944acfc73e1fad4f95
       vst_dir: ports/trkit/tapfx
       build: bash tools/build_ci.sh trkit/tapfx
       plugin_id: tr-mpc-tap-fx
