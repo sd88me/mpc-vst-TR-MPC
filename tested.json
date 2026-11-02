@@ -28,7 +28,7 @@
  {
   "version": "1.2.0",
   "device": "MPC Live III",
-  "firmware": "MPC OS 3.10.1",
+  "firmware": "MPC OS 3.10",
   "date": "2026-11-02",
   "note": "6W6, 8W8, 9W9, CW-78: realistic skins with Q-Link columns."
  },
@@ -42,7 +42,7 @@
  {
   "version": "1.1.0",
   "device": "MPC Live III",
-  "firmware": "MPC OS 3.10.1",
+  "firmware": "MPC OS 3.10",
   "date": "2026-11-02",
   "note": "TR-MPC and Tap FX: slot modules in the kits' looks, VOICES Q-Link page."
  }
