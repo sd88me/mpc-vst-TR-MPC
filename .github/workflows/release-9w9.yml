@@ -22,7 +22,7 @@ jobs:
     with:
       tag: 9w9-vst-v${{ inputs.version }}
       version: ${{ inputs.version }}
-      tools_ref: e15ce126d3a523f76f9e099ce5bc9bdc542e0cc3
+      tools_ref: 70c162311387475f0942d9944acfc73e1fad4f95
       vst_dir: ports/9w9
       build: SHADOW_SKIN_MPC_OS=2 bash tools/build_ci.sh 9w9
       host_test: bash tools/test_ci.sh 9w9

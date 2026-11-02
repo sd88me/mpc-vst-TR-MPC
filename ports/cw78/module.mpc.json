@@ -1017,7 +1017,7 @@
   },
   {
    "key": "rev_decay",
-   "name": "REV Decay",
+   "name": "Rev Decay",
    "type": "int",
    "min": 0,
    "max": 127,
@@ -1025,7 +1025,7 @@
   },
   {
    "key": "rev_tone",
-   "name": "REV Tone",
+   "name": "Rev Tone",
    "type": "int",
    "min": 0,
    "max": 127,
@@ -1033,7 +1033,7 @@
   },
   {
    "key": "rev_hpf",
-   "name": "REV HPF",
+   "name": "Rev HPF",
    "type": "int",
    "min": 0,
    "max": 127,
@@ -1041,7 +1041,7 @@
   },
   {
    "key": "rev_level",
-   "name": "REV Level",
+   "name": "Rev Level",
    "type": "int",
    "min": 0,
    "max": 127,
@@ -1052,7 +1052,7 @@
   },
   {
    "key": "dly_time",
-   "name": "DLY Time",
+   "name": "Dly Time",
    "type": "enum",
    "options": [
     "1/32",
@@ -1073,7 +1073,7 @@
   },
   {
    "key": "dly_fdbk",
-   "name": "DLY Fdbk",
+   "name": "Dly Fdbk",
    "type": "int",
    "min": 0,
    "max": 127,
@@ -1081,7 +1081,7 @@
   },
   {
    "key": "dly_tone",
-   "name": "DLY Tone",
+   "name": "Dly Tone",
    "type": "int",
    "min": 0,
    "max": 127,
@@ -1089,7 +1089,7 @@
   },
   {
    "key": "dly_hpf",
-   "name": "DLY HPF",
+   "name": "Dly HPF",
    "type": "int",
    "min": 0,
    "max": 127,
@@ -1097,7 +1097,7 @@
   },
   {
    "key": "dly_level",
-   "name": "DLY Level",
+   "name": "Dly Level",
    "type": "int",
    "min": 0,
    "max": 127,

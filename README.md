@@ -24,7 +24,7 @@ All the sound design is by **athousanddetails**, who wrote the original [Schwung
 
 What this repo adds is only the MPC side:
 - the VST2 wrapper and parameter list, via the Schwung adapter in [mpc-vst-plugins](https://github.com/sd88me/mpc-vst-plugins);
-- an MPC touchscreen skin and Q-Link pages per kit (`layout.conf`);
+- an MPC touchscreen skin per kit, drawn in the manner of the machine it ports, with its Q-Link pages (`layout.conf`);
 - a remap of the MPC drum-pad MIDI notes (0-15) onto each kit's own voice map, so the pads of an MPC drum program play the right drums;
 - build, offline test and release automation.
 
@@ -47,6 +47,17 @@ Sixteen voices. Fifteen are circuit models built from the service notes: a bridg
 
 ### CW-78, CR-78 CompuRhythm
 Fourteen voices modelled from the 1979 service notes and Roland's factory alignment figures: kick, snare, low/hi bongo, low conga, rim shot, claves, hi-hat, cymbal, maracas, cowbell, tambourine, guiro and the Metallic Beat. The machine's **preset rhythms** are included, transcribed from the service notes: 17 buttons with an A/B lever (34 rhythms), and a second button can be combined with the first as on the hardware. They play from the MPC transport on the Rhythm page.
+
+### The skins
+Each kit's skin is drawn after the machine it ports: 8W8 a charcoal 808 panel with cream voice tiles and orange Level knobs, 6W6 the 606's brushed aluminium with faceted metal knobs, CW-78 the CR-78's black panel in a walnut case, 9W9 the 909's off-white panel with slate section bars. They are drawn from scratch, not copied from photos, and carry no maker's names or marks. Knobs are lit from a fixed direction, so only the pointer turns.
+
+| 8W8 | 6W6 |
+|---|---|
+| ![8W8](docs/screenshots/8w8.png) | ![6W6](docs/screenshots/6w6.png) |
+| **CW-78** | **9W9** |
+| ![CW-78](docs/screenshots/cw78.png) | ![9W9](docs/screenshots/9w9.png) |
+
+**Q-Links.** Every voice is one column: its top four knobs are **Level, Tune, Decay, Drive**, with Distortion, the voice's own controls and the Reverb / Delay sends below. On a page's overview the Q-Links turn those top four for each of its voices; each voice also has its own Q-Link page (the four, then the rest of its controls). MPC outlines the knobs the Q-Links are on. **FX/MASTER** is Reverb, Delay, Master and Accent (velocity depth, and the hat choke where the kit has one) in every kit; CW-78's preset rhythms are a column next to Guiro and Metal Beat.
 
 ### 9W9, TR-909
 Circuit-modelled kick, snare, three toms, rim shot and hand clap; **sampled** hi-hats, ride and crash, the same split the real 909 used. The cymbal samples ship with the plugin (`engine/samples/` next to the `.so`) and come from [ER-99](https://github.com/matthewcieplak/er-99), GPL-3.0. Accent sets the full-velocity level; closed and open hat choke each other.
@@ -78,7 +89,7 @@ Then add the plugin to a track from the plugin browser: the drum machines and TR
 
 - **TR-MPC 1.0.0** and **TR-MPC Tap FX 1.0.0** are released (MPC OS 3.x; tested on a Force, MPC OS 3.9.1.2).
 - 6W6, 8W8, CW-78 and 9W9 are at 1.1.1 (MPC OS 2.x skin shape, readable menu pickers, FX/MASTER page, host transport and tempo for the kits); not yet tested on a 2.x unit.
-- The drum-machine skins are auto-generated layouts (palette from the original web UIs). Their knob caps and plates are drawn, but the web UIs' sequencer and pad strip are not reproduced.
+- The skins are drawn after the hardware (above); the web UIs' sequencer and pad strip are not reproduced. Skins and Q-Link outlines checked on an MPC Live III; still to check on a Force.
 - Not yet checked by ear: the pad-to-voice mapping against every MPC drum-program layout.
 - Not yet auditioned at length on the device: TR-MPC Tap FX routing on every combination of slot, send and `THRU`.
 
@@ -90,17 +101,19 @@ One modular drum kit that combines all four machines: **16 pad slots, where each
 
 ### Playing it
 - Slots 1-16 answer MIDI notes **36-51** (the standard MPC drum-pad range), or notes 0-15 with the optional drum-pad patch below. Velocity works as on the drum plugins.
-- Add TR-MPC to a track as an instrument; each pad of an MPC drum program triggers its slot. Every slot starts with a ready default voice (bass drum, snare, toms, hats, clap, rim, cowbell and so on), so it plays as a kit straight away.
+- Add TR-MPC to a track as an instrument; each pad of an MPC drum program triggers its slot. Every slot starts with a ready default voice (kick, snare, hats, clap, rim, toms, ride, cowbell and so on, from all four kits), so it plays as a kit straight away.
 - Two slots set to the same voice share that engine voice (one is retriggered by the other); they can still differ in pan and sends, and the slot you hit last is the one you hear.
 - Project recall: all slot values, FX settings and the randomise setup are saved with the project.
 
-### Slot pages (Q-Link)
-Each slot has one page of 16 knobs. The panel **reskins itself to the kit of its voice** (6W6 silver, 8W8 charcoal, CW-78 black and wood, 9W9 cream), with the voice name as a menu at the top (grouped and coloured per kit). Every slot has:
-- **Voice** (49 choices), **Distortion** type (the seven characters: Diode, Clip, SAT, BFZ, PDIST, Fold, Crush), **Level**, **Tune**, **Decay**, **Drive**;
+### Slot modules
+Four slots per page, each a rack module that **takes the look of the kit its voice comes from**: the same panel, heading and knobs as that drum plugin, with screws in its corners. The voice name at the top is the menu (tap it; voices are grouped and coloured per kit). Every slot has:
+- **Level**, **Tune**, **Decay**, **Drive** (the top four);
 - the voice's own controls where it has them (Attack, Tone, Snappy, Noise, Rate, Sweep and so on: only those the voice owns are shown);
-- **Pan** (constant power) and **Rev** / **Dly** sends into the shared effects.
+- **Distortion** type (the seven characters: Diode, Clip, SAT, BFZ, PDIST, Fold, Crush), **Pan** (constant power) and **Rev** / **Dly** sends into the shared effects.
 
-Continuous knobs are 0-127 and the jog wheel and Q-Links nudge them in fine steps.
+A new TR-MPC starts with every page mixing the four kits (page 1: an 8W8 kick, 9W9 snare, 6W6 closed hat and CW-78 hi-hat), so it plays as a kit straight away.
+
+**Q-Links.** On each page the Q-Links turn the top four of all four slots; a **VOICES** page puts the four voice menus on the Q-Links; and each **SLOT** page has all of one slot's controls. MPC outlines the knobs in use. Continuous knobs are 0-127; a jog wheel click moves one three steps.
 
 ### FX page
 Three modules with a lit / dark key each: **REVERB** (decay, tone, high-pass, level), **DELAY** (tempo-synced time, feedback, tone, high-pass, level) and **MASTER** (master distortion and drive, a one-knob bus compressor, volume). One reverb, one delay and one master chain serve all 16 slots, followed by an output soft limiter so sixteen pads summed together do not hard-clip. The key lit means the kit's own stage is in the signal path; dark means **send only**: the stage is bypassed and that send leaves only through a Tap FX (below).
@@ -119,7 +132,7 @@ A companion effect plugin for routing parts of the kit through MPC's own mixer. 
 
 ### Limits
 - MPC OS 3.x only for TR-MPC and Tap FX, for now.
-- About 20 MB installed and about 1,100 skin components: the pages load a little slowly and memory is tighter than the drum plugins (watch it with many other add-ons running).
+- About 20 MB installed and over a thousand skin components: the pages load a little slowly and memory is tighter than the drum plugins (watch it with many other add-ons running).
 - CPU: see the table above. Use one TR-MPC per project.
 - Only Level, Tune, Decay, Drive, Distortion and the nine extra voice pots are saved per slot; other internal pots of an engine keep their defaults.
 
@@ -132,7 +145,7 @@ bash tools/build_ci.sh 9w9      # armhf .so + skin in ports/9w9/build
 bash tools/test_ci.sh 9w9       # offline ASan/UBSan host test
 ```
 
-`tools/extract_module.py` builds `module.mpc.json` (chain_params and ui_hierarchy) from a kit's generated `*_params.h`; `tools/build_all.sh` builds everything and renders skin previews. TR-MPC builds with `bash tools/build_ci.sh trkit full` and its offline tests are `bash ports/trkit/test/run.sh`; `tools/package_trmpc.sh <version> <dist> [device-ip]` packages and installs it and Tap FX locally. Releases: Actions, "Release <kit> (draft)" (`.github/workflows/release-<kit>.yml`, tags `<kit>-vst-v<version>`; TR-MPC and Tap FX share `release-trmpc.yml`), then install the draft's zip on a device, smoke-test it and publish. `patch/` holds an experimental MPC OS drum-pad patch.
+`tools/extract_module.py` builds `module.mpc.json` (chain_params and ui_hierarchy) from a kit's generated `*_params.h`; `tools/build_all.sh` builds everything and renders skin previews. TR-MPC builds with `bash tools/build_ci.sh trkit` and its offline tests are `bash ports/trkit/test/run.sh`; the skins are drawn by `python3 tools/drum_skin.py <kit>` (each kit's look is `ports/<kit>/skin/style.py`) and `python3 tools/trmpc_skin.py`, which write `layout.conf` and `art/` (commit both); `tools/package_trmpc.sh <version> <dist> [device-ip]` packages and installs it and Tap FX locally. Releases: Actions, "Release <kit> (draft)" (`.github/workflows/release-<kit>.yml`, tags `<kit>-vst-v<version>`; TR-MPC and Tap FX share `release-trmpc.yml`), then install the draft's zip on a device, smoke-test it and publish. `patch/` holds an experimental MPC OS drum-pad patch.
 
 ## Credits and licence
 

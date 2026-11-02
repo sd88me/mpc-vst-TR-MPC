@@ -124,11 +124,12 @@ const Knob kKnobs[] = {
 };
 constexpr int kNumKnobs = 14;
 
-/* Default flat voice per slot (808 kick/snare/toms, 606 hats, 909 clap/rim/cymbals, CR78 percussion) */
+/* Default flat voice per slot: every page of four mixes the four kits (kick, snare, hats; kick, snare, clap, rim; toms and
+ * bongo; ride, cymbal, cowbell, guiro). Must match DEFAULT_FLAT in tools/gen_trkit_params.py. */
 int default_flat(int slot) {
     static const struct { int b, v; } d[kSlots] = {
-        {1, 0}, {1, 1}, {1, 2}, {1, 4}, {0, 4}, {0, 5}, {3, 6}, {3, 5},
-        {1, 11}, {1, 12}, {2, 10}, {2, 6}, {0, 6}, {3, 9}, {2, 9}, {1, 7},
+        {1, 0}, {3, 1}, {0, 4}, {2, 3}, {3, 0}, {0, 1}, {1, 11}, {2, 2},
+        {0, 2}, {1, 3}, {3, 4}, {2, 7}, {3, 9}, {0, 6}, {1, 12}, {2, 12},
     };
     int flat = d[slot].v;
     for (int i = 0; i < d[slot].b; ++i) flat += kBackends[i].nvoices;
