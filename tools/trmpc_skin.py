@@ -146,6 +146,26 @@ def label_image(t, cx, cy, text, size):
     return ds.final(tt.hi, w, h), w, h
 
 
+# The kit's name running up the module's left edge, faint, in the kit's own lettering (as the earlier TR-MPC skin had it)
+WATERMARK = {"6w6": ("6W6", "michroma", (26, 28, 34), 60), "8w8": ("8W8", "logo", (232, 98, 40), 88),
+             "cw78": ("CW-78", "filmotype", (240, 112, 40), 80), "9w9": ("9W9", "earth", (78, 82, 94), 76)}
+
+
+def watermark(t, kit):
+    text, face, rgb, alpha = WATERMARK[kit]
+    size = 42
+    while size > 24 and ds.font(size, face).getlength(text) / SS > 118:   # stays beside the bottom row, under Distortion
+        size -= 1
+    f = ds.font(size, face)
+    w = int(f.getlength(text)) + 8 * SS
+    h = size * SS + 8 * SS
+    layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    ImageDraw.Draw(layer).text((4 * SS, h // 2), text, font=f, fill=rgb + (alpha,), anchor="lm")
+    layer = layer.rotate(90, expand=True)                     # reads bottom to top
+    x, y = (XM + 8) * SS, (MB - 26) * SS - layer.height      # left edge, above the bottom screw
+    t.hi.alpha_composite(layer, (int(x), int(y)))
+
+
 def family_module(out, fam):
     """Module art for sNN_fam = fam, the fixed knobs' strips, and the strips and name images of every voice extra a
     voice of this kit can have. Returns {name: strip file}, {(n, kind): (strip, label image)} and the art file."""
@@ -153,6 +173,7 @@ def family_module(out, fam):
     g, cells = geo(fam)
     t = kit_tab(kit, g)
     module_edges(t, XM)
+    watermark(t, kit)
     ax = XM + (TITLE_CW78[0] + TITLE_CW78[1] // 2 - 4 if kit == "cw78" else PW - 44)   # the voice menu's arrow (CW-78: clear of its keys)
     ink = tuple(int(TITLE_INK[kit][i:i + 2], 16) for i in (0, 2, 4))
     t.d.polygon([((ax - 7) * SS, (TITLE_Y - 4) * SS), ((ax + 7) * SS, (TITLE_Y - 4) * SS), (ax * SS, (TITLE_Y + 5) * SS)], fill=ink)
