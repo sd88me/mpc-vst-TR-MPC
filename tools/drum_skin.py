@@ -170,7 +170,8 @@ class Tab:
     def tile(self, x0, name):
         """The voice's name in small capitals: on a cream tile (808) or straight on the metal (606)."""
         d = self.d
-        x1, y0, y1 = x0 + COLW - 20, 58, 90
+        x1 = x0 + COLW - 20
+        y0, y1 = getattr(self, "tile_y", (58, 90))      # a TR-MPC module sets its heading lower, under its screws
         x0 += 20
         if hasattr(self.st["module"], "tile"):   # the kit draws its own headings
             self.st["module"].tile(self, x0, x1, y0, y1, name)

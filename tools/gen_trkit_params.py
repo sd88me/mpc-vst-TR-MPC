@@ -25,8 +25,9 @@ DEFAULT_FLAT = []
 off = [0]
 for _, ids in KITS:
     off.append(off[-1] + len(ids.split()))
-for b, v in [(1, 0), (1, 1), (1, 2), (1, 4), (0, 4), (0, 5), (3, 6), (3, 5),
-             (1, 11), (1, 12), (2, 10), (2, 6), (0, 6), (3, 9), (2, 9), (1, 7)]:
+# every page mixes the four kits (must match default_flat() in ports/trkit/src/trkit.cpp)
+for b, v in [(1, 0), (3, 1), (0, 4), (2, 3), (3, 0), (0, 1), (1, 11), (2, 2),
+             (0, 2), (1, 3), (3, 4), (2, 7), (3, 9), (0, 6), (1, 12), (2, 12)]:
     DEFAULT_FLAT.append(off[b] + v)
 
 KITS_ORDER = [("6W6", 0), ("8W8", 1), ("CW-78", 2), ("9W9", 3)]
@@ -42,7 +43,9 @@ for s in range(1, 17):
     params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1], "refresh_display": True})
     keys.append(sk + "src")
     # the voice's kit (read-only, derived in trkit.cpp): the skin swaps each slot's faceplate on it
-    params.append({"key": sk + "fam", "name": "Kit", "options": [k for k, _ in KITS_ORDER] + ["9W9 BD"], "default": 1})
+    dflat = DEFAULT_FLAT[s - 1]   # the default voice's kit (4: the 9W9 kick), so a new instance draws the right modules
+    dfam = 4 if dflat == off[3] else max(b for b in range(4) if off[b] <= dflat)
+    params.append({"key": sk + "fam", "name": "Kit", "options": [k for k, _ in KITS_ORDER] + ["9W9 BD"], "default": dfam})
     keys.append(sk + "fam")
     for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
                            ("dist", "Dist", 0)] + EXTRA_KNOBS + [

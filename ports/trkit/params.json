@@ -266,7 +266,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 9,
+   "default": 39,
    "refresh_display": true
   },
   {
@@ -279,7 +279,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 3
   },
   {
    "key": "s02_level",
@@ -477,7 +477,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 10,
+   "default": 4,
    "refresh_display": true
   },
   {
@@ -490,7 +490,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 0
   },
   {
    "key": "s03_level",
@@ -688,7 +688,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 12,
+   "default": 27,
    "refresh_display": true
   },
   {
@@ -701,7 +701,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 2
   },
   {
    "key": "s04_level",
@@ -899,7 +899,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 4,
+   "default": 38,
    "refresh_display": true
   },
   {
@@ -912,7 +912,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 4
   },
   {
    "key": "s05_level",
@@ -1110,7 +1110,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 5,
+   "default": 1,
    "refresh_display": true
   },
   {
@@ -1123,7 +1123,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 0
   },
   {
    "key": "s06_level",
@@ -1321,7 +1321,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 44,
+   "default": 19,
    "refresh_display": true
   },
   {
@@ -1532,7 +1532,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 43,
+   "default": 26,
    "refresh_display": true
   },
   {
@@ -1545,7 +1545,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 2
   },
   {
    "key": "s08_level",
@@ -1743,7 +1743,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 19,
+   "default": 2,
    "refresh_display": true
   },
   {
@@ -1756,7 +1756,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 0
   },
   {
    "key": "s09_level",
@@ -1954,7 +1954,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 20,
+   "default": 11,
    "refresh_display": true
   },
   {
@@ -2165,7 +2165,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 34,
+   "default": 42,
    "refresh_display": true
   },
   {
@@ -2178,7 +2178,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 3
   },
   {
    "key": "s11_level",
@@ -2376,7 +2376,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 30,
+   "default": 31,
    "refresh_display": true
   },
   {
@@ -2389,7 +2389,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 2
   },
   {
    "key": "s12_level",
@@ -2587,7 +2587,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 6,
+   "default": 47,
    "refresh_display": true
   },
   {
@@ -2600,7 +2600,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 3
   },
   {
    "key": "s13_level",
@@ -2798,7 +2798,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 47,
+   "default": 6,
    "refresh_display": true
   },
   {
@@ -2811,7 +2811,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 0
   },
   {
    "key": "s14_level",
@@ -3009,7 +3009,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 33,
+   "default": 20,
    "refresh_display": true
   },
   {
@@ -3220,7 +3220,7 @@
     "RIDE",
     "CRASH"
    ],
-   "default": 15,
+   "default": 36,
    "refresh_display": true
   },
   {
@@ -3233,7 +3233,7 @@
     "9W9",
     "9W9 BD"
    ],
-   "default": 1
+   "default": 2
   },
   {
    "key": "s16_level",
