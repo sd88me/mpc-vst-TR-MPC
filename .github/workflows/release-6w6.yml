@@ -16,7 +16,7 @@ on:
 
 jobs:
   tr_6w6:
-    uses: open-mpc/mpc-vst-plugins/.github/workflows/vst-release.yml@9c600825cd60f5b05c2017d58e55f2898c665abc
+    uses: open-mpc/mpc-vst-plugins/.github/workflows/vst-release.yml@70c162311387475f0942d9944acfc73e1fad4f95
     permissions:
       contents: write
     with:
