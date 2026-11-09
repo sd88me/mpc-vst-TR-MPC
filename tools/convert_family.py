@@ -3,13 +3,17 @@
 aarch64 zips into one "<Manufacturer> - VST - <Name>" folder (original .so files, original Plugin Skins, a generated plugin.json), then this script
 verifies that every skin file, data file and binary is byte-identical to the release zips, and writes dist-sdk/<Name>-<ver>-VST2-Plugins.zip.
     tools/convert_family.py [kit ...]     (default: all six)   MPC_SDK: the mpc-plugin-builder-sdk checkout"""
-import hashlib, os, shutil, subprocess, sys, zipfile
+import hashlib, json, os, shutil, subprocess, sys, zipfile
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 SDK = os.environ.get("MPC_SDK", os.path.expanduser("~/mpc-310-private/mpc-plugin-builder-sdk"))
 REL = os.path.join(ROOT, "build", "rel")
 OUT = os.path.join(ROOT, "dist-sdk")
 KITS = {"6w6": ("6W6-1.2.0", "6w6-vst-v1.2.0"), "8w8": ("8W8-1.2.0", "8w8-vst-v1.2.0"), "9w9": ("9W9-1.2.0", "9w9-vst-v1.2.0"), "cw78": ("CW-78-1.2.0", "cw78-vst-v1.2.0"),
         "trkit": ("TR-MPC-1.1.0", "trmpc-vst-v1.1.0"), "tapfx": ("TR-MPC-Tap-FX-1.1.0", "trmpc-tap-fx-vst-v1.1.0")}
+
+
+# version of the new (folder-format) release per kit; the folder's plugin.json carries it, everything else stays as released
+NEW = {"6w6": "1.3.0", "8w8": "1.3.0", "9w9": "1.3.0", "cw78": "1.3.0", "trkit": "1.2.0", "tapfx": "1.2.0"}
 
 
 def sha(b):
@@ -40,6 +44,11 @@ def main():
         shutil.rmtree(tmp, ignore_errors=True)
         subprocess.check_call([sys.executable, os.path.join(SDK, "tools", "legacy_convert.py"), arm, a64, "--out", tmp], stdout=subprocess.DEVNULL)
         folder = os.listdir(tmp)[0]
+        pj = os.path.join(tmp, folder, "plugin.json")
+        meta = json.load(open(pj))
+        meta["version"] = NEW[k]
+        json.dump(meta, open(pj, "w"), indent=2)
+        open(pj, "a").write("\n")
         fa, files_a = release_files(arm)
         _, files_b = release_files(a64)
         assert fa == folder, (fa, folder)
@@ -61,7 +70,7 @@ def main():
         n = sum(1 for _ in os.walk(os.path.join(tmp, folder)))
         if bad:
             sys.exit("%s: not identical to the release: %s" % (k, bad[:5]))
-        zout = os.path.join(OUT, "%s-VST2-Plugins.zip" % stem)
+        zout = os.path.join(OUT, "%s-%s-VST2-Plugins.zip" % (stem.rsplit("-", 1)[0], NEW[k]))
         with zipfile.ZipFile(zout, "w", zipfile.ZIP_DEFLATED) as z:
             for d, _, fs in os.walk(os.path.join(tmp, folder)):
                 for f in sorted(fs):
