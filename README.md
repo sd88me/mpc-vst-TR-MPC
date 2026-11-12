@@ -2,10 +2,7 @@
 
 💬 Questions or feedback? Join the [Open MPC Discord](https://discord.gg/sRRysZSgu3).
 
-> **MPC OS.** The 6W6, 8W8, CW-78 and 9W9 releases from 1.1.1 are built for **MPC OS 2.x and 3.x**: the plugin library needs glibc 2.32 or less
-> and the skin uses the version 2.15.1's own skins use (the [catalog](https://sd88me.github.io/mpc-vst-plugins/) checks both). They are tested on
-> MPC OS 3.x (a Force); **not yet tested on a 2.x unit**, so the catalog does not show them as tested on 2.x. TR-MPC itself still works on MPC OS 3.x only.
-> See [MPC OS 2.x vs 3.x](https://github.com/sd88me/mpc-vst-plugins#mpc-os-2x-vs-3x) in the main repo.
+> **MPC OS.** The plugin libraries need glibc 2.32 or less and the skins use the version MPC OS 2.15.1's own skins use. They are tested on MPC OS 3.x (a Force and a Live III) and **not yet on a 2.x unit**.
 
 Four classic drum machines, and a modular kit that combines them, as native VST2 plugins for Akai MPC OS standalone devices (Force, MPC Live / Live II, One, X, Key 61), each with its own MPC touchscreen skin and Q-Link mapping:
 
@@ -64,16 +61,12 @@ Circuit-modelled kick, snare, three toms, rim shot and hand clap; **sampled** hi
 
 ## Install
 
-Needs a first-generation MPC OS standalone with root SSH (a modded unit). Take the zip from the plugin's release, unzip it, copy the folder to the device and run `install.sh` (it stops MPC, so save first):
+Each plugin is one folder that works on both MPC families (32-bit: Force, Live, Live II, One, X, Key; 64-bit: Live III and other aarch64 units). Take the zip from the plugin's [release](../../releases), unzip it and copy the `athousanddetails - VST - <name>` (or `sd88me - VST - <name>`) folder into your plugin folder:
 
-```
-scp -r 6W6-1.1.1 root@<device-ip>:/tmp/
-ssh root@<device-ip> sh /tmp/6W6-1.1.1/install.sh
-```
+- **MPC Live III, One and other units that load plugin folders from `VST2 Plugins`:** copy it into a folder named exactly `VST2 Plugins` at the root of a drive the MPC can see, turn on **Preferences > Enhancements > Enable Enhancements** and **VST2 Support**, restart the MPC and add the plugin from External VST Plugins.
+- **Force and other 32-bit MPC OS with a plugin folder (for example `/sdcard/Synths`):** copy it over the existing folder of the same name. Replace the whole folder to upgrade. Save your project first, as the MPC has to restart to see a new plugin.
 
-(`TR-MPC-1.0.0` and `TR-MPC-Tap-FX-1.0.0` work the same way. TR-MPC's zip is about 20 MB; if copying the unzipped folder over a flaky network is a problem, `scp` the zip, unzip it on the device and run `sh install.sh -y`.)
-
-Then add the plugin to a track from the plugin browser: the drum machines and TR-MPC are Instrument plugins, Tap FX is an Insert effect. `INSTALL.md` in each zip has the manual steps and `uninstall.sh` removes it. The installer stops MPC (save first), backs up `MPC.settings` and upgrading in place keeps your own files. Tested on a Force. Installing plugins this way is unofficial, so back up first.
+The drum machines and TR-MPC are Instrument plugins; Tap FX is an Insert effect. TR-MPC's folder is about 20 MB.
 
 ## CPU (Force, one core, 44.1 kHz / 128 frames, 16 voices)
 
@@ -87,9 +80,10 @@ Then add the plugin to a track from the plugin browser: the drum machines and TR
 
 ## Status
 
-- **TR-MPC 1.0.0** and **TR-MPC Tap FX 1.0.0** are released (MPC OS 3.x; tested on a Force, MPC OS 3.9.1.2).
-- 6W6, 8W8, CW-78 and 9W9 are at 1.1.1 (MPC OS 2.x skin shape, readable menu pickers, FX/MASTER page, host transport and tempo for the kits); not yet tested on a 2.x unit.
-- The skins are drawn after the hardware (above); the web UIs' sequencer and pad strip are not reproduced. Skins and Q-Link outlines checked on an MPC Live III; still to check on a Force.
+- **6W6, 8W8, CW-78 and 9W9 1.3.0**, **TR-MPC 1.2.0** and **TR-MPC Tap FX 1.2.0**: one plugin folder per plugin for both MPC families. The sound engine, skins, parameters and presets are unchanged from the previous releases.
+- The 32-bit plugin files are byte-for-byte the ones tested on a Force (MPC OS 3.9.1.2); the folders were checked on an MPC Live III.
+- Not yet tested on an MPC OS 2.x unit.
+- The skins are drawn after the hardware (above); the web UIs' sequencer and pad strip are not reproduced.
 - Not yet checked by ear: the pad-to-voice mapping against every MPC drum-program layout.
 - Not yet auditioned at length on the device: TR-MPC Tap FX routing on every combination of slot, send and `THRU`.
 
