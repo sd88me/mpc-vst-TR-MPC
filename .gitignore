@@ -9,3 +9,4 @@ ports/trkit/tapfx/build/
 __pycache__/
 /build/
 /dist-sdk/
+dist-catalog/
