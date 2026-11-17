@@ -105,6 +105,7 @@ struct Pair {
     long quiet[2] = {0, 0};
     uint16_t data[2] = {0, 0};
     float accent[2] = {-1, -1};
+    LaneKnobs knobs[kLanes];   /* the LIVE knobs the boards were last given (applyKnobs) */
 
     void build(const Spec &s, double rate)
     {
@@ -152,6 +153,7 @@ struct Pair {
 /* A lane's LIVE knobs into a pair's boards. */
 void applyKnobs(Pair &p, const LaneKnobs *knobs)
 {
+    for (int l = 0; l < kLanes; ++l) p.knobs[l] = knobs[l];
     for (int bi = 0; bi < 2; ++bi) {
         tr808::Controls &c = p.ctl[bi];
         c.bdLevel = c.sdLevel = c.ltLevel = c.mtLevel = c.htLevel = 1.0;
@@ -209,11 +211,14 @@ struct Engine::Impl {
     tr808::Parallel *par = nullptr;
     LaneKnobs knobs[kLanes];
     bool liveDirty = true;
-    /* LIVE knobs reach the boards at most every kLiveEvery samples: each change makes the circuits
-     * it touches rebuild their matrices on the next step, on the audio thread, and a Q-Link sweep
-     * moves a knob every block. ~10 ms is still a smooth turn. */
+    /* LIVE knobs reach the boards at most every kLiveEvery samples per lane, and at most one lane
+     * per block (round-robin): each change makes the circuits it touches rebuild their matrices on
+     * the next step, on the audio thread, and a Q-Link sweep moves knobs every block. Sending every
+     * lane's change at once stacked those rebuilds into one block. ~10 ms is still a smooth turn. */
     static constexpr long kLiveEvery = 480;
-    long liveWait = 0;
+    LaneKnobs applied[kLanes];   /* the LIVE knobs as the current pair has them */
+    long laneWait[kLanes] = {};
+    int liveNext = 0;
     int metalLane = L_CH;        /* the CH/OH/CY lane whose tune was moved last: they share the metal source */
 
     bool laneOn[kLanes] = {};
@@ -265,7 +270,33 @@ struct Engine::Impl {
         return s;
     }
 
-    void applyLive(Pair &p) { applyKnobs(p, knobs); }
+    void applyLive(Pair &p) { applyKnobs(p, applied); }
+
+    static bool liveDiffers(const LaneKnobs &a, const LaneKnobs &b)
+    {
+        return a.tunePot != b.tunePot || a.decay != b.decay || a.tone != b.tone || a.snappy != b.snappy ||
+               a.ratio != b.ratio;
+    }
+    /* one lane's pending LIVE change to the current pair, if any lane is due */
+    void liveTick(int n)
+    {
+        for (long &w : laneWait)
+            if (w > 0) w -= n;
+        if (!liveDirty) return;
+        bool pending = false;
+        for (int k = 0; k < kLanes; ++k) {
+            const int l = (liveNext + k) % kLanes;
+            if (!liveDiffers(applied[l], knobs[l])) continue;
+            pending = true;
+            if (laneWait[l] > 0) continue;
+            applied[l] = knobs[l];
+            applyLive(*cur);
+            laneWait[l] = kLiveEvery;
+            liveNext = (l + 1) % kLanes;
+            return;   /* stays dirty: the next block looks again */
+        }
+        liveDirty = pending;
+    }
 
     void work()
     {
@@ -378,6 +409,7 @@ Engine::Engine(double sampleRate, const LaneKnobs *initial) : m(new Impl)
         m->par = new tr808::Parallel(w, workerStart);
     m->cur = new Pair;
     m->cur->build(m->built, sampleRate);
+    for (int l = 0; l < kLanes; ++l) m->applied[l] = m->knobs[l];
     m->applyLive(*m->cur);
     m->cur->settle(sampleRate);
     for (auto &b : m->cur->b) b.setParallel(m->par);
@@ -451,15 +483,12 @@ void Engine::render(int n, float *const lanes[kLanes])
         im.retire(im.cur);
         im.cur = p;
         for (auto &b : p->b) b.setParallel(im.par);
+        /* it was settled with the worker's snapshot of the knobs: liveTick sends what has moved
+         * since, a lane per block, as for any knob */
+        for (int l = 0; l < kLanes; ++l) im.applied[l] = p->knobs[l];
         im.liveDirty = true;
     }
-    if (im.liveWait > 0)
-        im.liveWait -= n;
-    if (im.liveDirty && im.liveWait <= 0) {
-        im.applyLive(*im.cur);   /* retiring pairs keep their knobs: they only ring out */
-        im.liveDirty = false;
-        im.liveWait = Impl::kLiveEvery;
-    }
+    im.liveTick(n);   /* retiring pairs keep their knobs: they only ring out */
     im.renderPair(*im.cur, n, lanes, true);
     for (auto &r : im.retiring) {
         if (!r) continue;
