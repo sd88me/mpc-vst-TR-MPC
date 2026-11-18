@@ -254,9 +254,12 @@ float pot_value(int slot, int pot)
  * with its Level pot full): the geometric mean of the per-voice gains that would match 8W8's levels
  * (+0.2 dB on the low conga to +7.3 dB on the CH), keeping the drive stage and old projects close. */
 constexpr float kLemusGain = 1.553f;
+/* Into the drive stage each voice goes at its 8W8 level (these per-voice gains match a hit's level
+ * to the old engine's, within 1 dB), so Drive and Dist bite on it as they did on 8W8; after it the
+ * same gain comes back out and kLemusGain goes on, so the clean voices keep the 808's balance. */
 constexpr float kLemusTrim[SC808_NUM_VOICES] = {
-    kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain,
-    kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain,
+    1.466f, 1.796f, 1.114f, 1.218f, 1.201f, 1.046f, 1.733f, 1.259f,
+    2.030f, 1.635f, 1.180f, 1.629f, 2.351f, 2.324f, 1.959f, 1.715f,
 };
 
 } /* namespace */
@@ -786,7 +789,11 @@ static inline float voice_sample(sc808_engine *e, int v, float raw)
 #endif
     const float shaped = sc808_shape_st(trimmed, e->potv[s.drive],
                                         e->env[s.dist], r.crush_st);
+#if SC808_ENGINE_LEMUS
+    return shaped * (kLemusGain / kLemusTrim[v]) * e->potv[s.level] * r.hit_gain * r.choke_gain;
+#else
     return shaped * e->potv[s.level] * r.hit_gain * r.choke_gain;
+#endif
 }
 
 /*
