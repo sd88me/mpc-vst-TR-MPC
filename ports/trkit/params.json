@@ -4061,7 +4061,7 @@
   {
    "key": "latency",
    "name": "Latency",
-   "default": 1,
+   "default": 2,
    "options": [
     "0 blocks (0 ms)",
     "1 block (+2.9 ms)",

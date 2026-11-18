@@ -9,7 +9,7 @@ mod.update(id="9x9", name="9X9", abbrev="9X9", version="1.0.0", author="sd88me; 
            description="TR-909 voicing board solved from its circuit (Lemus), with 9W9's panel, drive and effects")
 # l909_board.h: the board renders this many 128-frame blocks ahead of the host, 2.9 ms each (1: a busy beat plays clean on the
 # Live III; 2: never missed a block)
-mod["chain_params"].append({"key": "latency", "name": "Latency", "type": "enum", "default": 1,
+mod["chain_params"].append({"key": "latency", "name": "Latency", "type": "enum", "default": 2,
                             "options": ["0 blocks (0 ms)", "1 block (+2.9 ms)", "2 blocks (+5.8 ms)", "3 blocks (+8.7 ms)"]})
 root = mod["ui_hierarchy"]["levels"]["root"]
 root["params"].append({"key": "latency", "label": "Latency"})

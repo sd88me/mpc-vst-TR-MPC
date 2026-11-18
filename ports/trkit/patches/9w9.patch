@@ -1,7 +1,7 @@
 diff -ruN a/er99_engine.c b/er99_engine.c
---- a/er99_engine.c	2026-11-18 21:31:03.059576999 +1100
-+++ b/er99_engine.c	2026-11-18 21:31:03.066069544 +1100
-@@ -795,6 +795,7 @@
+--- a/er99_engine.c	2026-11-18 22:28:04.532336100 +1100
++++ b/er99_engine.c	2026-11-18 22:28:04.539703396 +1100
+@@ -817,6 +817,7 @@
          const float noise = wa_noise_tick(&e->noise);
  
          float mix = 0.0f, rbus = 0.0f, dbus = 0.0f;
@@ -9,7 +9,7 @@ diff -ruN a/er99_engine.c b/er99_engine.c
          for(int i=0; i<ER99_NUM_INSTRUMENTS; ++i)
          {
              float v;
-@@ -803,15 +804,18 @@
+@@ -825,15 +826,18 @@
              else
                  v = er99_bt_render(&e->bt[i], noise);
              mix += v;
@@ -28,7 +28,7 @@ diff -ruN a/er99_engine.c b/er99_engine.c
              mix += v; rbus += v * e->send_rev[ER99_HC]; dbus += v * e->send_dly[ER99_HC];
          }
          {
-@@ -820,11 +824,13 @@
+@@ -842,11 +846,13 @@
              {
                  const float v = render_sampler(&e->sampler[i]);
                  mix += v;
@@ -42,15 +42,15 @@ diff -ruN a/er99_engine.c b/er99_engine.c
          out[n] = bus_out(e, mix, rbus, dbus);
      }
  }
-@@ -923,6 +929,7 @@
-                 e->ldc_y[l] = y;
+@@ -989,6 +995,7 @@
+                 }
                  const int t = ltrig[l];
                  const float v = lem_post(e, l, t, y);
 +                if(e->tap) e->tap[t * ER99_TAP_FRAMES + base + i] += v;   /* TR-MPC patch */
                  mix += v; rbus += v * e->send_rev[t]; dbus += v * e->send_dly[t];
              }
              if(any_standin)
-@@ -930,14 +937,18 @@
+@@ -996,14 +1003,18 @@
                  {
                      if(!standin[s]) continue;
                      const float v = render_sampler(&e->sampler[s]);
@@ -70,8 +70,8 @@ diff -ruN a/er99_engine.c b/er99_engine.c
  /* Parameters                                                             */
  /* ===================================================================== */
 diff -ruN a/er99_engine.h b/er99_engine.h
---- a/er99_engine.h	2026-11-18 21:31:03.059679705 +1100
-+++ b/er99_engine.h	2026-11-18 21:31:03.067479019 +1100
+--- a/er99_engine.h	2026-11-18 22:28:04.532463503 +1100
++++ b/er99_engine.h	2026-11-18 22:28:04.541146934 +1100
 @@ -165,6 +165,8 @@
  
      er99_master_t master;
@@ -81,7 +81,7 @@ diff -ruN a/er99_engine.h b/er99_engine.h
  
  
      /* Pot positions (0..127) — the external parameter surface. Real
-@@ -206,6 +208,11 @@
+@@ -210,6 +212,11 @@
  /* Render mono into out (engine is mono; the plugin duplicates to stereo). */
  void er99_engine_render(er99_engine_t *e, float *out, int frames);
  

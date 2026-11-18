@@ -800,6 +800,7 @@ struct VoiceBoard::Impl {
 	std::array<bool, 2> cymbalOk{};
 	std::array<std::array<int, 13>, 2> sCymbal{}; // d0..d5, e0..e5, run
 	HiHat hihat;
+	double hhBaseHz = 0; // 9X9: its clock as prepared (setHiHatClockRatio)
 	bool hihatOk = false;
 	std::array<int, 7> sHihat{}; // d0..d5, run
 	// The hi-hat's trig, CLOSED/OPEN and accent lines reach its netlist HiHat::latency() steps late,
@@ -940,6 +941,7 @@ void VoiceBoard::prepare(double hostRate)
 		hh.setSmoothing(HiHat::Smoothing::Sinc);
 		if (m_cal.hhClockHz > 0)
 			hh.setClock(m_cal.hhClockHz);
+		im.hhBaseHz = hh.clock(); // 9X9: setHiHatClockRatio's 1
 		im.hhLatency = std::clamp(int(std::lround(hh.latency())), 0, Impl::kDelay - 1);
 		for (int l = 0; l < 7; ++l)
 			im.sHihat[size_t(l)] = sig.index(l < 6 ? "hh.d" + std::to_string(l) : std::string("hh.run"));
@@ -1160,6 +1162,21 @@ void VoiceBoard::setControls(const Controls &c)
 	m_impl->cymbals[0].setTune(m_cal.knob("crTune", c.crTune));
 	m_impl->cymbals[1].setTune(m_cal.knob("rdTune", c.rdTune));
 	m_impl->mix.set("volume", c.volume);
+}
+
+void VoiceBoard::setBehaviourMod(Voice v, int mod, double value)
+{
+	for (auto &b : m_impl->units[size_t(v)].blocks)
+		if (b.beh)
+			b.beh->setMod(mod, value);
+}
+
+void VoiceBoard::setHiHatClockRatio(double ratio)
+{
+	auto &im = *m_impl;
+	if (im.hhBaseHz <= 0)
+		im.hhBaseHz = im.hihat.clock();
+	im.hihat.setClock(im.hhBaseHz * ratio);
 }
 
 void VoiceBoard::setPlugged(Voice v, bool plugged)

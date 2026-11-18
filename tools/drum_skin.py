@@ -222,9 +222,27 @@ class Tab:
             x1, y1 = polar(cx * SS, cy * SS, (r + 12) * SS, a)
             self.d.line([(x0, y0), (x1, y1)], fill=self.st["ink"], width=2 * SS)
 
+    def label(self, key, cx, cy, name):
+        """A control's name. A key in the style's `extended` set is a control the original machine doesn't have (8X8, 9X9):
+        `extended_mark` "pill" draws its name inverted on a pill of the ink colour, "ink" in the style's accent colour."""
+        if key not in self.st.get("extended", ()):
+            self.text(cx, cy, name, self.label_size)
+            return
+        mark = self.st.get("extended_mark", "pill")
+        if mark == "ink":
+            self.text(cx, cy, name, self.label_size, self.st.get("extended_ink", (240, 120, 40)), "bold")
+            return
+        f = font(self.label_size, "bold")
+        w = self.d.textlength(name, font=f) / SS + 14
+        h = self.label_size + 8
+        ink = self.st["ink"]
+        self.d.rounded_rectangle(((cx - w / 2) * SS, (cy - h / 2) * SS, (cx + w / 2) * SS, (cy + h / 2) * SS), h / 2 * SS, fill=ink)
+        light = sum(ink[:3]) / 3 > 128            # the pill's text: dark on a light pill (8X8's panel), light on a dark one
+        self.text(cx, cy, name, self.label_size, self.st.get("extended_pill_text", (28, 28, 28) if light else (236, 234, 226)), "bold")
+
     def knob(self, key, cx, cy, name, level=False):
         r = self.r
-        self.text(cx, cy + self.label_dy, name, self.label_size)
+        self.label(key, cx, cy + self.label_dy, name)
         self.ticks(cx, cy, r)
         box = ((cx - r) * SS, (cy - r) * SS, (cx + r) * SS, (cy + r) * SS)
         self.hi.alpha_composite(soft_shadow(self.hi.size, box, 4, 170, (3, 5)))

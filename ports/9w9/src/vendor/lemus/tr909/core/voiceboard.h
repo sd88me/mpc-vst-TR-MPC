@@ -88,6 +88,10 @@ public:
 	// A cable in a voice's MULTI OUT jack: the jack's switching contact takes the voice out of the
 	// mix, and the cable's input loads it (mix.cir, plug_<voice>). Kept across prepare().
 	void setPlugged(Voice v, bool plugged);
+	// 9X9 (local): a setting of a voice's behavioural model (behave.h, LEMUS_BEH_VCO; e.g. the kick's pitch and sweep
+	// depth, KickVco::kModPitch / kModDepth), and the hi-hat ROM's clock as a ratio of its own (its tune). Between renders.
+	void setBehaviourMod(Voice v, int mod, double value);
+	void setHiHatClockRatio(double ratio);
 	bool plugged(Voice v) const { return m_plugged[size_t(v)]; }
 
 	// A write from the CPU board to the latches: reg 1-8 the accent DACs (IC2-IC9; D1-D6, bits

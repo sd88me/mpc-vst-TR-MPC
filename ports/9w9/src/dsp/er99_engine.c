@@ -74,6 +74,27 @@ static void lem_voice_fields(er99_engine_t *e, const int t, float **drive, float
     *drive = &s->drive; *dist = &s->dist_type; *level = &s->volume;
 }
 
+/* 9X9's extras: 9W9 controls a 909 doesn't have, built on the board's voices (the skin marks them). At its default each
+ * leaves the 909 as it is.
+ *   BD P.Depth (bd_c_sweep_depth): ENV3's share of the kick VCO's control voltage, 1x..4x (the sweep's depth);
+ *   BD Pitch (bd_c_pitch_mod): the whole control voltage, 0.43x..4.7x (both on the behavioural VCO: behave.h KickVco);
+ *   LT/MT/HT Attack: above its default, a transient on the jack's first few ms (as 8X8's BD and MA Attack);
+ *   HC, RD and CR Decay: below its default, an envelope shortens the tail (a 909 lets them ring their full length);
+ *   CH and OH Tune: the hi-hat ROM's clock, 0.5x..2x, set as each hat starts (they share one).
+ * RS and HC Tune need parts changed in their circuits: not yet. */
+enum { LX_SWEEP, LX_PITCH, LX_LTATK, LX_MTATK, LX_HTATK, LX_HCDEC, LX_RCDEC, LX_CRDEC, LX_CHP, LX_OHP, LX_N };
+static const char *const g_lx_keys[LX_N] = {
+    "bd_c_sweep_depth", "bd_c_pitch_mod", "lt_c_attack", "mt_c_attack", "ht_c_attack",
+    "hc_decay", "rc_decay", "cr_decay", "chh_pitch", "ohh_pitch",
+};
+int er99_engine_get_raw(const er99_engine_t *e, const char *key, float *out);
+static float lx(const er99_engine_t *e, const int i)
+{
+    float v = 0.0f;
+    er99_engine_get_raw(e, g_lx_keys[i], &v);
+    return v;
+}
+
 /* A pot as a rotation: its default at noon, straight lines to either end. */
 static l909_controls_t lem_controls(const er99_engine_t *e)
 {
@@ -372,9 +393,10 @@ void er99_engine_init(er99_engine_t *e, const float _sr, const char *_module_dir
             e->ldef_level[t] = *level;
         }
         for(int l = 0; l < L909_LANES; ++l) e->lgain[l] = e->master.accent;
-        /* Live III: 1 block played a busy beat for 150 s without a miss, and misses only when all
-         * the voices hit at once; 2 never missed (l909_board.h) */
-        e->latency = 1;
+        for(int i = 0; i < LX_N; ++i) e->lx_def[i] = lx(e, i);
+        /* 2 blocks (5.8 ms): inside MPC (Live III, 2026-11-18) MPC's audio threads preempt the render
+         * thread on the fast cores; at 1 block a busy pattern missed ~10 blocks in 5 s */
+        e->latency = 2;
         if(getenv("L909_LATENCY")) e->latency = atoi(getenv("L909_LATENCY"));   /* tools: bench at 0 */
         e->lknobs = lem_controls(e);
         if(_module_dir) snprintf(e->lem_roms, sizeof e->lem_roms, "%s/roms", _module_dir);
@@ -860,6 +882,36 @@ static void lem_render(er99_engine_t *e, float *out, const int frames)
         l909_set_controls(e->lem, &k);
     }
     l909_set_latency(e->lem, e->latency);
+    /* the extras (see g_lx_keys) */
+    {
+        l909_mods_t m;
+        m.bd_pitch = e->lx_def[LX_PITCH] > 0.0f ? lx(e, LX_PITCH) / e->lx_def[LX_PITCH] : 1.0f;
+        m.bd_depth = 1.0f + 3.0f * (lx(e, LX_SWEEP) - e->lx_def[LX_SWEEP]);
+        if(m.bd_depth < 0.0f) m.bd_depth = 0.0f;
+        /* the hats: 9W9's 0.25x..4x pot as 0.5x..2x of the ROM's clock (the square root): up, the ROM's content moves
+         * into the hat circuit's own filters and the hat gets thinner and quieter, as a clock mod on a 909 does */
+        m.ch_tune = e->lx_def[LX_CHP] > 0.0f ? sqrtf(lx(e, LX_CHP) / e->lx_def[LX_CHP]) : 1.0f;
+        m.oh_tune = e->lx_def[LX_OHP] > 0.0f ? sqrtf(lx(e, LX_OHP) / e->lx_def[LX_OHP]) : 1.0f;
+        l909_set_mods(e->lem, &m);
+    }
+    float atk[L909_LANES] = {0}, dec[L909_LANES];
+    for(int l = 0; l < L909_LANES; ++l) dec[l] = 1.0f;
+    for(int t = 0; t < 3; ++t)   /* LT MT HT Attack: the part above its default, 0..1 */
+    {
+        const float d = e->lx_def[LX_LTATK + t], v = lx(e, LX_LTATK + t);
+        atk[2 + t] = v > d && d < 1.0f ? (v - d) / (1.0f - d) : 0.0f;
+    }
+    {   /* HC, RD, CR Decay: below the default, a tail with time constant (ms / 6.9) / (1 - ms/default), so it reaches
+         * the 909's full length (no envelope) at the default */
+        static const int lane[3] = {6, 9, 8}, key[3] = {LX_HCDEC, LX_RCDEC, LX_CRDEC};
+        for(int i = 0; i < 3; ++i)
+        {
+            const float d = e->lx_def[key[i]], v = lx(e, key[i]), r = d > 0.0f ? v / d : 1.0f;
+            if(r < 0.999f)
+                dec[lane[i]] = expf(-1.0f / ((v * 0.001f / 6.9f) / (1.0f - r) * e->sample_rate));
+        }
+    }
+    const float atk_fall = 1.0f - 1.0f / (0.003f * e->sample_rate);
     /* Missed blocks (the render-ahead thread late): one stderr line (MPC's journal) at most every
      * 5 s, and only when the count rose. */
     {
@@ -907,6 +959,8 @@ static void lem_render(er99_engine_t *e, float *out, const int frames)
             {
                 e->lgain[l] = tg[l];
                 if(l == 7) e->lhat_open = hv[l] == L909_OH;
+                e->latk_env[l] = 1.0f;   /* the extras' transient and tail start with the hit */
+                e->ldec_env[l] = 1.0f;
             }
         const int ltrig[L909_LANES] = { ER99_BD, ER99_SD, ER99_LT, ER99_MT, ER99_HT, ER99_RS, ER99_HC,
                                         e->lhat_open ? ER99_OHH : ER99_CHH, ER99_CR, ER99_RC };
@@ -918,9 +972,21 @@ static void lem_render(er99_engine_t *e, float *out, const int frames)
                 if(!lane_on[l]) continue;
                 /* the jack's DC (its op-amps' offsets) out: a 1 Hz high-pass */
                 const float x = e->lbuf[l][i];
-                const float y = x - e->ldc_x[l] + 0.99986f * e->ldc_y[l];
+                float y = x - e->ldc_x[l] + 0.99986f * e->ldc_y[l];
                 e->ldc_x[l] = x;
                 e->ldc_y[l] = y;
+                if(atk[l] > 0.0f)   /* extras: Attack's transient (the jack high-passed, under a 3 ms envelope) */
+                {
+                    const float hp = y - e->latk_hp[l];
+                    e->latk_hp[l] += 0.12f * hp;
+                    y += 3.0f * atk[l] * hp * e->latk_env[l];
+                    e->latk_env[l] *= atk_fall;
+                }
+                if(dec[l] < 1.0f)   /* extras: Decay's shorter tail */
+                {
+                    y *= e->ldec_env[l];
+                    e->ldec_env[l] *= dec[l];
+                }
                 const int t = ltrig[l];
                 const float v = lem_post(e, l, t, y);
                 mix += v; rbus += v * e->send_rev[t]; dbus += v * e->send_dly[t];

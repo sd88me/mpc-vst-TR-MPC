@@ -27,6 +27,8 @@ struct Behaviour {
 	virtual ~Behaviour() = default;
 	// in: the partition's inputs in its netlist's order; out: its outputs, the same
 	virtual void step(const double *in, double *out, double dt) = 0;
+	// 9X9's controls a 909 doesn't have (VoiceBoard::setBehaviourMod); a model without that mod ignores it
+	virtual void setMod(int /*mod*/, double /*value*/) {}
 };
 
 // The toms' triangle VCO (comparator IC a, 4069 inverters, integrator IC b; ht.cir's VCO1): the
@@ -257,9 +259,18 @@ struct KickVco final : Behaviour {
 		}
 	}
 	bool ok() const { return C > 0 && ic9 >= 0 && ip1 >= 0 && oQ7b.size() == 1 && oI12an.size() == 1 && !oTri.empty(); }
+	// 9X9: kModPitch scales the VCO's control voltage (its whole pitch), kModDepth ENV3's share of it (the sweep);
+	// 1 is the 909
+	enum { kModPitch, kModDepth };
+	double pitch = 1, depth = 1;
+	void setMod(int mod, double value) override
+	{
+		if (mod == kModPitch) pitch = value;
+		else if (mod == kModDepth) depth = value;
+	}
 	void step(const double *in, double *out, double dt) override
 	{
-		const double va = -(in[ic9] * kR28 / kR26 + 15.0 * kR28 / R27);
+		const double va = -(in[ic9] * kR28 / kR26 * depth + 15.0 * kR28 / R27) * pitch;
 		// Q7: its base from the divider, clamped a Vbe under +15 V while it conducts
 		const double rth = kR12 * kR13 / (kR12 + kR13), div = (in[ip1] * kR13 + 15.0 * kR12) / (kR12 + kR13);
 		// Q7's base current: Ib rth = (15 - div) - Vbe (Newton on Vbe)

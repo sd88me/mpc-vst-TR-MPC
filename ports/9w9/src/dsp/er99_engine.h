@@ -190,6 +190,10 @@ typedef struct {
     float    ldef_drive[ER99_NUM_TRIGGERS], ldef_level[ER99_NUM_TRIGGERS];
     int      lfb_now;                        /* firing a stand-in: no re-queue    */
     long     lunder_seen, lunder_blocks;     /* missed blocks logged; frames since */
+    /* 9X9's controls a 909 doesn't have (er99_engine.c, "extras"): their defaults, and the lanes' Attack transients
+     * and Decay envelopes */
+    float    lx_def[12];
+    float    latk_env[L909_LANES], latk_hp[L909_LANES], ldec_env[L909_LANES];
     struct { signed char which; unsigned char vel, blocks; } lfb[32];
     int      nlfb;                           /* stand-in hits waiting out latency */
 #endif

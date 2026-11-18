@@ -1,6 +1,6 @@
 diff -ruN a/sc808_engine.cpp b/sc808_engine.cpp
---- a/sc808_engine.cpp	2026-11-18 21:31:03.023034258 +1100
-+++ b/sc808_engine.cpp	2026-11-18 21:31:03.035805737 +1100
+--- a/sc808_engine.cpp	2026-11-18 22:28:04.498321296 +1100
++++ b/sc808_engine.cpp	2026-11-18 22:28:04.510219612 +1100
 @@ -265,6 +265,8 @@
  } /* namespace */
  
@@ -10,7 +10,7 @@ diff -ruN a/sc808_engine.cpp b/sc808_engine.cpp
      float sample_rate;
  
      int   pot[SC808_NUM_POTS];       /* raw 0..127, the stored form   */
-@@ -818,6 +820,7 @@
+@@ -820,6 +822,7 @@
  {
      const float sv = voice_sample(e, v, raw);
      *mix += sv;
@@ -18,7 +18,7 @@ diff -ruN a/sc808_engine.cpp b/sc808_engine.cpp
      const VoiceSlots &s = e->slot[v];
      if(s.rev >= 0) *send_r += sv * e->potv[s.rev];
      if(s.dly >= 0) *send_d += sv * e->potv[s.dly];
-@@ -926,6 +929,7 @@
+@@ -928,6 +931,7 @@
          for(int i = 0; i < n; ++i)
          {
              float mix = 0.0f, send_r = 0.0f, send_d = 0.0f;
@@ -26,7 +26,7 @@ diff -ruN a/sc808_engine.cpp b/sc808_engine.cpp
              for(int v = 0; v < SC808_NUM_VOICES; ++v)
              {
                  if(!on[v] || e->rt[v].choke_gain <= 0.0f) continue;
-@@ -934,6 +938,7 @@
+@@ -936,6 +940,7 @@
                  else if(v == SC808_MA) raw = l808_attack(e, v, raw, e->ma_attack);
                  sc808_add(e, v, raw, &mix, &send_r, &send_d);
              }
@@ -34,7 +34,7 @@ diff -ruN a/sc808_engine.cpp b/sc808_engine.cpp
              mix += sc808_verb_tick(&e->verb, send_r);
              mix += sc808_dly_tick(&e->dly, send_d, e->sample_rate);
              if(mdist > 0) mix = sc808_shape_st(mix, mdrive, mdist - 1, e->crush_master);
-@@ -955,6 +960,7 @@
+@@ -957,6 +962,7 @@
      for(int i = 0; i < frames; ++i)
      {
          float mix = 0.0f, send_r = 0.0f, send_d = 0.0f;
@@ -42,7 +42,7 @@ diff -ruN a/sc808_engine.cpp b/sc808_engine.cpp
          SC808_LANE(SC808_BD, bdc);
          SC808_LANE(SC808_SD, sdc);
          SC808_LANE(SC808_LT, ltc);
-@@ -985,6 +991,8 @@
+@@ -987,6 +993,8 @@
          SC808_METAL(SC808_CY, cyc);
  #undef SC808_METAL
  
@@ -51,7 +51,7 @@ diff -ruN a/sc808_engine.cpp b/sc808_engine.cpp
          /*
           * The wet returns join the bus BEFORE the master stages, so master
           * distortion and the glue work on the whole picture rather than on a
-@@ -1014,6 +1022,38 @@
+@@ -1016,6 +1024,38 @@
  
  #endif /* SC808_ENGINE_LEMUS */
  
@@ -91,8 +91,8 @@ diff -ruN a/sc808_engine.cpp b/sc808_engine.cpp
  
  int sc808_set_param(sc808_engine_t *e, const char *key, const char *val)
 diff -ruN a/sc808_engine.h b/sc808_engine.h
---- a/sc808_engine.h	2026-11-18 21:31:03.022595835 +1100
-+++ b/sc808_engine.h	2026-11-18 21:31:03.037384621 +1100
+--- a/sc808_engine.h	2026-11-18 22:28:04.497895684 +1100
++++ b/sc808_engine.h	2026-11-18 22:28:04.511553147 +1100
 @@ -73,6 +73,15 @@
  /* Mono float render. The plugin wrapper does the int16 stereo interleave. */
  void  sc808_render(sc808_engine_t *e, float *out, int frames);

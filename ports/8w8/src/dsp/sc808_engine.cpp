@@ -509,8 +509,10 @@ sc808_engine_t *sc808_create(float sample_rate)
 #if !LEMUS_LAZY_BOARD
     sc808_lemus_build(e);                    /* 8X8: now; TR-MPC builds it once a slot plays an 808 voice */
 #endif
-    /* 1 block (2.9 ms): the board renders ahead on its own thread, the audio call only copies */
-    e->latency = 1;
+    /* 2 blocks (5.8 ms): the board renders ahead on its own thread, the audio call only copies. Inside MPC (Live III,
+     * 2026-11-18) MPC's audio threads preempt it on the fast cores: at 1 block a busy pattern missed ~45 blocks in 5 s,
+     * at 2 next to none. */
+    e->latency = 2;
     if(getenv("L808_LATENCY")) e->latency = atoi(getenv("L808_LATENCY"));   /* tools: bench at 0 */
 #endif
     return e;

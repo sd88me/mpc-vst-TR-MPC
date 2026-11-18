@@ -112,7 +112,7 @@ sections.append({"label": "Internal FX", "keys": ix})
 params.append({"key": "rnd_go_voice", "name": "Random Voices", "momentary": True})
 sections[[s["label"] for s in sections].index("Randomise")]["keys"].append("rnd_go_voice")
 # Gen2: the circuit engines render this many 128-frame blocks ahead (2.9 ms each); Gen1 ignores it
-params.append({"key": "latency", "name": "Latency", "default": 1,
+params.append({"key": "latency", "name": "Latency", "default": 2,
                "options": ["0 blocks (0 ms)", "1 block (+2.9 ms)", "2 blocks (+5.8 ms)", "3 blocks (+8.7 ms)"]})
 sections[[s["label"] for s in sections].index("FX and master")]["keys"].append("latency")
 # a power switch per slot (appended: the list is append-only): off, a slot plays nothing and its kit's engine (on Gen2 its

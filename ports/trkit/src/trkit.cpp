@@ -266,7 +266,7 @@ void *create(const char *dir) {
     for (int s = 0; s < kSlots; ++s) { in->pan[s] = 64; in->rev[s] = 0; in->dly[s] = 0; in->on[s] = 1; }
     in->int_rev = in->int_dly = in->int_comp = 1;
     in->rnd_amount = 64; in->rng = 0x9e3779b9u ^ (uint32_t)(uintptr_t)in;
-    in->latency = 1;
+    in->latency = 2;   /* 5.8 ms: at 1, MPC's audio threads preempting the boards' threads cost missed blocks (Live III) */
     for (int b = 0; b < kNumBackends; ++b) in->lat_sent[b] = -1;
     { const void *none = nullptr; in->tap_owner = g_tap.owner.compare_exchange_strong(none, in); }
     in->maker = new Inst::Maker;

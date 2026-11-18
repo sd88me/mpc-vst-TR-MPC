@@ -41,6 +41,12 @@ typedef struct {
     float ch_decay, oh_decay, cr_tune, rd_tune;
 } l909_controls_t;
 
+/* 9X9's controls a 909 doesn't have, as ratios (1: the 909): the kick's pitch and its sweep's depth (on the behavioural
+ * VCO, LEMUS_BEH_VCO), the closed and open hat's tune (the ROM's clock, set as each hat starts). */
+typedef struct {
+    float bd_pitch, bd_depth, ch_tune, oh_tune;
+} l909_mods_t;
+
 /* Builds and settles the board (not realtime: about a second of rendering). rom_dir holds the
  * user's hn61256p__c43.ic69 (hi-hat), __c42.ic62 (crash) and __c44.ic54 (ride), checked by CRC;
  * NULL or a missing/wrong file leaves that voice silent (see l909_rom_ok). */
@@ -51,6 +57,7 @@ void l909_destroy(l909_t *b);
 int l909_rom_ok(const l909_t *b, int which);
 
 void l909_set_controls(l909_t *b, const l909_controls_t *c);
+void l909_set_mods(l909_t *b, const l909_mods_t *m);
 
 /* 0..L909_MAX_LATENCY blocks. Takes effect at the next block boundary. */
 void l909_set_latency(l909_t *b, int blocks);

@@ -70,11 +70,13 @@ Controls toControls(const l909_controls_t &k)
 
 struct Core {
 	static constexpr int kLanes = L909_LANES, kBlock = L909_BLOCK;
-	enum { HIT, CONTROLS };
+	enum { HIT, CONTROLS, MODS };
+	enum { kKickPitch = 0, kKickDepth = 1 }; // behave.h KickVco::kModPitch / kModDepth
 	struct Cmd {
 		int type, voice, code;
 		float tag;
 		l909_controls_t ctl;
+		l909_mods_t mods;
 	};
 	struct Info {
 		int hitVoice[kLanes];
@@ -99,6 +101,7 @@ struct Core {
 	int workers = L909_WORKERS;
 	Info hits; // the hits started since the last block
 	bool pulse = false;
+	float chTune = 1, ohTune = 1, hhRatio = 1; // hhRatio: the clock as last set (1: as prepared, untouched)
 
 	Core() { hits.clear(); }
 	~Core() { board.setParallel(nullptr); }
@@ -114,9 +117,23 @@ struct Core {
 			board.setControls(toControls(c.ctl));
 			return;
 		}
+		if (c.type == MODS) {
+			board.setBehaviourMod(Voice::BD, kKickPitch, c.mods.bd_pitch);
+			board.setBehaviourMod(Voice::BD, kKickDepth, c.mods.bd_depth);
+			chTune = c.mods.ch_tune;
+			ohTune = c.mods.oh_tune;
+			return;
+		}
 		const int v = c.voice;
 		if (v < 0 || v > 10)
 			return;
+		if (v == 7 || v == L909_OH) { // the hats share one ROM clock: each hit sets it for its own tune (only if it moves)
+			const float r = v == 7 ? chTune : ohTune;
+			if (r != hhRatio) {
+				board.setHiHatClockRatio(double(r));
+				hhRatio = r;
+			}
+		}
 		const int code = c.code < 0 ? 0 : c.code > 63 ? 63 : c.code;
 		board.write(kDac[v], uint8_t(code << 1));
 		if (v == 7 || v == L909_OH) // CLOSED/OPEN, a held level
@@ -155,6 +172,7 @@ struct l909 {
 	bool romOk[3] = {false, false, false};
 	std::unique_ptr<lemus::Ahead<Core>> ahead;
 	l909_controls_t lastCtl{};
+	l909_mods_t lastMods{1, 1, 1, 1};
 };
 
 extern "C" {
@@ -223,6 +241,17 @@ void l909_set_controls(l909_t *b, const l909_controls_t *c)
 	Core::Cmd cmd{};
 	cmd.type = Core::CONTROLS;
 	cmd.ctl = *c;
+	b->ahead->post(cmd);
+}
+
+void l909_set_mods(l909_t *b, const l909_mods_t *m)
+{
+	if (std::memcmp(m, &b->lastMods, sizeof *m) == 0)
+		return;
+	b->lastMods = *m;
+	Core::Cmd cmd{};
+	cmd.type = Core::MODS;
+	cmd.mods = *m;
 	b->ahead->post(cmd);
 }
 
