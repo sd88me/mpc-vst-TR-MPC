@@ -250,9 +250,13 @@ float pot_value(int slot, int pot)
  * meaning. Measured by src/tools/l808_levels.cpp (peak, default knobs,
  * unaccented hit, against the sc808/circuit engine's trimmed peak).
  */
+/* One gain for every voice, so the voices keep the 808's own balance (each jack's circuit output
+ * with its Level pot full): the geometric mean of the per-voice gains that would match 8W8's levels
+ * (+0.2 dB on the low conga to +7.3 dB on the CH), keeping the drive stage and old projects close. */
+constexpr float kLemusGain = 1.553f;
 constexpr float kLemusTrim[SC808_NUM_VOICES] = {
-    1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+    kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain,
+    kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain, kLemusGain,
 };
 
 } /* namespace */
