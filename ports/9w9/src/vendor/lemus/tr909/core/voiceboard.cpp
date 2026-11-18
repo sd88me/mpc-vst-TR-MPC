@@ -1,4 +1,9 @@
 #include "voiceboard.h"
+#include "behave.h"
+
+#ifndef LEMUS_BEH_VCO
+#define LEMUS_BEH_VCO 0
+#endif
 #include "noise.h"
 #include "cymbals.h"
 #include "hihat.h"
@@ -133,10 +138,36 @@ std::string signalName(const std::string &n, const std::string &owner)
 	return owner + "." + n;
 }
 
+// 9X9: the behaviour (behave.h) that stands in for a partition's circuit, or null
+std::shared_ptr<Behaviour> behaviourFor(const std::string &owner, const std::string &part, const circuit::Netlist &net)
+{
+	static const bool on = std::getenv("TR909_BEHVCO") ? std::atoi(std::getenv("TR909_BEHVCO")) != 0 : LEMUS_BEH_VCO;
+	if (!on)
+		return nullptr;
+	std::shared_ptr<Behaviour> b;
+	if ((owner == "lt" || owner == "mt" || owner == "ht") && part.rfind("vco", 0) == 0) {
+		auto v = std::make_shared<TomVco>(net);
+		if (v->ok()) b = v;
+	} else if (owner == "sd" && part.rfind("vco", 0) == 0) {
+		auto v = std::make_shared<SnareVco>(net);
+		if (v->ok()) b = v;
+	} else if (owner == "bd" && part == "vco") {
+		auto v = std::make_shared<KickVco>(net);
+		if (v->ok()) b = v;
+	} else {
+		return nullptr;
+	}
+	if (!b)
+		std::fprintf(stderr, "tr909: %s:%s: its behaviour isn't wired (the circuit runs)\n", owner.c_str(), part.c_str());
+	return b;
+}
+
 // One netlist running as a circuit, wired to the signals. A block sleeps (isn't stepped, its
 // outputs held) once it has settled; wake() starts it again.
 struct Block {
 	circuit::Circuit c;
+	std::shared_ptr<Behaviour> beh; // 9X9: stepped in its circuit's place (behave.h)
+	std::vector<double> behIn, behOut;
 	std::vector<std::pair<int, int>> ins;  // (input index, signal)
 	std::vector<std::pair<int, int>> outs; // (output index, signal)
 	std::map<std::string, int> controls;
@@ -299,6 +330,15 @@ struct Block {
 			if (!moved)
 				return;
 			wake();
+		}
+		if (beh) {
+			for (const auto &[i, s] : ins)
+				behIn[size_t(i)] = sig[s];
+			beh->step(behIn.data(), behOut.data(), 1.0 / c.rate());
+			for (const auto &[o, s] : outs)
+				sig[s] = behOut[size_t(o)];
+			++steps;
+			return;
 		}
 		if (over > 1) {
 			stepOver(sig, noiseSub);
@@ -516,6 +556,11 @@ struct Unit {
 				blocks[k].c.setName(owner + ":" + split[k].name);
 				blocks[k].ownSleep = split[k].sleeps;
 				blocks[k].over = split[k].over;
+				blocks[k].beh = behaviourFor(owner, split[k].name, blocks[k].c.netlist());
+				if (blocks[k].beh) {
+					blocks[k].behIn.assign(blocks[k].c.netlist().inputs.size(), 0.0);
+					blocks[k].behOut.assign(blocks[k].c.netlist().outputs.size(), 0.0);
+				}
 				if (blocks[k].over > 1 && blocks[k].noiseIn >= 0 && kNoiseSub % blocks[k].over != 0)
 					throw std::runtime_error("partition " + split[k].name + ": a partition that takes the noise runs at over=2 or 4");
 			}
