@@ -17,7 +17,7 @@ STYLE["fx"] = [("rev", ["rev_level", "rev_decay", "rev_tone", "rev_hpf"], []),  
 STYLE["extended"] = {"bd_tune", "bd_attack", "sd_tune", "lt_decay", "mt_decay", "ht_decay", "lc_decay", "mc_decay", "hc_decay",
                      "rs_tune", "rs_decay", "cl_tune", "cl_decay", "ma_tune", "ma_decay", "ma_attack", "cp_tune", "cp_decay",
                      "cb_tune", "cb_decay", "ch_tune", "ch_decay", "oh_tune", "cy_tune"}
-STYLE["extended_mark"] = "pill"
+STYLE["extended_mark"] = "ticks"
 STYLE["fx_names"] = {"latency": "LATENCY"}
 STYLE["fx_captions"] = {"latency": "EACH BLOCK ADDS 2.9 ms LATENCY\nBUT IMPROVES PERFORMANCE"}
 for _name in dir(_base):   # panel(), knob_sprite() and whatever else drum_skin asks of a style

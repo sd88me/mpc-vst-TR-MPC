@@ -7,6 +7,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 mod = json.load(open(os.path.join(HERE, "..", "9w9", "module.mpc.json"), encoding="utf-8"))
 mod.update(id="9x9", name="9X9", abbrev="9X9", version="1.0.0", author="sd88me; voices: Lemus (lemus-dev); panel after 9W9 (athousanddetails)",
            description="TR-909 voicing board solved from its circuit (Lemus), with 9W9's panel, drive and effects")
+# every pot's default position, as the engine seeds it (src/tools/er99_pot_defaults.c in 9W9): the panel marks the extended
+# controls' defaults, and the wrapper falls back on them
+pots = json.load(open(os.path.join(HERE, "pot_defaults.json"), encoding="utf-8"))
+for p in mod["chain_params"]:
+    if p["key"] in pots and "options" not in p:
+        p["default"] = pots[p["key"]]
 # l909_board.h: the board renders this many 128-frame blocks ahead of the host, 2.9 ms each (1: a busy beat plays clean on the
 # Live III; 2: never missed a block)
 mod["chain_params"].append({"key": "latency", "name": "Latency", "type": "enum", "default": 2,

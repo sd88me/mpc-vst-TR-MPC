@@ -31,7 +31,8 @@
    "name": "BD Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 34
   },
   {
    "key": "bd_c_attack",
@@ -39,35 +40,40 @@
    "type": "int",
    "min": 0,
    "max": 127,
-   "viz": false
+   "viz": false,
+   "default": 13
   },
   {
    "key": "bd_c_decay",
    "name": "BD Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 90
   },
   {
    "key": "bd_c_sweep_depth",
    "name": "BD P. Depth",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "bd_c_pitch_mod",
    "name": "BD Pitch",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 45
   },
   {
    "key": "bd_c_drive",
    "name": "BD Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "bd_c_dist_type",
@@ -91,35 +97,40 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 94
   },
   {
    "key": "sd_c_tune",
    "name": "SN Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 64
   },
   {
    "key": "sd_c_noise_decay",
    "name": "SN Tone",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 68
   },
   {
    "key": "sd_c_snappy",
    "name": "SN Snappy",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 64
   },
   {
    "key": "sd_c_drive",
    "name": "SN Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 36
   },
   {
    "key": "sd_c_dist_type",
@@ -143,35 +154,40 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 58
   },
   {
    "key": "sd_c_rev",
    "name": "SN Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "sd_c_dly",
    "name": "SN Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "lt_c_tune",
    "name": "LT Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 66
   },
   {
    "key": "lt_c_decay",
    "name": "LT Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 111
   },
   {
    "key": "lt_c_attack",
@@ -179,14 +195,16 @@
    "type": "int",
    "min": 0,
    "max": 127,
-   "viz": false
+   "viz": false,
+   "default": 23
   },
   {
    "key": "lt_c_drive",
    "name": "LT Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 41
   },
   {
    "key": "lt_c_dist_type",
@@ -210,35 +228,40 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 52
   },
   {
    "key": "lt_c_rev",
    "name": "LT Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "lt_c_dly",
    "name": "LT Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "mt_c_tune",
    "name": "MT Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 69
   },
   {
    "key": "mt_c_decay",
    "name": "MT Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 100
   },
   {
    "key": "mt_c_attack",
@@ -246,14 +269,16 @@
    "type": "int",
    "min": 0,
    "max": 127,
-   "viz": false
+   "viz": false,
+   "default": 23
   },
   {
    "key": "mt_c_drive",
    "name": "MT Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 41
   },
   {
    "key": "mt_c_dist_type",
@@ -277,35 +302,40 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 52
   },
   {
    "key": "mt_c_rev",
    "name": "MT Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "mt_c_dly",
    "name": "MT Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "ht_c_tune",
    "name": "HT Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 53
   },
   {
    "key": "ht_c_decay",
    "name": "HT Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 105
   },
   {
    "key": "ht_c_attack",
@@ -313,14 +343,16 @@
    "type": "int",
    "min": 0,
    "max": 127,
-   "viz": false
+   "viz": false,
+   "default": 23
   },
   {
    "key": "ht_c_drive",
    "name": "HT Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 41
   },
   {
    "key": "ht_c_dist_type",
@@ -344,35 +376,40 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 52
   },
   {
    "key": "ht_c_rev",
    "name": "HT Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "ht_c_dly",
    "name": "HT Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "rs_tune",
    "name": "RM Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 62
   },
   {
    "key": "rs_saturation",
    "name": "RM Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 24
   },
   {
    "key": "rs_dist_type",
@@ -396,42 +433,48 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 103
   },
   {
    "key": "rs_rev",
    "name": "RM Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "rs_dly",
    "name": "RM Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "hc_tune",
    "name": "CP Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 63
   },
   {
    "key": "hc_decay",
    "name": "CP Tail",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 63
   },
   {
    "key": "hc_drive",
    "name": "CP Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 30
   },
   {
    "key": "hc_dist_type",
@@ -455,42 +498,48 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 122
   },
   {
    "key": "hc_rev",
    "name": "CP Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "hc_dly",
    "name": "CP Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "chh_decay",
    "name": "CH Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 84
   },
   {
    "key": "chh_pitch",
    "name": "CH Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 64
   },
   {
    "key": "chh_drive",
    "name": "CH Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "chh_dist_type",
@@ -514,42 +563,48 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 89
   },
   {
    "key": "chh_rev",
    "name": "CH Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "chh_dly",
    "name": "CH Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "ohh_decay",
    "name": "OH Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 97
   },
   {
    "key": "ohh_pitch",
    "name": "OH Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 64
   },
   {
    "key": "ohh_drive",
    "name": "OH Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "ohh_dist_type",
@@ -573,42 +628,48 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 80
   },
   {
    "key": "ohh_rev",
    "name": "OH Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "ohh_dly",
    "name": "OH Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "rc_decay",
    "name": "RD Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 108
   },
   {
    "key": "rc_pitch",
    "name": "RD Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 64
   },
   {
    "key": "rc_drive",
    "name": "RD Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "rc_dist_type",
@@ -632,42 +693,48 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 42
   },
   {
    "key": "rc_rev",
    "name": "RD Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "rc_dly",
    "name": "RD Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "cr_decay",
    "name": "CY Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 108
   },
   {
    "key": "cr_pitch",
    "name": "CY Tune",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 64
   },
   {
    "key": "cr_drive",
    "name": "CY Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "cr_dist_type",
@@ -691,21 +758,24 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 47
   },
   {
    "key": "cr_rev",
    "name": "CY Rev",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "cr_dly",
    "name": "CY Dly",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "master_dist",
@@ -727,14 +797,16 @@
    "name": "Master Drive",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 41
   },
   {
    "key": "master_comp",
    "name": "Comp",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 0
   },
   {
    "key": "volume",
@@ -744,42 +816,48 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 44
   },
   {
    "key": "accent",
    "name": "Accent",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 42
   },
   {
    "key": "vel_depth",
    "name": "Velocity",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 127
   },
   {
    "key": "rev_decay",
    "name": "Rev Decay",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 73
   },
   {
    "key": "rev_tone",
    "name": "Rev Tone",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 57
   },
   {
    "key": "rev_hpf",
    "name": "Rev HPF",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 62
   },
   {
    "key": "rev_level",
@@ -789,7 +867,8 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 85
   },
   {
    "key": "dly_time",
@@ -816,21 +895,24 @@
    "name": "Dly Fdbk",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 52
   },
   {
    "key": "dly_tone",
    "name": "Dly Tone",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 51
   },
   {
    "key": "dly_hpf",
    "name": "Dly HPF",
    "type": "int",
    "min": 0,
-   "max": 127
+   "max": 127,
+   "default": 62
   },
   {
    "key": "dly_level",
@@ -840,7 +922,8 @@
    "max": 127,
    "viz": {
     "kind": "fader"
-   }
+   },
+   "default": 85
   },
   {
    "key": "latency",
