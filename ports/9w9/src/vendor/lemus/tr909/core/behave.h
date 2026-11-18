@@ -87,7 +87,7 @@ struct TomVco final : Behaviour {
 		if (tsw < 0) {
 			const double thr = hi ? kThreshold : -kThreshold;
 			if ((hi && on > thr) || (!hi && on < thr))
-				tsw = (thr - o) / sl + kDelay; // from this sample's start
+				tsw = std::max(0.0, (thr - o) / sl) + kDelay; // from this sample's start (0: the threshold moved past the ramp)
 		}
 		if (tsw >= 0 && tsw < dt) {
 			hi = !hi;
@@ -106,9 +106,12 @@ struct TomVco final : Behaviour {
 // 10k: high, it forces the comparator high; low (at rest about -2 V) it holds P's lower threshold
 // up, from -7 V to about -4.7 V, and loads the line (the trigger partition takes P back: the two
 // VCOs' coupling). P is solved each sample with the 1SS133's own equation. Q44 (its base from PULSE
-// through 1M, forward here: the ramp above its emitter) holds the ramp near +0.75 V for the trigger.
+// through 1M, forward here: the ramp above its emitter) holds the ramp near +0.75 V for the trigger;
+// at rest, with the line below 0, its base-collector junction turns on near the ramp's bottom and
+// it runs reverse (BR 6), drawing BR times its base current out of the integrator's input: about
+// 1.4 uA on average over the rising ramp, +45 cents.
 struct SnareVco final : Behaviour {
-	static constexpr double kR = 47e3, kRreset = 10e3, kSwing = 0.993, kDelay = 10e-6, kVsat = 14.0;
+	static constexpr double kR = 47e3, kRreset = 10e3, kDrop = 0.0075 /* the inverters' output under 47k, as Lemus's 4069 */, kDelay = 10e-6, kVsat = 14.0;
 	static constexpr double kRhyst = 100e3, kRd = 10e3 + 1.44, kIs = 1.45e-9, kNVt = 1.71 * 0.025852;
 	static constexpr double kBetaF = 350, kBetaR = 6, kVcesatF = 0.124, kVcesatR = 0.171, kRbase = 1e6, kQis = 1.1e-14, kVt = 0.025852;
 	double C = 10e-9;
@@ -163,6 +166,23 @@ struct SnareVco final : Behaviour {
 		}
 		return p;
 	}
+	// Q44's base current at rest, reverse: the base-collector junction (IS/BR) in series with 1M
+	// to the line and (1 + BR) 10k to the ramp
+	double reverseBase(double pulse, double v) const
+	{
+		const double vmax = pulse - v, rs = kRbase + (1 + kBetaR) * kRreset;
+		if (vmax < 0.3)
+			return 0;
+		double x = std::min(vmax, 0.55);
+		for (int it = 0; it < 30; ++it) {
+			const double e = kQis / kBetaR * std::exp(x / kVt), f = e - (vmax - x) / rs, df = e / kVt + 1 / rs;
+			const double st = f / df;
+			x -= st;
+			if (std::abs(st) < 1e-9)
+				break;
+		}
+		return std::max(0.0, (vmax - x) / rs);
+	}
 	double pHi = 0, pLo = 0, lastPulse = 1e9;
 	void step(const double *in, double *out, double dt) override
 	{
@@ -174,11 +194,13 @@ struct SnareVco final : Behaviour {
 		}
 		const double ib = std::max(0.0, pulse - 0.6) / kRbase;
 		auto rate = [&](double v, bool h) {
-			const double y = kSwing * (h ? vss : vdd);
+			const double y = h ? vss + kDrop : vdd - kDrop;
 			double iq = 0;
 			if (ib > 0) {
 				iq = v > 0 ? std::min(kBetaF * ib, std::max(0.0, v - kVcesatF) / kRreset)
 				           : std::max(-kBetaR * ib, std::min(0.0, v + kVcesatR) / kRreset);
+			} else {
+				iq = -kBetaR * reverseBase(pulse, v);
 			}
 			return -(y / kR + iq) / C;
 		};
@@ -193,7 +215,7 @@ struct SnareVco final : Behaviour {
 			const double sl = rate(o, hi);
 			double on = o + sl * dt;
 			if (tsw < 0 && ((hi && on > thr) || (!hi && on < thr)))
-				tsw = (thr - o) / sl + kDelay;
+				tsw = std::max(0.0, (thr - o) / sl) + kDelay; // 0: the threshold moved past the ramp
 			if (tsw >= 0 && tsw < dt) {
 				hi = !hi;
 				on = o + sl * tsw + rate(o, hi) * (dt - tsw);
@@ -205,7 +227,7 @@ struct SnareVco final : Behaviour {
 		}
 		for (int k : oTri) out[k] = o;
 		out[oP[0]] = hi ? pHi : pLo;
-		out[oQ[0]] = pulse > 0.3 ? std::min(pulse, kVt * std::log1p(ib / kQis * kBetaF / (kBetaF + 1))) : pulse;
+		out[oQ[0]] = pulse > 0.3 ? std::min(pulse, kVt * std::log1p(ib / kQis * kBetaF / (kBetaF + 1))) : pulse - kRbase * reverseBase(pulse, o);
 	}
 };
 
@@ -306,7 +328,7 @@ struct KickVco final : Behaviour {
 			const double thr = plus(hi), sl = rate(o, hi);
 			double on = o + sl * dt;
 			if (tsw < 0 && ((hi && on > thr) || (!hi && on < thr)))
-				tsw = (thr - o) / sl + kDelay;
+				tsw = std::max(0.0, (thr - o) / sl) + kDelay; // 0: the threshold moved past the ramp
 			if (tsw >= 0 && tsw < dt) {
 				hi = !hi;
 				on = o + sl * tsw + rate(o, hi) * (dt - tsw);
