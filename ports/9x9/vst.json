@@ -24,6 +24,7 @@
       "ports/9w9/src/vendor/lemus/tr909/core/parallel.cpp"
     ],
     "cflags": [
+      "-Iports/common",
       "-Iports/9w9/src",
       "-Iports/9w9/src/dsp",
       "-Iports/9w9/src/host",

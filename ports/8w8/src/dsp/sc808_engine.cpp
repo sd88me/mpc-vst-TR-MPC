@@ -330,6 +330,8 @@ struct sc808_engine {
     float lbuf[SC808_NUM_VOICES][l808::kMaxBlock];
     l808::LaneKnobs lknobs[SC808_NUM_VOICES];/* what the board was last told     */
     float atk_env[SC808_NUM_VOICES];         /* the Attack lanes' transient       */
+    int   latency;                           /* blocks of render-ahead, 0..3 (l808_board.h) */
+    long  under_seen, under_frames;          /* missed blocks logged; frames since       */
     float atk_hp[SC808_NUM_VOICES];
 #endif
 };
@@ -504,6 +506,9 @@ sc808_engine_t *sc808_create(float sample_rate)
     /* the boards are built from the starting knobs, so the first sync changes nothing */
     for(int v = 0; v < SC808_NUM_VOICES; ++v) e->lknobs[v] = l808_knobs(e, v);
     e->lem = new l808::Engine(sr, e->lknobs);
+    /* 1 block (2.9 ms): the board renders ahead on its own thread, the audio call only copies */
+    e->latency = 1;
+    if(getenv("L808_LATENCY")) e->latency = atoi(getenv("L808_LATENCY"));   /* tools: bench at 0 */
 #endif
     return e;
 }
@@ -590,9 +595,11 @@ void sc808_trigger(sc808_engine_t *e, int voice, int velocity)
     /* what a voltage lane still has to do with gain, once the volts bottom */
     const float softGain = vgain < 1.0f ? vgain : 1.0f;
 
+#if !SC808_ENGINE_LEMUS
     e->rt[voice].hit_gain   = vgain;
     e->rt[voice].choke_gain = 1.0f;
     e->rt[voice].choke_step = 0.0f;
+#endif
 
     const VoiceSlots &s = e->slot[voice];
     const float decay = e->potv[s.decay];
@@ -605,7 +612,7 @@ void sc808_trigger(sc808_engine_t *e, int voice, int velocity)
      * hi-hat swallowing their crash. */
     const int choke = e->env[e->e_choke];
 #if SC808_ENGINE_LEMUS
-    if(voice == SC808_OH && choke == 2) choke_voice(e, SC808_CH);
+    (void)choke;   /* the hit's gain, choke and attack land with its block (l808_arrive) */
 #else
     if(voice == SC808_CH && choke >= 1) { choke_voice(e, SC808_OH); e->ohc.choke(); }
     if(voice == SC808_OH && choke == 2) { choke_voice(e, SC808_CH); e->chc.choke(); }
@@ -620,9 +627,7 @@ void sc808_trigger(sc808_engine_t *e, int voice, int velocity)
      * only Mutual's OH-cuts-CH needs the fade.
      */
     (void)decay; (void)tune;
-    e->lem->trigger(voice, vgain > 1.0f ? (volts - 4.0f) / 10.0f : 0.0f);
-    e->rt[voice].hit_gain = softGain;
-    if(voice == SC808_BD || voice == SC808_MA) e->atk_env[voice] = 1.0f;
+    e->lem->trigger(voice, vgain > 1.0f ? (volts - 4.0f) / 10.0f : 0.0f, softGain);
     return;
 #endif
     switch(voice)
@@ -840,6 +845,17 @@ static void l808_sync(sc808_engine_t *e)
     }
 }
 
+/* A hit reaching the output (its block, after the latency): the lane's gain, Mutual's OH-cuts-CH, and BD/MA's
+ * Attack transient start here, so they line up with the sound. */
+static void l808_arrive(sc808_engine_t *e, int v, float gain)
+{
+    e->rt[v].hit_gain   = gain;
+    e->rt[v].choke_gain = 1.0f;
+    e->rt[v].choke_step = 0.0f;
+    if(v == SC808_OH && e->env[e->e_choke] == 2) choke_voice(e, SC808_CH);
+    if(v == SC808_BD || v == SC808_MA) e->atk_env[v] = 1.0f;
+}
+
 /* BD and MA Attack: no such knob on an 808, so a transient on the jack's
  * first few ms — the high-passed signal added under a 3 ms envelope. */
 static inline float l808_attack(sc808_engine_t *e, int v, float raw, int pot)
@@ -860,6 +876,18 @@ void sc808_render(sc808_engine_t *e, float *out, int frames)
     const float comp   = e->potv[e->p_comp];
 
     l808_sync(e);
+    e->lem->setLatency(e->latency);
+    {   /* missed blocks (the render-ahead thread late): one stderr line (MPC's journal) at most every 5 s */
+        const long u = e->lem->underruns();
+        e->under_frames += frames;
+        if(u != e->under_seen && e->under_frames >= (long)(5.0f * e->sample_rate))
+        {
+            fprintf(stderr, "8X8: %ld block(s) not rendered in time (%ld in all), latency %d\n",
+                    u - e->under_seen, u, e->latency);
+            e->under_seen = u;
+            e->under_frames = 0;
+        }
+    }
     for(int base = 0; base < frames; base += l808::kMaxBlock)
     {
         const int n = frames - base < l808::kMaxBlock ? frames - base : l808::kMaxBlock;
@@ -868,6 +896,11 @@ void sc808_render(sc808_engine_t *e, float *out, int frames)
         e->lem->render(n, lanes);
         bool on[SC808_NUM_VOICES];
         for(int v = 0; v < SC808_NUM_VOICES; ++v) on[v] = e->lem->active(v);
+        for(int v = 0; v < SC808_NUM_VOICES; ++v)
+        {
+            float tag;
+            if(e->lem->hit(v, &tag)) l808_arrive(e, v, tag);
+        }
         for(int i = 0; i < n; ++i)
         {
             float mix = 0.0f, send_r = 0.0f, send_d = 0.0f;
@@ -971,6 +1004,14 @@ int sc808_set_param(sc808_engine_t *e, const char *key, const char *val)
         if(bpm > 20.0f) { e->dly.bpm = bpm; sc808_fx_sync(e); }
         return 1;
     }
+#if SC808_ENGINE_LEMUS
+    if(!strcmp(key, "latency"))   /* 8X8's render-ahead, 0..3 blocks */
+    {
+        const int v = atoi(val);
+        e->latency = v < 0 ? 0 : v > 3 ? 3 : v;
+        return 1;
+    }
+#endif
 
     /* "default" resets a control to its sc808 default. Those defaults are not
      * pot centre — they are the arguments the SynthDefs declare — so a UI
@@ -1006,6 +1047,9 @@ int sc808_get_param(sc808_engine_t *e, const char *key, char *buf, int len)
     if(slot >= 0) return snprintf(buf, len, "%d", e->pot[slot]);
     const int es = find_enum(key);
     if(es >= 0)   return snprintf(buf, len, "%d", e->env[es]);
+#if SC808_ENGINE_LEMUS
+    if(!strcmp(key, "latency")) return snprintf(buf, len, "%d", e->latency);
+#endif
     return -1;
 }
 
@@ -1017,7 +1061,11 @@ int sc808_serialize(const sc808_engine_t *e, char *buf, int len)
     if(n < len) n += snprintf(buf + n, len - n, "],\"enums\":[");
     for(int i = 0; i < SC808_NUM_ENUMS && n < len; ++i)
         n += snprintf(buf + n, len - n, i ? ",%d" : "%d", e->env[i]);
+#if SC808_ENGINE_LEMUS
+    if(n < len) n += snprintf(buf + n, len - n, "],\"mutes\":%u,\"latency\":%d}", e->mutes, e->latency);
+#else
     if(n < len) n += snprintf(buf + n, len - n, "],\"mutes\":%u}", e->mutes);
+#endif
     return n;
 }
 
@@ -1155,6 +1203,10 @@ void sc808_deserialize(sc808_engine_t *e, const char *json)
     }
     sc808_fx_sync(e);
 
+#if SC808_ENGINE_LEMUS
+    if(const char *lp = strstr(json, "\"latency\""))
+        if((lp = strchr(lp, ':'))) { const int v = atoi(lp + 1); e->latency = v < 0 ? 0 : v > 3 ? 3 : v; }
+#endif
     const char *mp = strstr(json, "\"mutes\"");
     if(mp) { mp = strchr(mp, ':'); if(mp) e->mutes = (unsigned)strtoul(mp + 1, NULL, 10)
                                                      & ((1u << SC808_NUM_VOICES) - 1u); }

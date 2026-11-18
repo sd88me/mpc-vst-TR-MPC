@@ -349,6 +349,8 @@ def plain_column(t, i, tile, top, lower, params):
     names = dict(FX_NAMES, **t.st.get("fx_names", {}))
     captions = t.st.get("fx_captions", {})   # a line under a control (9W9's LATENCY: what a block costs)
     for key, (cx, cy) in zip(top + lower, [(ca, r0), (cb, r0), (ca, r1), (cb, r1), (ca, r2), (cb, r2)]):
+        if key == "-":   # an empty place (a style's spacer)
+            continue
         if params[key].get("type") == "enum":
             t.popup(key, cx, cy + (8 if cy < r2 else 0), names[key])
             for n, line in enumerate(captions.get(key, "").split("\n") if key in captions else []):

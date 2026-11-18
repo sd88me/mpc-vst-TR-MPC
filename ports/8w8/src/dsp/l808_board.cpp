@@ -5,6 +5,7 @@
  */
 #include "l808_board.h"
 
+#include "lemus_ahead.h"
 #include "tr808/core/parallel.h"
 #include "tr808/core/voiceboard.h"
 
@@ -20,6 +21,7 @@
 #include <cstdint>
 #include <cstring>
 #include <mutex>
+#include <memory>
 #include <thread>
 #include <vector>
 
@@ -182,22 +184,17 @@ void applyKnobs(Pair &p, const LaneKnobs *knobs)
 } // namespace
 
 /*
- * The voices of a board run as jobs on worker threads besides the audio thread (Lemus's Parallel:
- * the output is the same to the bit with or without them). On a Live III, MPC's audio workers sit
- * on the four Cortex-A76 cores; ours run there too, at real-time priority just under the audio
- * thread's, so a hit's burst of Newton solves is shared instead of landing on one core.
- * L808_WORKERS overrides the count (0: everything on the audio thread).
+ * The voices of a board run as jobs on worker threads besides the rendering thread (Lemus's Parallel:
+ * the output is the same to the bit with or without them), started from the render-ahead thread so
+ * they share its placement: the fast cores without MPC's "Audio Processing" core, at a real-time
+ * priority below MPC's audio threads (lemus::fastThread, after mpc-vst-plugins' fast_cores.h).
+ * L808_WORKERS overrides the count (0: everything on the rendering thread).
  */
 #ifndef L808_WORKERS
 #define L808_WORKERS 3
 #endif
 
-void workerStart(int)
-{
-    sched_param sp{};
-    sp.sched_priority = 70;
-    pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);   /* best effort: may be refused */
-}
+void workerStart(int) { lemus::fastThread(); }
 
 int workerCount()
 {
@@ -207,6 +204,27 @@ int workerCount()
 }
 
 struct Engine::Impl {
+    /* lemus::Ahead core: the boards render in blocks of 128, hits and knobs arrive as commands */
+    static constexpr int kLanes = l808::kLanes, kBlock = 128;
+    enum { TRIGGER, KNOBS };
+    struct Cmd { int type, lane; float accent, tag; LaneKnobs k; };
+    struct Info {
+        bool on[l808::kLanes], hit[l808::kLanes];
+        float tag[l808::kLanes];
+        void clear() { for (int l = 0; l < l808::kLanes; ++l) on[l] = hit[l] = false; }
+        void merge(const Info &o)
+        {
+            for (int l = 0; l < l808::kLanes; ++l) {
+                on[l] = on[l] || o.on[l];
+                if (o.hit[l]) { hit[l] = true; tag[l] = o.tag[l]; }
+            }
+        }
+    };
+    Info hits;                   /* the hits applied since the last block */
+    int workers = 0;
+    std::unique_ptr<lemus::Ahead<Impl>> ahead;
+    Info last;                   /* what the last render() reported */
+
     double rate;
     tr808::Parallel *par = nullptr;
     LaneKnobs knobs[kLanes];
@@ -346,6 +364,15 @@ struct Engine::Impl {
         /* the worker is far behind: leak rather than free on the audio thread */
     }
 
+    void threadStart()
+    {
+        lemus::fastThread();
+        if (workers > 0)
+            par = new tr808::Parallel(workers, workerStart);
+    }
+    void apply(const Cmd &c);
+    void renderBlock(float *const lanes[kLanes], Info &info);
+
     void renderPair(Pair &p, int n, float *const lanes[kLanes], bool owner)
     {
         for (int bi = 0; bi < 2; ++bi) {
@@ -405,13 +432,15 @@ Engine::Engine(double sampleRate, const LaneKnobs *initial) : m(new Impl)
         std::lock_guard<std::mutex> lk(m->wantMx);
         m->want = m->built;
     }
-    if (const int w = workerCount(); w > 0)
-        m->par = new tr808::Parallel(w, workerStart);
+    m->workers = workerCount();
+    m->hits.clear();
+    m->last.clear();
     m->cur = new Pair;
     m->cur->build(m->built, sampleRate);
     for (int l = 0; l < kLanes; ++l) m->applied[l] = m->knobs[l];
     m->applyLive(*m->cur);
     m->cur->settle(sampleRate);
+    m->ahead.reset(new lemus::Ahead<Impl>(*m));   /* starts the render-ahead thread, which starts the workers */
     for (auto &b : m->cur->b) b.setParallel(m->par);
     m->liveDirty = false;
     m->worker = std::thread([this] { m->work(); });
@@ -419,6 +448,7 @@ Engine::Engine(double sampleRate, const LaneKnobs *initial) : m(new Impl)
 
 Engine::~Engine()
 {
+    m->ahead.reset();   /* the render-ahead thread stops first */
     m->quit.store(true);
     m->worker.join();
     delete m->cur;
@@ -429,9 +459,65 @@ Engine::~Engine()
     delete m;
 }
 
-void Engine::trigger(int lane, float accent01)
+void Engine::trigger(int lane, float accent01, float tag)
 {
     if (lane < 0 || lane >= kLanes) return;
+    Impl::Cmd c{};
+    c.type = Impl::TRIGGER;
+    c.lane = lane;
+    c.accent = accent01;
+    c.tag = tag;
+    m->ahead->post(c);
+}
+
+void Engine::setKnobs(int lane, const LaneKnobs &k)
+{
+    if (lane < 0 || lane >= kLanes) return;
+    Impl::Cmd c{};
+    c.type = Impl::KNOBS;
+    c.lane = lane;
+    c.k = k;
+    m->ahead->post(c);
+}
+
+void Engine::render(int n, float *const lanes[kLanes]) { m->ahead->render(n, lanes, m->last); }
+
+bool Engine::active(int lane) const { return lane >= 0 && lane < kLanes && m->last.on[lane]; }
+
+bool Engine::hit(int lane, float *tag) const
+{
+    if (lane < 0 || lane >= kLanes || !m->last.hit[lane]) return false;
+    if (tag) *tag = m->last.tag[lane];
+    return true;
+}
+
+void Engine::setLatency(int blocks) { m->ahead->setLatency(blocks); }
+int Engine::latency() const { return m->ahead->latency(); }
+long Engine::underruns() const { return m->ahead->underruns(); }
+
+void Engine::Impl::apply(const Cmd &c)
+{
+    Impl *m = this;
+    if (c.type == KNOBS) {
+        const int lane = c.lane;
+        const LaneKnobs &k = c.k;
+        LaneKnobs &o = m->knobs[lane];
+        if ((lane == L_CH || lane == L_OH || lane == L_CY) && k.ratio != o.ratio) m->metalLane = lane;
+        o = k;
+        m->liveDirty = true;
+        const Spec s = m->specFromKnobs();
+        if (s != m->pendingWant) {
+            m->pendingWant = s;
+            m->pendingPush = true;
+        }
+        if (m->pendingPush)
+            std::copy(m->knobs, m->knobs + kLanes, m->pendingKnobs);
+        return;
+    }
+    const int lane = c.lane;
+    const float accent01 = c.accent;
+    hits.hit[lane] = true;
+    hits.tag[lane] = c.tag;
     Pair &p = *m->cur;
     const int bi = kMap[lane].board;
     p.pend[bi] = true;
@@ -442,25 +528,10 @@ void Engine::trigger(int lane, float accent01)
     }
 }
 
-void Engine::setKnobs(int lane, const LaneKnobs &k)
+void Engine::Impl::renderBlock(float *const lanes[kLanes], Info &info)
 {
-    if (lane < 0 || lane >= kLanes) return;
-    LaneKnobs &o = m->knobs[lane];
-    if ((lane == L_CH || lane == L_OH || lane == L_CY) && k.ratio != o.ratio) m->metalLane = lane;
-    o = k;
-    m->liveDirty = true;
-    const Spec s = m->specFromKnobs();
-    if (s != m->pendingWant) {
-        m->pendingWant = s;
-        m->pendingPush = true;
-    }
-    if (m->pendingPush)
-        std::copy(m->knobs, m->knobs + kLanes, m->pendingKnobs);
-}
-
-void Engine::render(int n, float *const lanes[kLanes])
-{
-    Impl &im = *m;
+    Impl &im = *this;
+    const int n = kBlock;
     for (int l = 0; l < kLanes; ++l) std::memset(lanes[l], 0, sizeof(float) * size_t(n));
     for (bool &a : im.laneOn) a = false;
 
@@ -496,9 +567,10 @@ void Engine::render(int n, float *const lanes[kLanes])
         if (r->asleep()) { im.dispose(r); r = nullptr; }
     }
     im.clock.fetch_add(n);
+    info = hits;
+    hits.clear();
+    for (int l = 0; l < kLanes; ++l) info.on[l] = laneOn[l];
 }
-
-bool Engine::active(int lane) const { return lane >= 0 && lane < kLanes && m->laneOn[lane]; }
 
 int Engine::pairs() const
 {

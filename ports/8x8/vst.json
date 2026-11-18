@@ -25,6 +25,7 @@
       "ports/8w8/src/vendor/lemus/tr808/core/factory.cpp"
     ],
     "cflags": [
+      "-Iports/common",
       "-Iports/8w8/src",
       "-Iports/8w8/src/dsp",
       "-Iports/8w8/src/host",

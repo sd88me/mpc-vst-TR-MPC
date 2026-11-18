@@ -1270,6 +1270,18 @@
    "min": 0,
    "max": 65535,
    "default": 0
+  },
+  {
+   "key": "latency",
+   "name": "Latency",
+   "type": "enum",
+   "default": 1,
+   "options": [
+    "0 blocks (0 ms)",
+    "1 block (+2.9 ms)",
+    "2 blocks (+5.8 ms)",
+    "3 blocks (+8.7 ms)"
+   ]
   }
  ],
  "ui_hierarchy": {
@@ -2163,6 +2175,10 @@
      {
       "key": "note_map",
       "label": "Note Map"
+     },
+     {
+      "key": "latency",
+      "label": "Latency"
      }
     ]
    }

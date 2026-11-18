@@ -19,7 +19,11 @@
  *           is handed back to the worker to free. No crossfade is needed: nothing is cut.
  *           LEMUS_TUNE_REBUILD=0 compiles this out (the knobs then do nothing).
  *
- * Realtime: trigger/render/setKnob never allocate or lock on the audio thread.
+ * Latency (lemus_ahead.h): 0 renders the boards on the audio thread inside render(); 1-3 on a thread of ours (fast
+ * cores, below MPC's audio priority) that many 128-frame blocks ahead, render() then only copies. Hits and knobs
+ * land in the block the latency puts them in; a hit's tag comes back with the block it sounds in (hit()).
+ *
+ * Realtime: trigger/render/setKnobs never allocate or lock on the audio thread.
  *
  * AGPL-3.0 (with Lemus).
  */
@@ -51,8 +55,9 @@ public:
     Engine(double sampleRate, const LaneKnobs *initial = nullptr);
     ~Engine();
 
-    /* A hit on a lane. accent01: 0 = unaccented trig; >0 = ACCENT data with VR3 at that rotation. */
-    void trigger(int lane, float accent01);
+    /* A hit on a lane. accent01: 0 = unaccented trig; >0 = ACCENT data with VR3 at that rotation. tag: any value,
+     * back from hit() after the render() whose frames the hit starts in. */
+    void trigger(int lane, float accent01, float tag = 1.0f);
 
     /* Knob values; applied at the next render (LIVE) or after a short quiet period (REBUILD). */
     void setKnobs(int lane, const LaneKnobs &k);
@@ -63,6 +68,13 @@ public:
     /* After render(): whether lane l's circuit was awake on any board pair in that block (its
      * buffer is zeros otherwise, and the lane's own processing can be skipped). */
     bool active(int lane) const;
+    /* After render(): whether a hit on lane l started in it, and its tag. */
+    bool hit(int lane, float *tag) const;
+
+    /* 0..3 blocks of render-ahead (lemus_ahead.h); the latency new hits get now; blocks missed. */
+    void setLatency(int blocks);
+    int latency() const;
+    long underruns() const;
 
     /* the number of board pairs rendering (1, or 2+ while an old pair's tails finish) */
     int pairs() const;
