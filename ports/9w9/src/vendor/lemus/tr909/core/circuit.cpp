@@ -34,7 +34,10 @@ constexpr double kAnchorR = 1e8, kAnchorG = 1e-5;
 // with no better estimate (JFETs and MOSFETs that conduct, OTA inputs, a sinking comparator's
 // output); kOffCurrent the current under which a JFET's gate or an OTA's control counts as off.
 const double kLinWindow = std::getenv("TR909_LINWINDOW") ? std::atof(std::getenv("TR909_LINWINDOW")) : 2e-3;
-const double kLinTolerance = std::getenv("TR909_LINTOL") ? std::atof(std::getenv("TR909_LINTOL")) : 1e-4; // volts
+#ifndef LEMUS_LINTOL
+#define LEMUS_LINTOL 1e-4 // 9X9 builds with 1e-3 (VENDORED.md)
+#endif
+const double kLinTolerance = std::getenv("TR909_LINTOL") ? std::atof(std::getenv("TR909_LINTOL")) : LEMUS_LINTOL; // volts
 const bool kLinOff = std::getenv("TR909_NOLINEAR") != nullptr;
 const bool kMosWindows = std::getenv("TR909_NOMOSWINDOWS") == nullptr; // tools: MOSFETs' windows kLinWindow
 const bool kSlewWindows = std::getenv("TR909_NOSLEWWINDOWS") == nullptr; // tools: an op-amp past its linear range to Newton
@@ -1264,7 +1267,10 @@ double Circuit::defaultTolerance()
 	// 10 uV at a junction is 0.04 % of its current: against 1 uV, envelopes move under 0.1 dB
 	// (the hats; 0.01 elsewhere), spectra under 0.05 dB, Fischer's medians and the SPICE suite not
 	// at all (the metal voices' 2-5 % within 0.2), for 6 % less CPU.
-	static const double tol = std::getenv("TR909_TOL") ? std::atof(std::getenv("TR909_TOL")) : 1e-5;
+#ifndef LEMUS_TOL
+#define LEMUS_TOL 1e-5 // 9X9 builds with 1e-3 (VENDORED.md)
+#endif
+	static const double tol = std::getenv("TR909_TOL") ? std::atof(std::getenv("TR909_TOL")) : LEMUS_TOL;
 	return tol;
 }
 

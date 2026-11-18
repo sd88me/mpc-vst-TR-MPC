@@ -3,7 +3,7 @@
  * dynamically from the DSP via get_param(). */
 #ifndef ER99_PARAMS_H
 #define ER99_PARAMS_H
-#define ER99_CHAIN_PARAMS_LEN 8007
+#define ER99_CHAIN_PARAMS_LEN 8160
 static const char er99_chain_params_json[] =
     "[{\"key\":\"note_map\",\"name\":\"Note Map\",\"type\":\"enum\",\"options\":[\"Drum Rack (36+)\",\"General MIDI\"]},{\"k"
     "ey\":\"bd_c_tune\",\"name\":\"BD Tune\",\"type\":\"int\",\"min\":0,\"max\":127},{\"key\":\"bd_c_attack\",\"name\":\"BD Att"
@@ -85,8 +85,9 @@ static const char er99_chain_params_json[] =
     "2\",\"1/2.\"]},{\"key\":\"dly_fdbk\",\"name\":\"Dly Fdbk\",\"type\":\"int\",\"min\":0,\"max\":127},{\"key\":\"dly_tone\",\"n"
     "ame\":\"Dly Tone\",\"type\":\"int\",\"min\":0,\"max\":127},{\"key\":\"dly_hpf\",\"name\":\"Dly HPF\",\"type\":\"int\",\"min\""
     ":0,\"max\":127},{\"key\":\"dly_level\",\"name\":\"Dly Level\",\"type\":\"int\",\"min\":0,\"max\":127,\"viz\":{\"kind\":\"fa"
-    "der\"}}]";
-#define ER99_UI_HIERARCHY_LEN 6147
+    "der\"}},{\"key\":\"latency\",\"name\":\"Latency\",\"type\":\"enum\",\"default\":2,\"options\":[\"0 blocks (0 ms)\",\"1 b"
+    "lock (+2.9 ms)\",\"2 blocks (+5.8 ms)\",\"3 blocks (+8.7 ms)\"]}]";
+#define ER99_UI_HIERARCHY_LEN 6183
 static const char er99_ui_hierarchy_json[] =
     "{\"pad_layout\":\"drums\",\"focus_param\":\"ui_focus_level\",\"levels\":{\"bd\":{\"name\":\"Bass Drum\",\"knobs\":[\"bd"
     "_c_tune\",\"bd_c_attack\",\"bd_c_decay\",\"bd_c_sweep_depth\",\"bd_c_pitch_mod\",\"bd_c_drive\",\"bd_c_dist_type"
@@ -149,11 +150,11 @@ static const char er99_ui_hierarchy_json[] =
     "Ride\"},{\"level\":\"crash\",\"label\":\"Crash\"},{\"level\":\"fxrev\",\"label\":\"Reverb\"},{\"level\":\"fxdly\",\"label\""
     ":\"Delay\"},{\"key\":\"master_dist\",\"label\":\"Master Dist\"},{\"key\":\"master_drive\",\"label\":\"Master Drive\"},"
     "{\"key\":\"master_comp\",\"label\":\"Comp\"},{\"key\":\"volume\",\"label\":\"Volume\"},{\"key\":\"accent\",\"label\":\"Acce"
-    "nt\"},{\"key\":\"vel_depth\",\"label\":\"Velocity\"}]}}}";
+    "nt\"},{\"key\":\"vel_depth\",\"label\":\"Velocity\"},{\"key\":\"latency\",\"label\":\"Latency\"}]}}}";
 /* The same contract with the General MIDI note map, for g_note_map == 1.
  * The map is switchable at runtime, so one static hierarchy would be wrong
  * half the time; get_param picks. */
-#define ER99_UI_HIERARCHY_GM_LEN 6147
+#define ER99_UI_HIERARCHY_GM_LEN 6183
 static const char er99_ui_hierarchy_gm_json[] =
     "{\"pad_layout\":\"drums\",\"focus_param\":\"ui_focus_level\",\"levels\":{\"bd\":{\"name\":\"Bass Drum\",\"knobs\":[\"bd"
     "_c_tune\",\"bd_c_attack\",\"bd_c_decay\",\"bd_c_sweep_depth\",\"bd_c_pitch_mod\",\"bd_c_drive\",\"bd_c_dist_type"
@@ -216,5 +217,5 @@ static const char er99_ui_hierarchy_gm_json[] =
     "Ride\"},{\"level\":\"crash\",\"label\":\"Crash\"},{\"level\":\"fxrev\",\"label\":\"Reverb\"},{\"level\":\"fxdly\",\"label\""
     ":\"Delay\"},{\"key\":\"master_dist\",\"label\":\"Master Dist\"},{\"key\":\"master_drive\",\"label\":\"Master Drive\"},"
     "{\"key\":\"master_comp\",\"label\":\"Comp\"},{\"key\":\"volume\",\"label\":\"Volume\"},{\"key\":\"accent\",\"label\":\"Acce"
-    "nt\"},{\"key\":\"vel_depth\",\"label\":\"Velocity\"}]}}}";
+    "nt\"},{\"key\":\"vel_depth\",\"label\":\"Velocity\"},{\"key\":\"latency\",\"label\":\"Latency\"}]}}}";
 #endif

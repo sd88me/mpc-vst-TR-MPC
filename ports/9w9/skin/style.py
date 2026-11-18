@@ -30,7 +30,9 @@ STYLE = dict(
     fx=[("rev", ["rev_level", "rev_decay", "rev_tone", "rev_hpf"], []),
         ("dly", ["dly_level", "dly_time", "dly_fdbk", "dly_tone"], ["dly_hpf"]),
         ("master", ["volume", "master_drive", "master_dist", "master_comp"], []),
-        ("accent", ["accent", "vel_depth"], [])])
+        ("accent", ["accent", "vel_depth"], ["latency"])],
+    fx_names={"latency": "LATENCY"},
+    fx_captions={"latency": "EACH BLOCK ADDS 2.9 ms LATENCY"})
 
 
 SIDE = 20

@@ -841,6 +841,18 @@
    "viz": {
     "kind": "fader"
    }
+  },
+  {
+   "key": "latency",
+   "name": "Latency",
+   "type": "enum",
+   "default": 2,
+   "options": [
+    "0 blocks (0 ms)",
+    "1 block (+2.9 ms)",
+    "2 blocks (+5.8 ms)",
+    "3 blocks (+8.7 ms)"
+   ]
   }
  ],
  "ui_hierarchy": {
@@ -1500,6 +1512,10 @@
      {
       "key": "vel_depth",
       "label": "Velocity"
+     },
+     {
+      "key": "latency",
+      "label": "Latency"
      }
     ]
    }

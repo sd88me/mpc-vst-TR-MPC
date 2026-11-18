@@ -17,6 +17,16 @@
 #include "er99_pots.h"
 #include "er99_perc909.h"
 
+/* 9X9: the voices come from Lemus's TR-909 voicing board (l909_board.h, AGPL); 9W9's own voices
+ * stand in for the hi-hat, crash and ride when their ROM is missing. 0 builds the 9W9 voices. */
+#ifndef ER99_ENGINE_LEMUS
+#define ER99_ENGINE_LEMUS 1
+#endif
+#if ER99_ENGINE_LEMUS
+#include "l909_board.h"
+#define ER99_LEMUS_KNOBS 16
+#endif
+
 /* Trigger IDs. 'chh' is not a separate voice — it retriggers the hi-hat with
  * the closed decay time, exactly as er-99's playNote() does. */
 typedef enum {
@@ -163,6 +173,23 @@ typedef struct {
     /* decoded sample data, owned by the engine */
     float   *sample_data[ER99_NUM_SAMPLERS];
     uint32_t sample_len[ER99_NUM_SAMPLERS];
+
+#if ER99_ENGINE_LEMUS
+    l909_t  *lem;
+    int      latency;                        /* blocks of render-ahead, 0..3      */
+    float    lbuf[L909_LANES][L909_BLOCK];
+    float    lgain[L909_LANES];              /* the sounding hit's Accent gain    */
+    float    ldc_x[L909_LANES], ldc_y[L909_LANES];
+    float    lcrush[L909_LANES][2];
+    int      lhat_open;                      /* the HH lane's last hit was open   */
+    unsigned char lpot_def[ER99_LEMUS_KNOBS];/* the panel pots' defaults: noon    */
+    l909_controls_t lknobs;                  /* what the board was last told      */
+    float    ldef_drive[ER99_NUM_TRIGGERS], ldef_level[ER99_NUM_TRIGGERS];
+    int      lfb_now;                        /* firing a stand-in: no re-queue    */
+    long     lunder_seen, lunder_blocks;     /* missed blocks logged; frames since */
+    struct { signed char which; unsigned char vel, blocks; } lfb[32];
+    int      nlfb;                           /* stand-in hits waiting out latency */
+#endif
 } er99_engine_t;
 
 /* Initialise with stock er-99 parameters. module_dir may be NULL, in which

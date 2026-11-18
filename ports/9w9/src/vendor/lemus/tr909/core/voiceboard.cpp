@@ -887,7 +887,10 @@ void VoiceBoard::setCalibration(const Calibration &c)
 void VoiceBoard::prepare(double hostRate)
 {
 	m_hostRate = hostRate;
-	m_factor = hostRate < 80000 ? 2 : 1;
+#ifndef LEMUS_FACTOR
+#define LEMUS_FACTOR 2 // 9X9 builds with 1: the board at the host rate (VENDORED.md)
+#endif
+	m_factor = hostRate < 80000 ? LEMUS_FACTOR : 1;
 	if (const char *f = std::getenv("TR909_FACTOR")) // tools: force the oversampling
 		m_factor = std::max(1, std::atoi(f));
 	const int stages = m_factor >= 8 ? 3 : m_factor >= 4 ? 2 : m_factor >= 2 ? 1 : 0;
