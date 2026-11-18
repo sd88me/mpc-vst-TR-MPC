@@ -191,7 +191,7 @@ cp+=rev+dly   # without this the grid has no type/range for them and toggles
 
 # 9X9's render-ahead (src/dsp/l909_board.h): the board renders this many 128-frame blocks ahead of
 # the host, 2.9 ms each. Last in the list: params.lock binds saved projects by index.
-LATENCY={"key":"latency","name":"Latency","type":"enum","default":2,
+LATENCY={"key":"latency","name":"Latency","type":"enum","default":1,
          "options":["0 blocks (0 ms)","1 block (+2.9 ms)","2 blocks (+5.8 ms)","3 blocks (+8.7 ms)"]}
 cp+=[LATENCY]
 

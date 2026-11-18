@@ -85,7 +85,7 @@ static const char er99_chain_params_json[] =
     "2\",\"1/2.\"]},{\"key\":\"dly_fdbk\",\"name\":\"Dly Fdbk\",\"type\":\"int\",\"min\":0,\"max\":127},{\"key\":\"dly_tone\",\"n"
     "ame\":\"Dly Tone\",\"type\":\"int\",\"min\":0,\"max\":127},{\"key\":\"dly_hpf\",\"name\":\"Dly HPF\",\"type\":\"int\",\"min\""
     ":0,\"max\":127},{\"key\":\"dly_level\",\"name\":\"Dly Level\",\"type\":\"int\",\"min\":0,\"max\":127,\"viz\":{\"kind\":\"fa"
-    "der\"}},{\"key\":\"latency\",\"name\":\"Latency\",\"type\":\"enum\",\"default\":2,\"options\":[\"0 blocks (0 ms)\",\"1 b"
+    "der\"}},{\"key\":\"latency\",\"name\":\"Latency\",\"type\":\"enum\",\"default\":1,\"options\":[\"0 blocks (0 ms)\",\"1 b"
     "lock (+2.9 ms)\",\"2 blocks (+5.8 ms)\",\"3 blocks (+8.7 ms)\"]}]";
 #define ER99_UI_HIERARCHY_LEN 6183
 static const char er99_ui_hierarchy_json[] =

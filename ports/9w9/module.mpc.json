@@ -846,7 +846,7 @@
    "key": "latency",
    "name": "Latency",
    "type": "enum",
-   "default": 2,
+   "default": 1,
    "options": [
     "0 blocks (0 ms)",
     "1 block (+2.9 ms)",

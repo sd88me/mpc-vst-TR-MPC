@@ -372,7 +372,9 @@ void er99_engine_init(er99_engine_t *e, const float _sr, const char *_module_dir
             e->ldef_level[t] = *level;
         }
         for(int l = 0; l < L909_LANES; ++l) e->lgain[l] = e->master.accent;
-        e->latency = 2;   /* Live III: no missed block in a 150 s soak at 2 (l909_board.h) */
+        /* Live III: 1 block played a busy beat for 150 s without a miss, and misses only when all
+         * the voices hit at once; 2 never missed (l909_board.h) */
+        e->latency = 1;
         if(getenv("L909_LATENCY")) e->latency = atoi(getenv("L909_LATENCY"));   /* tools: bench at 0 */
         e->lknobs = lem_controls(e);
         char roms[600];

@@ -32,7 +32,7 @@ STYLE = dict(
         ("master", ["volume", "master_drive", "master_dist", "master_comp"], []),
         ("accent", ["accent", "vel_depth"], ["latency"])],
     fx_names={"latency": "LATENCY"},
-    fx_captions={"latency": "EACH BLOCK ADDS 2.9 ms LATENCY"})
+    fx_captions={"latency": "EACH BLOCK ADDS 2.9 ms LATENCY\nBUT IMPROVES PERFORMANCE"})
 
 
 SIDE = 20

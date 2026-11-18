@@ -351,8 +351,8 @@ def plain_column(t, i, tile, top, lower, params):
     for key, (cx, cy) in zip(top + lower, [(ca, r0), (cb, r0), (ca, r1), (cb, r1), (ca, r2), (cb, r2)]):
         if params[key].get("type") == "enum":
             t.popup(key, cx, cy + (8 if cy < r2 else 0), names[key])
-            if key in captions:
-                t.text(cx, cy + (8 if cy < r2 else 0) + 34, captions[key], 13)
+            for n, line in enumerate(captions.get(key, "").split("\n") if key in captions else []):
+                t.text((ca + cb) / 2, cy + (8 if cy < r2 else 0) + 34 + 16 * n, line, 13)   # centred in the column
         else:
             t.knob(key, cx, cy, names[key], key in LEVELS)
 
