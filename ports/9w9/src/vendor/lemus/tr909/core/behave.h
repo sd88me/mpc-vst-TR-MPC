@@ -4,6 +4,7 @@
 
 #include "circuit.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -135,61 +136,54 @@ struct SnareVco final : Behaviour {
 		}
 	}
 	bool ok() const { return C > 0 && ipulse >= 0 && ivdd >= 0 && ivss >= 0 && !oTri.empty() && oP.size() == 1 && oQ.size() == 1; }
-	// D62 in series with 10k, V across both: its current (Newton on the diode's voltage)
-	double diode(double v)
+	// P with the comparator at cmp: (cmp - P)/100k - P/100k + i_D = 0, i_D D62's current from the line
+	// through 10k (none while the line is below P). One Newton on the diode's voltage vd (P = pulse -
+	// vd - i_D 10k; the residual rises with vd), from the last solution vd0.
+	double node(double cmp, double pulse, double &vd0) const
 	{
-		if (v <= 0)
-			return 0;
-		double vd = std::min(v, 0.7);
-		for (int it = 0; it < 30; ++it) {
-			const double e = std::exp(vd / kNVt), f = kIs * (e - 1) - (v - vd) / kRd, df = kIs * e / kNVt + 1 / kRd;
-			const double step = f / df;
-			vd -= step;
-			if (vd > v) vd = v;
-			if (std::abs(step) < 1e-9)
+		const double span = pulse - cmp / 2; // vd's most: the diode carrying all of P's pull
+		if (span <= 0)
+			return cmp / 2;
+		double vd = std::clamp(vd0, 0.0, std::min(span, 1.0));
+		for (int it = 0; it < 40; ++it) {
+			const double e = kIs * std::exp(vd / kNVt), i = e - kIs, di = e / kNVt;
+			const double f = (cmp - 2 * (pulse - vd - i * kRd)) / kRhyst + i, df = (2 + 2 * kRd * di) / kRhyst + di;
+			const double next = std::clamp(vd - f / df, 0.0, std::min(span, 1.0));
+			const double st = next - vd;
+			vd = std::abs(st) > 0.05 ? vd + std::copysign(0.05, st) : next;
+			if (std::abs(st) < 1e-10)
 				break;
 		}
-		return (v - vd) / kRd;
-	}
-	// P with the comparator at cmp: (cmp - P)/100k - P/100k + i_D(pulse - P) = 0
-	double node(double cmp, double pulse)
-	{
-		double p = cmp / 2;
-		for (int it = 0; it < 30; ++it) {
-			const double i = diode(pulse - p), h = 1e-6;
-			const double g = (cmp - 2 * p) / kRhyst + i;
-			const double dg = -2 / kRhyst - (diode(pulse - p + h) - i) / h;
-			const double step = g / dg;
-			p -= step;
-			if (std::abs(step) < 1e-7)
-				break;
-		}
-		return p;
+		vd0 = vd;
+		return pulse - vd - (kIs * std::expm1(vd / kNVt)) * kRd;
 	}
 	// Q44's base current at rest, reverse: the base-collector junction (IS/BR) in series with 1M
-	// to the line and (1 + BR) 10k to the ramp
-	double reverseBase(double pulse, double v) const
+	// to the line and (1 + BR) 10k to the ramp (Newton on the junction's voltage, from the last)
+	double xr = 0.5;
+	double reverseBase(double pulse, double v)
 	{
 		const double vmax = pulse - v, rs = kRbase + (1 + kBetaR) * kRreset;
 		if (vmax < 0.3)
 			return 0;
-		double x = std::min(vmax, 0.55);
+		double x = std::min(xr, vmax);
 		for (int it = 0; it < 30; ++it) {
 			const double e = kQis / kBetaR * std::exp(x / kVt), f = e - (vmax - x) / rs, df = e / kVt + 1 / rs;
 			const double st = f / df;
-			x -= st;
+			x -= std::clamp(st, -0.05, 0.05);
 			if (std::abs(st) < 1e-9)
 				break;
 		}
+		xr = x;
 		return std::max(0.0, (vmax - x) / rs);
 	}
+	double vdHi = 0.4, vdLo = 0.4;
 	double pHi = 0, pLo = 0, lastPulse = 1e9;
 	void step(const double *in, double *out, double dt) override
 	{
 		const double pulse = in[ipulse], vdd = in[ivdd], vss = in[ivss];
 		if (std::abs(pulse - lastPulse) > 1e-6) { // both thresholds at this PULSE
-			pHi = node(kVsat, pulse);
-			pLo = node(-kVsat, pulse);
+			pHi = node(kVsat, pulse, vdHi);
+			pLo = node(-kVsat, pulse, vdLo);
 			lastPulse = pulse;
 		}
 		const double ib = std::max(0.0, pulse - 0.6) / kRbase;

@@ -982,6 +982,11 @@ void VoiceBoard::prepare(double hostRate)
 	// The BD's VCO runs at rest (about 50 Hz, its VCAs shut) and each trigger resets it (Q7, Q11):
 	// the voice sleeps once its jack has settled, whatever its VCO's capacitors do.
 	im.units[size_t(Voice::BD)].capacitorMove(1e9);
+	// 9X9 (local): the BD and the toms count as quiet within 0.1 mV, about -100 dB from their
+	// peaks: at 10 uV their jacks' slow settling kept them awake 4-8 s after a hit (the BD 6.7 s,
+	// under -100 dB from 0.5 s); with it the BD sleeps at 0.44 s, the toms at 1.2-1.6 s.
+	for (Voice v : {Voice::BD, Voice::LT, Voice::MT, Voice::HT})
+		im.units[size_t(v)].quietFloor(1e-4);
 	// The clap's reverb VCA, Q37, closes ever more slowly after a hit (C61 drains only through its
 	// base): about 1.3 mV p-p of noise at the jack at 1 s, 0.3 mV at 2 s; it counts as quiet within
 	// 2 mV. Its reverb path's C55 and C57 (0.47 uF) carry the noise itself.
