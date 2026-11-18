@@ -174,9 +174,10 @@ R502 jk 0 12k
 .output atk sum
 * Runtime partitions (docs/model.md, "Partitions"): run in this order; in= nodes come from the others.
 * The VCO's loop (IC12b, Q10, the comparator) stays whole: a cut in it would delay every flip.
-.part trig in=q7b,q8b,q12b,q6b,i12an RIC1 RDAC R1 R2 Q1 D4 R3 R4 R11 C6 Q2 R19 C1 R12
-+ R38 R37 X11B R39 R34 D5 Q5 D6 R20 C7 R18 R17 Q3 R32 R33 Q4 R35 D8 R36 R22 D9 C8 P5 R58 R54
-+ R41 C12 R42 D7 R21 C9 R57 P2 R26 R5
+* 9X9 (local): ENV1's hold timer and envelope (Q3, Q4, C7, C8) a partition of their own, cut at n2
+* (Q2's collector) and IC11b's output: within 0.3 dB; D5 stays with n1, whose rise it carries.
+.part trig in=q7b,q8b,q6b,i12an,c7 RIC1 RDAC R1 R2 Q1 D4 R3 R4 R11 C6 Q2 R19 C1 R12 R38 R37 X11B R39 R34 D5 Q5 R41 C12 R42 D7 R21 C9 R57 P2 R26 R5 D6 R20
+.part env1 in=n2,ac,q12b D6 R20 C7 R18 R17 Q3 R32 R33 Q4 R35 D8 R36 R22 D9 C8 P5 R58 R54
 .part vco in=c9,p1,sh R26 R27 R28 R25 X12A R29 R30 R31 Q10 R23 R24 X12B R59 C14 X13A R12 R13 Q7 R47
 + Q11 R51 R48 D12 R49 R50 X13B R52
 .part shaper in=tri,q12c R52 D10 D11 R53
@@ -853,7 +854,13 @@ R514 j 0 8.2k
 * VCOs at their resistors from the triangles (op-amp outputs), and from the VCAs at their 2.2k into
 * the 47 ohm nodes (R357, R380, R355): each shaper a partition of its own, the VCAs and the output
 * op-amp another. On a trigger edge every partition is to be substepped (docs/circuit/toms.md, §8).
-.part trig in=o43b,o47b,o46b,q57b,q58b,q59b RLATCH R345 R346 Q61 R344 R342 R343 Q60 RA5 X45B R383 R382 R381 R347 D81 R349 R348 Q62 RGF R386 P16 R384 X42A R333 R335 R331 R332 R337 X42B R338 D83 C95 D82 C96 D73 R340 R339 D87 R390 R389 D88 R391 R373 D74 C99 D84 C106 D75 C98 P17 R385 R341 C100 R354 R353 R378 R352
+* 9X9 (local): the trigger partition cut in four at stiff nodes (the accent op-amp's output, Q16's
+* collector, IC14's rails) for smaller Newton steps at the trigger's edges: within 0.06 dB of the
+* whole partition over Tune, Decay, accents and retriggers; a tom's trigger block 34-46% -> 20-22%.
+.part acc RA5 X45B R383 R382 R381
+.part trig in=o43b,o47b,o46b,n42b RLATCH R345 R346 Q61 R344 R342 R343 Q60 R331 R332 D83 C95 D82 C96 D73 R340 R339 D87 R390 R389 D88 R391 R373
+.part rails in=c95,c96 R386 P16 R384 X42A R333 R335 R331 R332 R337 X42B R338
+.part gate in=o45b,q61c,q57b,q58b,q59b R347 D81 R349 R348 Q62 RGF D74 C99 D84 C106 D75 C98 P17 R385 R341 C100 R354 R353 R378 R352
 .part vco1 in=a,vdd,vss,s1,q56c D73 R340 R339 X43A R334 R336 R362 DIC44AH DIC44AL M44AP M44AN R364 X43B C97 R363 Q53 R361 R359 R358
 .part vco3 in=a,vdd,vss,s3 D87 R390 R389 X47A R372 R375 R374 DIC44BH DIC44BL M44BP M44BN R366 X47B C103 R377 Q55 R376 R388
 .part vco2 in=a,vdd,vss,s2 D88 R391 R373 X46A R371 R369 R370 DIC44DH DIC44DL M44DP M44DN R368 X46B C102 R365 Q54 R367 R356
@@ -1054,7 +1061,13 @@ R508 j 0 15k
 * VCOs at their resistors from the triangles (op-amp outputs), and from the VCAs at their 2.2k into
 * the 47 ohm nodes (R104, R116, R106): each shaper a partition of its own, the VCAs and the output
 * op-amp another. On a trigger edge every partition is to be substepped (docs/circuit/toms.md, §8).
-.part trig in=o15b,o19b,o17b,q19b,q20b,q21b RLATCH R93 R94 Q16 R92 R90 R91 Q15 RA3 X18B R120 R119 R118 R95 D18 R97 R96 Q17 RGF R113 P10 R112 X14A R68 R66 R60 R61 R64 X14B R65 D15 C16 D14 C17 D13 R62 R63 D32 R88 R87 D33 R89 R82 D24 C22 D25 C25 D19 C21 P11 R111 R100 C23 R107 R108 R110 R109
+* 9X9 (local): the trigger partition cut in four at stiff nodes (the accent op-amp's output, Q16's
+* collector, IC14's rails) for smaller Newton steps at the trigger's edges: within 0.06 dB of the
+* whole partition over Tune, Decay, accents and retriggers; a tom's trigger block 34-46% -> 20-22%.
+.part acc RA3 X18B R120 R119 R118
+.part trig in=o15b,o19b,o17b,n14b RLATCH R93 R94 Q16 R92 R90 R91 Q15 R60 R61 D15 C16 D14 C17 D13 R62 R63 D32 R88 R87 D33 R89 R82
+.part rails in=c16,c17 R113 P10 R112 X14A R68 R66 R60 R61 R64 X14B R65
+.part gate in=o18b,q16c,q19b,q20b,q21b R95 D18 R97 R96 Q17 RGF D24 C22 D25 C25 D19 C21 P11 R111 R100 C23 R107 R108 R110 R109
 .part vco1 in=a,vdd,vss,s1,q18c D13 R62 R63 X15A R69 R67 R70 DIC16AH DIC16AL M16AP M16AN R73 X15B C18 R72 Q13 R71 R102 R103
 .part vco3 in=a,vdd,vss,s3 D32 R88 R87 X19A R86 R85 R83 DIC16BH DIC16BL M16BP M16BN R75 X19B C20 R76 Q22 R84 R117
 .part vco2 in=a,vdd,vss,s2 D33 R89 R82 X17A R81 R79 R80 DIC16DH DIC16DL M16DP M16DN R78 X17B C19 R74 Q14 R77 R105
@@ -1526,7 +1539,13 @@ R511 j 0 12k
 * VCOs at their resistors from the triangles (op-amp outputs), and from the VCAs at their 2.2k into
 * the 47 ohm nodes (R165, R176, R167): each shaper a partition of its own, the VCAs and the output
 * op-amp another. On a trigger edge every partition is to be substepped (docs/circuit/toms.md, §8).
-.part trig in=o21b,o25b,o24b,q26b,q27b,q28b RLATCH R154 R155 Q25 R153 R151 R152 Q24 RA4 X23B R180 R179 R178 R156 D42 R158 R157 Q29 RGF R172 P13 R173 X20A R129 R127 R121 R122 R125 X20B R126 D37 C30 D36 C31 D35 R123 R124 D50 R149 R148 D51 R150 R143 D29 C36 D43 C39 D30 C35 P14 R171 R161 C37 R168 R169 R174 R170
+* 9X9 (local): the trigger partition cut in four at stiff nodes (the accent op-amp's output, Q16's
+* collector, IC14's rails) for smaller Newton steps at the trigger's edges: within 0.06 dB of the
+* whole partition over Tune, Decay, accents and retriggers; a tom's trigger block 34-46% -> 20-22%.
+.part acc RA4 X23B R180 R179 R178
+.part trig in=o21b,o25b,o24b,n20b RLATCH R154 R155 Q25 R153 R151 R152 Q24 R121 R122 D37 C30 D36 C31 D35 R123 R124 D50 R149 R148 D51 R150 R143
+.part rails in=c30,c31 R172 P13 R173 X20A R129 R127 R121 R122 R125 X20B R126
+.part gate in=o23b,q25c,q26b,q27b,q28b R156 D42 R158 R157 Q29 RGF D29 C36 D43 C39 D30 C35 P14 R171 R161 C37 R168 R169 R174 R170
 .part vco1 in=a,vdd,vss,s1,q23c D35 R123 R124 X21A R130 R128 R131 DIC22AH DIC22AL M22AP M22AN R134 X21B C32 R133 Q30 R132 R163 R164
 .part vco3 in=a,vdd,vss,s3 D50 R149 R148 X25A R147 R146 R144 DIC22BH DIC22BL M22BP M22BN R136 X25B C34 R137 Q32 R145 R181
 .part vco2 in=a,vdd,vss,s2 D51 R150 R143 X24A R142 R140 R141 DIC22DH DIC22DL M22DP M22DN R139 X24B C33 R135 Q31 R138 R166
@@ -2074,8 +2093,11 @@ R505 jk 0 12k
 .part trig in=env1,p37a,p38a,q44b,q45b,q46b,q49b,q43b,d58a,c68n RIC1 R239 R242 Q39 R246 R244 Q40 R245
 + D56 R247 D62 R275 D63 R274 R258 R267 R281 R292 R266 D58 D61
 .part rails in=pulse D56 R247 C66 R287 P6 R284 R249 R248 X35A R250 R251 R252 X35B R253
-.part acc in=q39c,q48b,env3b,env2b,q47b RDAC R240 R241 X34B R255 R243 X34A R257 D58 Q41 R256 C68 D61
-+ Q42 D60 C67 D59 P7 R254 R297 D68 C83 R291 D67 C82 R295 D64 C73 R280
+* 9X9 (local): the accent block in three (IC34's op-amps; Q41's gate and ENV2/3/5; Q42 and ENV4),
+* cut at the op-amps' outputs and Q39's collector: within 0.07 dB; the trigger block 30% -> 24%.
+.part accop RDAC R240 R241 X34B R255 R243 X34A
+.part gate in=ac,q39c,env3b,env2b,q47b R257 D58 Q41 D68 C83 R291 D67 C82 R295 D64 C73 R280
+.part env4 in=ac,ac10,q39c,q48b R256 C68 D61 Q42 D60 C67 D59 P7 R254 R297
 .part vco1 in=pulse,vdd,vss,sh1 D62 R275 R262 R260 R269 X37A R259 MN36A MP36A D36AL D36AH R261 C69 X37B R258 Q44 R263 R283
 .part vco2 in=pulse,vdd,vss,sh2 D63 R274 R271 R272 R273 X38A R270 MN36B MP36B D36BL D36BH R264 C71 X38B R267 Q45 R268 R305
 .part shape1 in=tri1,x50 R283 D65 D66 R288

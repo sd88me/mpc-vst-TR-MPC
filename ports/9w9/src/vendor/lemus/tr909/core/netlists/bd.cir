@@ -167,9 +167,10 @@ R502 jk 0 12k
 .output atk sum
 * Runtime partitions (docs/model.md, "Partitions"): run in this order; in= nodes come from the others.
 * The VCO's loop (IC12b, Q10, the comparator) stays whole: a cut in it would delay every flip.
-.part trig in=q7b,q8b,q12b,q6b,i12an RIC1 RDAC R1 R2 Q1 D4 R3 R4 R11 C6 Q2 R19 C1 R12
-+ R38 R37 X11B R39 R34 D5 Q5 D6 R20 C7 R18 R17 Q3 R32 R33 Q4 R35 D8 R36 R22 D9 C8 P5 R58 R54
-+ R41 C12 R42 D7 R21 C9 R57 P2 R26 R5
+* 9X9 (local): ENV1's hold timer and envelope (Q3, Q4, C7, C8) a partition of their own, cut at n2
+* (Q2's collector) and IC11b's output: within 0.3 dB; D5 stays with n1, whose rise it carries.
+.part trig in=q7b,q8b,q6b,i12an,c7 RIC1 RDAC R1 R2 Q1 D4 R3 R4 R11 C6 Q2 R19 C1 R12 R38 R37 X11B R39 R34 D5 Q5 R41 C12 R42 D7 R21 C9 R57 P2 R26 R5 D6 R20
+.part env1 in=n2,ac,q12b D6 R20 C7 R18 R17 Q3 R32 R33 Q4 R35 D8 R36 R22 D9 C8 P5 R58 R54
 .part vco in=c9,p1,sh R26 R27 R28 R25 X12A R29 R30 R31 Q10 R23 R24 X12B R59 C14 X13A R12 R13 Q7 R47
 + Q11 R51 R48 D12 R49 R50 X13B R52
 .part shaper in=tri,q12c R52 D10 D11 R53
