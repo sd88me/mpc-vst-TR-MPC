@@ -1,6 +1,8 @@
-﻿# 9W9 for MPC / Force
+# 9W9 for MPC / Force
 
 MPC OS VST plugin port of [9W9](https://github.com/athousanddetails/schwung-9W9) by athousanddetails (TR-909 style drum machine). Manufacturer: athousanddetails. GPL-3.0, see `LICENSE` and `THIRD_PARTY.md` (if present) and `VENDORED.md`. The DSP is the upstream's, unmodified; this folder adds the MPC wrapper settings (`vst.json`), the skin (`layout.conf`) and a MIDI pad-note remap (`src/mpc_pads_engine.c`).
+
+**909 modelled after ER-99's open-source emulation, with its cymbal samples; runs on every MPC.** For a Gen2 MPC there is also **9X9** (`ports/9x9`), the same panel with the voices solved as circuits by Lemus: higher quality and CPU heavy.
 
 - **Voices:** 11 voices (pads 1-11). Pad n plays voice n in the drum layout (MIDI notes 0-15 from the drum-pad layout, or 36 and up from the keyboard layout).
 - **Skin:** a header with the plugin name, then voice panels (two columns of knobs per voice), four panels per page.

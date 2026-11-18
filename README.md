@@ -17,7 +17,13 @@ Four classic drum machines, and a modular kit that combines them, as native VST2
 | **8X8** | Roland TR-808, circuit-solved (Gen2 only) | 16 | not yet released |
 | **9X9** | Roland TR-909, circuit-solved (Gen2 only) | 11 | not yet released |
 
-8X8 and 9X9 are in development: 8W8 and 9W9's panels and effects, with the voices solved as circuits by [Lemus](https://github.com/lemus-dev/lemus) instead. They need an MPC Gen2 (Live III and later, aarch64); 8W8 and 9W9 stay as they are for every MPC. See [8X8 and 9X9](#8x8-and-9x9-gen2) below.
+**W or X?** 8X8 and 9X9 (in development) share 8W8's and 9W9's panels and effects; what differs is how the voices are made:
+- **8W8:** 808 voices modelled by hand from original schematics and knowledge bases for low CPU; runs on every MPC.
+- **8X8:** 808 solved as a complete circuit from the service-note schematics (Lemus), part values fitted to a real unit. High quality, accurate, CPU heavy - Gen2 only.
+- **9W9:** 909 modelled after ER-99's open-source emulation, with its cymbal samples; runs on every MPC.
+- **9X9:** 909 voicing board solved as a circuit (Lemus), calibrated against recordings of real units; hats and cymbals play the 909's own hi-hat and cymbal ROMs, which you supply. High quality, accurate, CPU heavy - Gen2 only.
+
+See [8X8 and 9X9](#8x8-and-9x9-gen2) below.
 
 ## These are straight ports
 
@@ -67,6 +73,7 @@ Circuit-modelled kick, snare, three toms, rim shot and hand clap; **sampled** hi
 
 The same kits as 8W8 and 9W9, but every voice is [Lemus](https://github.com/lemus-dev/lemus)'s model of the 808's or 909's voicing board, its netlists taken from the service notes and solved as a circuit sample by sample. The panels, drive, distortion, sends, effects and Q-Links are 8W8's and 9W9's. The solver needs a Gen2 CPU, so these are separate plugins for the Live III and later; 8W8 and 9W9 are unchanged.
 
+- **9X9's CPU budget:** to fit a Live III, its kick, snare and tom oscillators are simpler stand-in models fitted to Lemus's circuits (within 1-2 dB), and the solver runs at a lower precision. Everything else is Lemus's circuit. 8X8 keeps every voice as Lemus's circuit, at the same lower solver precision.
 - **9X9's hi-hat, crash and ride** play the 909's own sample ROMs, which are not included: put your copies in the plugin folder's `engine/roms/` (names and checks in [`ports/9x9/README.md`](ports/9x9/README.md)). Without them, 9W9's samples play those voices.
 - **Latency** (FX/MASTER): 0-3 blocks, 2.9 ms each. Above 0 the circuits are rendered that many blocks ahead on a thread of the plugin's own, so a busy pattern doesn't overrun MPC's audio deadline. The default is 2; at 1 MPC's own audio threads can delay ours enough to miss blocks.
 - **Controls the hardware doesn't have**, such as 8X8's kick Tune or 9X9's ride Decay, have their scale drawn in orange, with an orange triangle at the default where the control leaves the machine exactly as built. Each port's README lists what they do: [8X8](ports/8x8/README.md), [9X9](ports/9x9/README.md).
