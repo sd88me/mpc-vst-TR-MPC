@@ -14,6 +14,10 @@ Four classic drum machines, and a modular kit that combines them, as native VST2
 | **8W8** | Roland TR-808 | 16 | [latest 8W8 release](../../releases?q=8w8-vst) |
 | **CW-78** | Roland CR-78 CompuRhythm | 14, plus 17 preset rhythm buttons | [latest CW-78 release](../../releases?q=cw78-vst) |
 | **9W9** | Roland TR-909 | 11 | [latest 9W9 release](../../releases?q=9w9-vst) |
+| **8X8** | Roland TR-808, circuit-solved (Gen2 only) | 16 | not yet released |
+| **9X9** | Roland TR-909, circuit-solved (Gen2 only) | 11 | not yet released |
+
+8X8 and 9X9 are in development: 8W8 and 9W9's panels and effects, with the voices solved as circuits by [Lemus](https://github.com/lemus-dev/lemus) instead. They need an MPC Gen2 (Live III and later, aarch64); 8W8 and 9W9 stay as they are for every MPC. See [8X8 and 9X9](#8x8-and-9x9-gen2) below.
 
 ## These are straight ports
 
@@ -25,7 +29,7 @@ What this repo adds is only the MPC side:
 - a remap of the MPC drum-pad MIDI notes (0-15) onto each kit's own voice map, so the pads of an MPC drum program play the right drums;
 - build, offline test and release automation.
 
-Please support and credit the original author. Everything is GPL-3.0, as upstream.
+Please support and credit the original author. Everything is GPL-3.0, as upstream, except the Lemus-based builds (8X8, 9X9 and TR-MPC for Gen2), which are AGPL-3.0 (below).
 
 ## What the drum plugins do
 
@@ -59,6 +63,14 @@ Each kit's skin is drawn after the machine it ports: 8W8 a charcoal 808 panel wi
 ### 9W9, TR-909
 Circuit-modelled kick, snare, three toms, rim shot and hand clap; **sampled** hi-hats, ride and crash, the same split the real 909 used. The cymbal samples ship with the plugin (`engine/samples/` next to the `.so`) and come from [ER-99](https://github.com/matthewcieplak/er-99), GPL-3.0. Accent sets the full-velocity level; closed and open hat choke each other.
 
+## 8X8 and 9X9 (Gen2)
+
+The same kits as 8W8 and 9W9, but every voice is [Lemus](https://github.com/lemus-dev/lemus)'s model of the 808's or 909's voicing board, its netlists taken from the service notes and solved as a circuit sample by sample. The panels, drive, distortion, sends, effects and Q-Links are 8W8's and 9W9's. The solver needs a Gen2 CPU, so these are separate plugins for the Live III and later; 8W8 and 9W9 are unchanged.
+
+- **9X9's hi-hat, crash and ride** play the 909's own sample ROMs, which are not included: put your copies in the plugin folder's `engine/roms/` (names and checks in [`ports/9x9/README.md`](ports/9x9/README.md)). Without them, 9W9's samples play those voices.
+- **Latency** (FX/MASTER): 0-3 blocks, 2.9 ms each. Above 0 the circuits are rendered that many blocks ahead on a thread of the plugin's own, so a busy pattern doesn't overrun MPC's audio deadline. The default is 2; at 1 MPC's own audio threads can delay ours enough to miss blocks.
+- **Controls the hardware doesn't have**, such as 8X8's kick Tune or 9X9's ride Decay, have their scale drawn in orange, with an orange triangle at the default where the control leaves the machine exactly as built. Each port's README lists what they do: [8X8](ports/8x8/README.md), [9X9](ports/9x9/README.md).
+
 ## Install
 
 Each plugin is one folder that works on both MPC families (32-bit: Force, Live, Live II, One, X, Key; 64-bit: Live III and other aarch64 units). Take the zip from the plugin's [release](../../releases), unzip it and copy the `athousanddetails - VST - <name>` (or `sd88me - VST - <name>`) folder into your plugin folder:
@@ -91,11 +103,14 @@ The drum machines and TR-MPC are Instrument plugins; Tap FX is an Insert effect.
 
 One modular drum kit that combines all four machines: **16 pad slots, where each slot picks any of the 49 voices** from 6W6 (8), 8W8 (16), CW-78 (14) and 9W9 (11): a 606 kick next to an 808 snare and 909 hats, say. It reuses the same engines, so the sound stays the original author's: `ports/<kit>/src` is byte-identical to upstream, and the kit build only adds a small per-voice output tap to a patched copy so each voice can be panned, sent and mixed separately.
 
+**On Gen2** (Live III and later), the same TR-MPC plays its 808 and 909 slots on 8X8's and 9X9's circuit-solved boards ([above](#8x8-and-9x9-gen2)), and those slots' faceplates read 8X8 and 9X9. Gen1 units keep 8W8's and 9W9's engines. One kit-wide **Latency** control on the FX page (default 2 blocks) applies to the Gen2 boards. This Gen2 build is in development and not yet released.
+
 ![TR-MPC slot pages](docs/img/tr-mpc-slots.png)
 
 ### Playing it
 - Slots 1-16 answer MIDI notes **36-51** (the standard MPC drum-pad range), or notes 0-15 with the optional drum-pad patch below. Velocity works as on the drum plugins.
 - Add TR-MPC to a track as an instrument; each pad of an MPC drum program triggers its slot. Every slot starts with a ready default voice (kick, snare, hats, clap, rim, toms, ride, cowbell and so on, from all four kits), so it plays as a kit straight away.
+- **Slots can be switched off**: OFF is the last entry in each slot's voice menu, and the FX page has a SLOTS ON key per slot. An off slot plays nothing but keeps its voice and settings, and saves as off. A kit's engine is only built once a slot that is on uses it, off the audio thread, so a TR-MPC using a few voices costs less CPU and memory. While a kit's engine is being built, hits on its slots in that first second are dropped.
 - Two slots set to the same voice share that engine voice (one is retriggered by the other); they can still differ in pan and sends, and the slot you hit last is the one you hear.
 - Project recall: all slot values, FX settings and the randomise setup are saved with the project.
 
@@ -110,7 +125,7 @@ A new TR-MPC starts with every page mixing the four kits (page 1: an 8W8 kick, 9
 **Q-Links.** On each page the Q-Links turn the top four of all four slots; a **VOICES** page puts the four voice menus on the Q-Links; and each **SLOT** page has all of one slot's controls. MPC outlines the knobs in use. Continuous knobs are 0-127; a jog wheel click moves one three steps.
 
 ### FX page
-Three modules with a lit / dark key each: **REVERB** (decay, tone, high-pass, level), **DELAY** (tempo-synced time, feedback, tone, high-pass, level) and **MASTER** (master distortion and drive, a one-knob bus compressor, volume). One reverb, one delay and one master chain serve all 16 slots, followed by an output soft limiter so sixteen pads summed together do not hard-clip. The key lit means the kit's own stage is in the signal path; dark means **send only**: the stage is bypassed and that send leaves only through a Tap FX (below).
+Three modules with a lit / dark key each: **REVERB** (decay, tone, high-pass, level), **DELAY** (tempo-synced time, feedback, tone, high-pass, level) and **MASTER** (master distortion and drive, a one-knob bus compressor, volume). One reverb, one delay and one master chain serve all 16 slots, followed by an output soft limiter so sixteen pads summed together do not hard-clip. The key lit means the kit's own stage is in the signal path; dark means **send only**: the stage is bypassed and that send leaves only through a Tap FX (below). A fourth module, **LATENCY**, has the kit-wide Latency control (0-3 blocks; only the Gen2 build uses it) and the 16 **SLOTS ON** keys.
 
 ![TR-MPC FX and master page](docs/img/tr-mpc-fx-master.png)
 
@@ -143,7 +158,7 @@ bash tools/test_ci.sh 9w9       # offline ASan/UBSan host test
 
 ## Credits and licence
 
-Sound design, DSP and the original modules: **athousanddetails**. 9W9's cymbals and early engine: Matthew Cieplak's ER-99. 8W8's rim shot: Sonic Pi's sc808. Schwung is by Charles Vestal. Not affiliated with or endorsed by Roland or Akai; TR-606, TR-808, CR-78 and TR-909 are Roland trademarks, used only to describe what is modelled. GPL-3.0, see `LICENSE`.
+Sound design, DSP and the original modules: **athousanddetails**. 8X8's and 9X9's voices (and TR-MPC's on Gen2): [Lemus](https://github.com/lemus-dev/lemus), vendored with local changes listed in each `VENDORED.md`. 9W9's cymbals and early engine: Matthew Cieplak's ER-99. 8W8's rim shot: Sonic Pi's sc808. Schwung is by Charles Vestal. Not affiliated with or endorsed by Roland or Akai; TR-606, TR-808, CR-78 and TR-909 are Roland trademarks, used only to describe what is modelled. GPL-3.0, see `LICENSE`; 8X8, 9X9 and TR-MPC's Gen2 build are AGPL-3.0 with Lemus (`ports/8x8/LICENSE`, `ports/9x9/LICENSE`).
 
 ## Optional drum-pad firmware patch
-Not part of any plugin release. A standalone script ([`tools/mpc_patch/mpc-drum-pad-patch.sh` in mpc-vst-plugins](https://github.com/sd88me/mpc-vst-plugins/tree/main/tools/mpc_patch); a development copy is in `patch/`) gives 6W6, 8W8, CW-78, 9W9, TR-MPC and Machinedrum Module the 16-pad drum layout on MPC OS 3.9.1.2. It modifies Akai's factory MPC program; read its README first.
+Not part of any plugin release. A standalone script ([`tools/mpc_patch/mpc-drum-pad-patch.sh` in mpc-vst-plugins](https://github.com/sd88me/mpc-vst-plugins/tree/main/tools/mpc_patch); a development copy is in `patch/`) gives 6W6, 8W8, CW-78, 9W9, TR-MPC and Machinedrum Module (and 8X8 and 9X9, from the patch's version 10, not yet merged) the 16-pad drum layout on MPC OS 3.9.1.2. It modifies Akai's factory MPC program; read its README first.
