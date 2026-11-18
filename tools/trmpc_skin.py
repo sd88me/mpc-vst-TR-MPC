@@ -50,6 +50,21 @@ ORANGE = (242, 86, 29)
 # the voice menu's groups (heading fill / text, option fill / text per kit) and each kit's title and distortion ink
 GROUPS = ("6W6 TR-606:8:b9bbb4:1a1d24:d9dad4:1a1d24,8W8 TR-808:16:141414:f1f827:202020:ffffff,"
           "CW-78 CR-78:14:121316:ff5a00:1c1d21:ecd5aa,9W9 TR-909:11:e6e2d6:4b5566:e6e2d6:ef6c1f")
+# Gen2 (the aarch64 build) plays its 808 and 909 on 8X8's and 9X9's circuit engines: the engine reports sNN_fam + 6, and
+# these faceplates and menus say so. One skin serves both builds; the faceplate follows the engine, live.
+GEN2_NAMES = {"8W8": "8X8", "9W9": "9X9"}
+
+
+def groups(gen):
+    g = GROUPS + ",OFF:1:2b2d31:c9c4b3:2b2d31:c9c4b3"   # the menu's last entry switches the slot off (SLOTS ON's key too)
+    if gen:
+        for a, b in GEN2_NAMES.items():
+            g = g.replace(a + " ", b + " ")
+    return g
+
+
+OFF_FAM = 5          # sNN_fam of a slot switched off (+6 on Gen2)
+FAM_STRIDE = 6       # Gen2's faceplates: sNN_fam + 6
 TITLE_INK = {"6w6": "1a1c22", "8w8": "1a1a1a", "cw78": "f07028", "9w9": "f07828"}
 DIST_INK = {"6w6": "ff3b30", "8w8": "f0aa3c", "cw78": "ff7a30", "9w9": "f07828"}
 THEME = ("bg=1f1f1f ink=f1eee4 ink_dim=c9c4b3 accent=f0aa3c accent_hi=f8c060 seg_active=f0aa3c seg_inactive=2b2d31 "
@@ -151,8 +166,10 @@ WATERMARK = {"6w6": ("6W6", "michroma", (26, 28, 34), 60), "8w8": ("8W8", "logo"
              "cw78": ("CW-78", "filmotype", (240, 112, 40), 80), "9w9": ("9W9", "earth", (78, 82, 94), 76)}
 
 
-def watermark(t, kit):
+def watermark(t, kit, gen=0):
     text, face, rgb, alpha = WATERMARK[kit]
+    if gen:
+        text = GEN2_NAMES.get(text, text)
     size = 42
     while size > 24 and ds.font(size, face).getlength(text) / SS > 118:   # stays beside the bottom row, under Distortion
         size -= 1
@@ -166,14 +183,16 @@ def watermark(t, kit):
     t.hi.alpha_composite(layer, (int(x), int(y)))
 
 
-def family_module(out, fam):
-    """Module art for sNN_fam = fam, the fixed knobs' strips, and the strips and name images of every voice extra a
-    voice of this kit can have. Returns {name: strip file}, {(n, kind): (strip, label image)} and the art file."""
+def family_module(out, fam, gen=0):
+    """Module art for sNN_fam = fam (+6 on Gen2), the fixed knobs' strips, and the strips and name images of every voice
+    extra a voice of this kit can have. Returns {name: strip file}, {(n, kind): (strip, label image)} and the art file.
+    Gen2's differ only in the watermark, so they carry no extras (those of Gen1 serve, cut away from it)."""
     kit = FAMILIES[fam]
     g, cells = geo(fam)
+    fid = fam + FAM_STRIDE * gen
     t = kit_tab(kit, g)
     module_edges(t, XM)
-    watermark(t, kit)
+    watermark(t, kit, gen)
     ax = XM + (TITLE_CW78[0] + TITLE_CW78[1] // 2 - 4 if kit == "cw78" else PW - 44)   # the voice menu's arrow (CW-78: clear of its keys)
     ink = tuple(int(TITLE_INK[kit][i:i + 2], 16) for i in (0, 2, 4))
     t.d.polygon([((ax - 7) * SS, (TITLE_Y - 4) * SS), ((ax + 7) * SS, (TITLE_Y - 4) * SS), (ax * SS, (TITLE_Y + 5) * SS)], fill=ink)
@@ -187,8 +206,10 @@ def family_module(out, fam):
     for name, _ in FIXED:
         cx, cy = cell_xy(g, cells, name)
         im, side = knob_strip(t, XM + cx, cy, g["r"], name == "level")
-        strips[name] = (out.save(im, "m%d_%s.png" % (fam, name)), side)
-    art = out.save(ds.final(cut(t), PW, MB - MT), "module_%d.png" % fam)
+        strips[name] = (out.save(im, "m%d_%s.png" % (fid, name)), side)
+    art = out.save(ds.final(cut(t), PW, MB - MT), "module_%d.png" % fid)
+    if gen:
+        return dict(art=art, strips=strips, extras={})
     # A voice's own extra controls: knobs whose strips carry their scale and name, cut from the plate with the fixed
     # controls already on it, so a frame matches whatever it overlaps. (Separate name images with `when=` were merged by
     # MPC's skin builder into one picture per mode and came out with black gaps and edges.)
@@ -208,21 +229,40 @@ def family_module(out, fam):
     return dict(art=art, strips=strips, extras=extras)
 
 
+def off_module(out):
+    """A slot switched off (SLOTS ON on FX/MASTER): a blank plate with the voice menu, so the voice can still be changed."""
+    g = REG
+    t = kit_tab("8w8", g)
+    module_edges(t, XM)
+    ax = XM + PW - 44
+    t.d.polygon([((ax - 7) * SS, (TITLE_Y - 4) * SS), ((ax + 7) * SS, (TITLE_Y - 4) * SS), (ax * SS, (TITLE_Y + 5) * SS)],
+                fill=(26, 26, 26))
+    t.text(XM + PW / 2, (MT + MB) / 2 - 10, "OFF", 44, (96, 96, 92), "bold")
+    t.text(XM + PW / 2, (MT + MB) / 2 + 30, "PICK A VOICE, OR SLOTS ON ON FX/MASTER", 12, (120, 120, 114))
+    return out.save(ds.final(cut(t), PW, MB - MT), "module_off.png")
+
+
 NINE_BD = 38    # the 9W9 kick's flat voice index (gen_trkit_params' voice order)
 
 
 def slot_lines(out, mods, s, px):
     k = "s%02d_" % s
     dx = px
-    for fam in range(5):
+    for gen in (0, 1):
+        w = "when=%sfam:%d" % (k, OFF_FAM + FAM_STRIDE * gen)
+        out.lines.append("art file=%s x=%d y=%d w=%d h=%d %s" % (mods["off"], px, MT + Y_OFF, PW, MB - MT, w))
+        out.lines.append('popup cx=%d cy=%d w=250 cw=118 h=34 label="" key=%ssrc groups="%s" accent=%s field=none %s' % (
+            px + PW // 2, TITLE_Y + Y_OFF, k, groups(gen), TITLE_INK["8w8"], w))
+    for fid in [f + FAM_STRIDE * gen for gen in (0, 1) for f in range(5)]:
+        fam, gen = fid % FAM_STRIDE, fid // FAM_STRIDE
         kit = FAMILIES[fam]
         g, cells = geo(fam)
-        m = mods[fam]
-        w = "when=%sfam:%d" % (k, fam)
+        m = mods[fid]
+        w = "when=%sfam:%d" % (k, fid)
         out.lines.append("art file=%s x=%d y=%d w=%d h=%d %s" % (m["art"], px, MT + Y_OFF, PW, MB - MT, w))
         tcx, tw = TITLE_CW78 if kit == "cw78" else (PW // 2, 250)
         out.lines.append('popup cx=%d cy=%d w=%d cw=118 h=34 label="" key=%ssrc groups="%s" accent=%s field=none %s' % (
-            px + tcx, TITLE_Y + Y_OFF, tw, k, GROUPS, TITLE_INK[kit], w))
+            px + tcx, TITLE_Y + Y_OFF, tw, k, groups(gen), TITLE_INK[kit], w))
         for name, _ in FIXED:
             cx, cy = cell_xy(g, cells, name)
             f, side = m["strips"][name]
@@ -353,6 +393,14 @@ def fx_page(out):
     for n, line in enumerate(("EACH BLOCK ADDS 2.9 ms LATENCY", "BUT IMPROVES PERFORMANCE")):
         kt.text(XM + PW / 2, cy + 8 + 34 + 16 * n, line, 13)
     lines.append('popup cx=%d cy=%d w=112 h=36 label="" key=latency accent=%s' % (px + PW // 2, cy + 8 + Y_OFF, DIST_INK[kit]))
+    # SLOTS ON: a key per slot (off: it plays nothing, and on Gen2 its kit's circuit board is only built for slots that are on)
+    gy = cy + 8 + 34 + 16 * 2 + 26
+    kt.text(XM + PW / 2, gy, "SLOTS ON", 14, None, "bold")
+    for sl in range(16):
+        r, c = divmod(sl, 4)
+        kx, ky = PW // 2 + (c - 1.5) * 70, gy + 44 + r * 54
+        lines.append('toggle cx=%d cy=%d label="" key=s%02d_on bw=64 ns=0 %s' % (
+            px + kx, ky + Y_OFF, sl + 1, key_attrs(out, "key_on_%02d" % (sl + 1), 64, 46, str(sl + 1), ORANGE, 18)))
     t.hi.paste(cut(kt), (px * SS, MT * SS))
     out.lines += ["", "[tab FX/MASTER]", "art file=%s fit=stretch" % page_image(out, t, "fx")] + lines
     out.lines.append('qlinks "FX/MASTER" = fx_rev_level,fx_rev_decay,fx_rev_tone,fx_rev_hpf,fx_dly_level,fx_dly_time,fx_dly_fdbk,'
@@ -406,7 +454,10 @@ def main():
     out = Out()
     out.lines = ["# generated by tools/trmpc_skin.py: the slot modules are the drum kits' own looks; edit that, not this file."]
     out.lines += ["theme_%s" % kv for kv in THEME.split()] + ["scale_names=1", "qlink_bounds=column"]
-    mods = [family_module(out, fam) for fam in range(5)]
+    mods = {fam: family_module(out, fam) for fam in range(5)}
+    for fam in range(5):   # Gen2: new faceplates where the watermark changes (8X8, 9X9), the same art for 6W6 and CW-78
+        mods[fam + FAM_STRIDE] = family_module(out, fam, 1) if FAMILIES[fam] in ("8w8", "9w9") else mods[fam]
+    mods["off"] = off_module(out)
     for page in range(4):
         voice_page(out, mods, page)
     fx_page(out)

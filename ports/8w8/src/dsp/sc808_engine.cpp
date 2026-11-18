@@ -326,7 +326,8 @@ struct sc808_engine {
     RimClave  rs;
 
 #if SC808_ENGINE_LEMUS
-    l808::Engine *lem;                       /* new'd: calloc runs no constructor */
+    l808::Engine *lem;                       /* the board as the audio thread uses it (null: not built yet) */
+    l808::Engine *lem_built;                 /* published by sc808_lemus_build (atomic), new'd */
     float lbuf[SC808_NUM_VOICES][l808::kMaxBlock];
     l808::LaneKnobs lknobs[SC808_NUM_VOICES];/* what the board was last told     */
     float atk_env[SC808_NUM_VOICES];         /* the Attack lanes' transient       */
@@ -505,7 +506,9 @@ sc808_engine_t *sc808_create(float sample_rate)
 #if SC808_ENGINE_LEMUS
     /* the boards are built from the starting knobs, so the first sync changes nothing */
     for(int v = 0; v < SC808_NUM_VOICES; ++v) e->lknobs[v] = l808_knobs(e, v);
-    e->lem = new l808::Engine(sr, e->lknobs);
+#if !LEMUS_LAZY_BOARD
+    sc808_lemus_build(e);                    /* 8X8: now; TR-MPC builds it once a slot plays an 808 voice */
+#endif
     /* 1 block (2.9 ms): the board renders ahead on its own thread, the audio call only copies */
     e->latency = 1;
     if(getenv("L808_LATENCY")) e->latency = atoi(getenv("L808_LATENCY"));   /* tools: bench at 0 */
@@ -517,7 +520,7 @@ void sc808_destroy(sc808_engine_t *e)
 {
     if(!e) return;
 #if SC808_ENGINE_LEMUS
-    delete e->lem;
+    delete e->lem_built;   /* the builder has returned: sc808_lemus_build's caller joins it first */
 #endif
     free(e);
 }
@@ -627,7 +630,8 @@ void sc808_trigger(sc808_engine_t *e, int voice, int velocity)
      * only Mutual's OH-cuts-CH needs the fade.
      */
     (void)decay; (void)tune;
-    e->lem->trigger(voice, vgain > 1.0f ? (volts - 4.0f) / 10.0f : 0.0f, softGain);
+    if(e->lem)   /* not built yet (TR-MPC, its first second): the hit is dropped */
+        e->lem->trigger(voice, vgain > 1.0f ? (volts - 4.0f) / 10.0f : 0.0f, softGain);
     return;
 #endif
     switch(voice)
@@ -829,6 +833,17 @@ static inline void sc808_add(sc808_engine *e, const int v, const float raw,
 
 
 #if SC808_ENGINE_LEMUS
+/* Builds the board from the knobs as they are (not on the audio thread: about a second, and threads). Once. */
+void sc808_lemus_build(sc808_engine_t *e)
+{
+    if(__atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE)) return;
+    /* the knobs: the audio thread leaves lknobs alone until it has the board (l808_sync) */
+    l808::Engine *b = new l808::Engine(e->sample_rate, e->lknobs);
+    __atomic_store_n(&e->lem_built, b, __ATOMIC_RELEASE);
+}
+
+int sc808_lemus_ready(const sc808_engine_t *e) { return __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE) != nullptr; }
+
 /* Pots to the board's knobs (l808_board.h): cheap, and only a change reaches it. */
 static void l808_sync(sc808_engine_t *e)
 {
@@ -875,6 +890,13 @@ void sc808_render(sc808_engine_t *e, float *out, int frames)
     const float vol    = e->potv[e->p_volume];
     const float comp   = e->potv[e->p_comp];
 
+    if(!e->lem)
+        e->lem = __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE);
+    if(!e->lem)   /* TR-MPC: no board yet */
+    {
+        memset(out, 0, sizeof(float) * (size_t)frames);
+        return;
+    }
     l808_sync(e);
     e->lem->setLatency(e->latency);
     {   /* missed blocks (the render-ahead thread late): one stderr line (MPC's journal) at most every 5 s */

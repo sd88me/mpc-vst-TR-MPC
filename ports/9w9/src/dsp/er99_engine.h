@@ -176,7 +176,9 @@ typedef struct {
     uint32_t sample_len[ER99_NUM_SAMPLERS];
 
 #if ER99_ENGINE_LEMUS
-    l909_t  *lem;
+    l909_t  *lem;                            /* the board as the audio thread uses it */
+    l909_t  *lem_built;                      /* published by er99_engine_lemus_build (atomic) */
+    char     lem_roms[600];
     int      latency;                        /* blocks of render-ahead, 0..3      */
     float    lbuf[L909_LANES][L909_BLOCK];
     float    lgain[L909_LANES];              /* the sounding hit's Accent gain    */
@@ -218,6 +220,14 @@ int er99_engine_get_param(const er99_engine_t *e, const char *key, float *pot);
 /* Self-contained state blob — required for slot autosave and User Presets. */
 int er99_engine_get_state(const er99_engine_t *e, char *buf, int len);
 int er99_engine_set_state(er99_engine_t *e, const char *blob);
+
+#if ER99_ENGINE_LEMUS
+/* 9X9's board (l909_board.h): built by er99_engine_init, or with LEMUS_LAZY_BOARD (TR-MPC) by a call to
+ * er99_engine_lemus_build from a thread of the caller's (not the audio thread; it takes about a second),
+ * which must have returned before er99_engine_free. Until then render() is silent and hits are dropped. */
+void er99_engine_lemus_build(er99_engine_t *e);
+int  er99_engine_lemus_ready(const er99_engine_t *e);
+#endif
 
 extern const char *const er99_trigger_names[ER99_NUM_TRIGGERS];
 

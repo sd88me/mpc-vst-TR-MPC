@@ -59,6 +59,13 @@ typedef struct sc808_engine sc808_engine_t;
 
 sc808_engine_t *sc808_create(float sample_rate);
 void  sc808_destroy(sc808_engine_t *e);
+#if SC808_ENGINE_LEMUS
+/* 8X8's board (l808_board.h): built by sc808_create, or with LEMUS_LAZY_BOARD (TR-MPC) by a call to
+ * sc808_lemus_build from a thread of the caller's (not the audio thread; it takes about a second),
+ * which must have returned before sc808_destroy. Until then render() is silent and hits are dropped. */
+void  sc808_lemus_build(sc808_engine_t *e);
+int   sc808_lemus_ready(const sc808_engine_t *e);
+#endif
 
 /* velocity 0 is treated as a note-off and ignored (drums are one-shots). */
 void  sc808_trigger(sc808_engine_t *e, int voice, int velocity);

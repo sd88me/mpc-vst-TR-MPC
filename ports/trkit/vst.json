@@ -62,7 +62,8 @@
       "-DLEMUS_LINTOL=1e-3",
       "-DLEMUS_GROUP_OVER=1",
       "-DLEMUS_FACTOR=1",
-      "-DLEMUS_BEH_VCO=1"
+      "-DLEMUS_BEH_VCO=1",
+      "-DLEMUS_LAZY_BOARD=1"
     ]
   },
   "defines": {

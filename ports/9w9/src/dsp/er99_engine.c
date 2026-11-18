@@ -377,18 +377,31 @@ void er99_engine_init(er99_engine_t *e, const float _sr, const char *_module_dir
         e->latency = 1;
         if(getenv("L909_LATENCY")) e->latency = atoi(getenv("L909_LATENCY"));   /* tools: bench at 0 */
         e->lknobs = lem_controls(e);
-        char roms[600];
-        if(_module_dir) snprintf(roms, sizeof roms, "%s/roms", _module_dir);
-        e->lem = l909_create(_sr, _module_dir ? roms : NULL, &e->lknobs);
+        if(_module_dir) snprintf(e->lem_roms, sizeof e->lem_roms, "%s/roms", _module_dir);
+#if !LEMUS_LAZY_BOARD
+        er99_engine_lemus_build(e);   /* 9X9: now; TR-MPC builds it once a slot plays a 909 voice */
+#endif
     }
 #endif
 }
 
+#if ER99_ENGINE_LEMUS
+/* Builds the board from the panel as it is (not on the audio thread: about a second, and threads). Once. The
+ * audio thread leaves lknobs alone until it has the board (lem_render). */
+void er99_engine_lemus_build(er99_engine_t *e)
+{
+    if(__atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE)) return;
+    l909_t *b = l909_create(e->sample_rate, e->lem_roms[0] ? e->lem_roms : NULL, &e->lknobs);
+    __atomic_store_n(&e->lem_built, b, __ATOMIC_RELEASE);
+}
+int er99_engine_lemus_ready(const er99_engine_t *e) { return __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE) != NULL; }
+#endif
+
 void er99_engine_free(er99_engine_t *e)
 {
 #if ER99_ENGINE_LEMUS
-    l909_destroy(e->lem);
-    e->lem = NULL;
+    l909_destroy(e->lem_built);   /* the builder has returned: er99_engine_lemus_build's caller joins it first */
+    e->lem = e->lem_built = NULL;
 #endif
     for(int i=0; i<ER99_NUM_SAMPLERS; ++i)
     {
@@ -431,7 +444,9 @@ void er99_engine_trigger(er99_engine_t *e, const er99_trigger_t _which, const in
     const float sr = e->sample_rate;
 
 #if ER99_ENGINE_LEMUS
-    if(e->lem)
+    if(!e->lem)
+        e->lem = __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE);
+    if(!e->lem) return;   /* not built yet (TR-MPC, its first second): the hit is dropped */
     {
         /* The board's hit: velocity (scaled by Velocity) is the 909's accent code; Accent's gain
          * comes back with the block the hit sounds in. A voice without its ROM is 9W9's own,
@@ -769,7 +784,11 @@ static void lem_render(er99_engine_t *e, float *out, int frames);
 void er99_engine_render(er99_engine_t *e, float *out, const int frames)
 {
 #if ER99_ENGINE_LEMUS
-    if(e->lem) { lem_render(e, out, frames); return; }
+    if(!e->lem)
+        e->lem = __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE);
+    if(e->lem) lem_render(e, out, frames);
+    else memset(out, 0, sizeof(float) * (size_t)frames);   /* TR-MPC: no board yet */
+    return;
 #endif
     for(int n=0; n<frames; ++n)
     {
