@@ -359,3 +359,4 @@ int_rev
 int_dly
 int_comp
 rnd_go_voice
+latency

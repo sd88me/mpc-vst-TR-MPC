@@ -3928,6 +3928,17 @@
    "key": "rnd_go_voice",
    "name": "Random Voices",
    "momentary": true
+  },
+  {
+   "key": "latency",
+   "name": "Latency",
+   "default": 1,
+   "options": [
+    "0 blocks (0 ms)",
+    "1 block (+2.9 ms)",
+    "2 blocks (+5.8 ms)",
+    "3 blocks (+8.7 ms)"
+   ]
   }
  ],
  "sections": [
@@ -4381,7 +4392,8 @@
     "fx_master_dist",
     "fx_master_drive",
     "fx_comp",
-    "fx_volume"
+    "fx_volume",
+    "latency"
    ]
   },
   {

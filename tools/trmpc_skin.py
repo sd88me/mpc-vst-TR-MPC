@@ -345,9 +345,15 @@ def fx_page(out):
         t.hi.paste(cut(kt), (px * SS, MT * SS))
         lines.append('toggle cx=%d cy=%d label="" key=%s bw=240 ns=0 %s' % (px + PW // 2, 540 + Y_OFF, ikey,
                                                                key_attrs(out, "key_" + ikey, 240, 70, title, ORANGE, 24)))
-    kt = kit_tab(kit, g)                    # a blank module fills the fourth place
-    module_edges(kt, XM, title=False)
-    t.hi.paste(cut(kt), ((PX0 + 3 * PPITCH) * SS, MT * SS))
+    kt = kit_tab(kit, g)                    # the fourth place: LATENCY (Gen2's circuit engines render ahead; Gen1 ignores it)
+    module_edges(kt, XM, title=True)
+    kt.text(XM + PW / 2 + 6, TITLE_Y, "LATENCY", 17, (24, 24, 24), "bold")
+    px, cy = PX0 + 3 * PPITCH, g["rows"][0]
+    kt.popup("x", XM + PW // 2, cy + 8, "BLOCKS")
+    for n, line in enumerate(("EACH BLOCK ADDS 2.9 ms LATENCY", "BUT IMPROVES PERFORMANCE")):
+        kt.text(XM + PW / 2, cy + 8 + 34 + 16 * n, line, 13)
+    lines.append('popup cx=%d cy=%d w=112 h=36 label="" key=latency accent=%s' % (px + PW // 2, cy + 8 + Y_OFF, DIST_INK[kit]))
+    t.hi.paste(cut(kt), (px * SS, MT * SS))
     out.lines += ["", "[tab FX/MASTER]", "art file=%s fit=stretch" % page_image(out, t, "fx")] + lines
     out.lines.append('qlinks "FX/MASTER" = fx_rev_level,fx_rev_decay,fx_rev_tone,fx_rev_hpf,fx_dly_level,fx_dly_time,fx_dly_fdbk,'
                      'fx_dly_tone,fx_volume,fx_master_drive,fx_master_dist,fx_comp,int_rev,int_dly,int_comp,fx_dly_hpf')

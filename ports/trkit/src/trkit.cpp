@@ -11,7 +11,12 @@
  *   - an engine that has been silent for a few seconds is not rendered until the next trigger.
  *
  * Pads: MIDI notes 36..51 -> slots 1..16 (MPC drum-pad default, C1 upward), or 0..15 with the drum-pad patch.
- * GPL-3.0, as the kits it links.
+ *
+ * Gen2 (TRKIT_LEMUS, the aarch64 build): the 808 and 909 voices are 8X8's and 9X9's circuit-solved voicing boards
+ * (Lemus), each rendered by its own thread `latency` blocks ahead (lemus_ahead.h). One kit-wide Latency (0..3 blocks of
+ * 128, 2.9 ms each) goes to both, and the 606 and CR-78 hits wait that many blocks so the kit stays in time. Gen1 keeps
+ * the 8W8 and 9W9 engines and ignores Latency.
+ * GPL-3.0, as the kits it links; the Gen2 build AGPL-3.0, with Lemus.
  */
 #include <stdint.h>
 #include <stdio.h>
@@ -158,7 +163,18 @@ struct Inst {
     bool tap_owner;            /* this Inst publishes the slot planes for the Tap plugins */
     int16_t pending[kBlock * 2];   /* the owner outputs one block behind what it publishes, so a tap called before it in a period still finds its block */
     bool have_pending;
+    int latency;                   /* 0..3 blocks (Gen2): the circuit engines render this far ahead */
+    int lat_sent[kNumBackends];    /* what each engine was last told (-1: not yet) */
+    struct Held { int b, v, vel, blocks; } held[64];   /* 606 / CR-78 hits waiting out the latency */
+    int nheld;
 };
+
+#ifndef TRKIT_LEMUS
+#define TRKIT_LEMUS 0
+#endif
+/* the engines that render ahead by themselves (Gen2's circuit boards) */
+inline bool renders_ahead(int b) { return TRKIT_LEMUS && (b == 1 || b == 3); }
+inline int effective_latency(const Inst *in) { return TRKIT_LEMUS ? in->latency : 0; }
 
 void *engine_for(Inst *in, int b) {
     if (!in->eng[b]) {
@@ -196,6 +212,8 @@ void *create(const char *dir) {
     for (int s = 0; s < kSlots; ++s) { in->pan[s] = 64; in->rev[s] = 0; in->dly[s] = 0; }
     in->int_rev = in->int_dly = in->int_comp = 1;
     in->rnd_amount = 64; in->rng = 0x9e3779b9u ^ (uint32_t)(uintptr_t)in;
+    in->latency = 1;
+    for (int b = 0; b < kNumBackends; ++b) in->lat_sent[b] = -1;
     { const void *none = nullptr; in->tap_owner = g_tap.owner.compare_exchange_strong(none, in); }
     engine_for(in, kFxBackend);
     for (int s = 0; s < kSlots; ++s) { int b, v; flat_to_bv(in->slot_flat[s], &b, &v); engine_for(in, b); }
@@ -218,7 +236,16 @@ void midi(void *p, const uint8_t *m, int len) {
     if (slot < 0 || slot >= kSlots) return;
     int b, v;
     flat_to_bv(in->slot_flat[slot], &b, &v);
-    if (void *e = engine_for(in, b)) { in->voice_owner[b][v] = slot; kBackends[b].trigger(e, v, m[2]); in->quiet[b] = 0; }
+    void *e = engine_for(in, b);
+    if (!e) return;
+    in->voice_owner[b][v] = slot;
+    in->quiet[b] = 0;
+    const int lat = effective_latency(in);
+    if (lat > 0 && !renders_ahead(b)) {   /* held back to sound with the circuit boards' hits */
+        if (in->nheld < (int)(sizeof in->held / sizeof in->held[0])) in->held[in->nheld++] = { b, v, m[2], lat };
+        return;
+    }
+    kBackends[b].trigger(e, v, m[2]);
 }
 
 /* keys: sNN_src (flat voice index), sNN_level/tune/decay/drive (the voice's pots), sNN_pan/rev/dly (the slot's),
@@ -301,6 +328,7 @@ void set_param(void *p, const char *key, const char *val) {
     const int x = atoi(val);
     if (!strcmp(key, "state")) { set_state(in, val); return; }
     if (!strcmp(key, "edit_slot")) { in->edit_slot = x < 0 ? 0 : (x >= kSlots ? kSlots - 1 : x); return; }
+    if (!strcmp(key, "latency")) { in->latency = x < 0 ? 0 : (x > 3 ? 3 : x); return; }
     if (!strncmp(key, "rnd_", 4)) {
         if (!strcmp(key, "rnd_go")) { if (x) randomise(in); }
         else if (!strcmp(key, "rnd_go_voice")) { if (x) randomise(in, true); }
@@ -370,7 +398,7 @@ int get_state(Inst *in, char *buf, int n) {
         if (len >= n - 32) break;
     }
     /* after the fx values: switching the compressor off saves the Comp value set above */
-    len += snprintf(buf + len, n - len, "int_rev=%d;int_dly=%d;int_comp=%d;", in->int_rev, in->int_dly, in->int_comp);
+    len += snprintf(buf + len, n - len, "int_rev=%d;int_dly=%d;int_comp=%d;latency=%d;", in->int_rev, in->int_dly, in->int_comp, in->latency);
     return len;
 }
 
@@ -396,6 +424,7 @@ int get_param(void *p, const char *key, char *buf, int n) {
     int slot; const char *rest;
     if (!strcmp(key, "state")) return get_state(in, buf, n);
     if (!strcmp(key, "edit_slot")) return snprintf(buf, n, "%d", in->edit_slot);
+    if (!strcmp(key, "latency")) return snprintf(buf, n, "%d", in->latency);
     if (!strncmp(key, "rnd_", 4)) {
         if (!strcmp(key, "rnd_go") || !strcmp(key, "rnd_go_voice") || !strcmp(key, "rnd_all") || !strcmp(key, "rnd_none")) return snprintf(buf, n, "0");
         if (!strcmp(key, "rnd_amount")) return snprintf(buf, n, "%d", in->rnd_amount);
@@ -465,6 +494,17 @@ void render(void *p, int16_t *out, int frames) {
     static thread_local float scratch[kBlock], dl[kBlock], dr[kBlock], sr[kBlock], sd[kBlock], ol[kBlock], orr[kBlock];
     for (int done = 0; done < frames; done += kBlock) {
         const int n = frames - done < kBlock ? frames - done : kBlock;
+        /* the latency to the circuit engines; held 606 / CR-78 hits whose wait is over (queued with the latency before
+         * call k, the boards' hits sound from call k + latency: count it down, fire at the next) */
+        const int lat = effective_latency(in);
+        for (int b = 0; b < kNumBackends; ++b)
+            if (renders_ahead(b) && in->eng[b] && in->lat_sent[b] != lat) { kBackends[b].set(in->eng[b], "latency", lat); in->lat_sent[b] = lat; }
+        for (int h = 0; h < in->nheld; ) {
+            Inst::Held &hd = in->held[h];
+            if (hd.blocks > 0) { hd.blocks--; ++h; continue; }
+            if (in->eng[hd.b]) { kBackends[hd.b].trigger(in->eng[hd.b], hd.v, hd.vel); in->quiet[hd.b] = 0; }
+            in->held[h] = in->held[--in->nheld];
+        }
         memset(dl, 0, sizeof(float) * n); memset(dr, 0, sizeof(float) * n);
         memset(sr, 0, sizeof(float) * n); memset(sd, 0, sizeof(float) * n);
         const bool pub = in->tap_owner && n == kBlock;
