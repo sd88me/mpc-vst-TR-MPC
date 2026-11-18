@@ -22,7 +22,7 @@
 #include "sc808_shape.h"
 
 #ifndef SC808_ENGINE_LEMUS
-#define SC808_ENGINE_LEMUS 1   /* 8X8: Lemus's circuit-solved voicing board (l808_board.h) */
+#define SC808_ENGINE_LEMUS 0   /* 1 builds 8X8 (ports/8x8, Gen2): Lemus's circuit-solved voicing board (l808_board.h) */
 #endif
 #if SC808_ENGINE_LEMUS
 #include "l808_board.h"

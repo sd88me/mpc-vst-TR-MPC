@@ -1,0 +1,50 @@
+{
+  "name": "8X8",
+  "vendor": "sd88me",
+  "uid": "T8X8",
+  "version": 1000,
+  "so": "tr8x8.so",
+  "targets": [
+    "aarch64"
+  ],
+  "art": "html",
+  "build": {
+    "root": "../..",
+    "sources": [
+      "ports/8w8/src/dsp/sc808_plugin.cpp",
+      "ports/8w8/src/dsp/sc808_engine.cpp",
+      "ports/8w8/src/dsp/l808_board.cpp",
+      "ports/8w8/src/mpc_pads_engine.c",
+      "ports/8w8/src/vendor/lemus/tr808/core/circuit.cpp",
+      "ports/8w8/src/vendor/lemus/tr808/core/voiceboard.cpp",
+      "ports/8w8/src/vendor/lemus/tr808/core/parallel.cpp",
+      "ports/8w8/src/vendor/lemus/tr808/core/oversampler.cpp",
+      "ports/8w8/src/vendor/lemus/tr808/core/trimmers.cpp",
+      "ports/8w8/src/vendor/lemus/tr808/core/machine.cpp",
+      "ports/8w8/src/vendor/lemus/tr808/core/ucom43.cpp",
+      "ports/8w8/src/vendor/lemus/tr808/core/factory.cpp"
+    ],
+    "cflags": [
+      "-Iports/8w8/src",
+      "-Iports/8w8/src/dsp",
+      "-Iports/8w8/src/host",
+      "-Iports/8w8/src/vendor/lemus",
+      "-Iports/8w8/src/vendor/lemus/generated",
+      "-std=gnu++17",
+      "-O3",
+      "-DLEMUS_TOL=1e-3",
+      "-DLEMUS_LINTOL=1e-3",
+      "-DLEMUS_GROUP_OVER=1",
+      "-DSC808_ENGINE_LEMUS=1"
+    ],
+    "libs": [
+      "-lm"
+    ]
+  },
+  "layout": "layout.conf",
+  "params": "module.mpc.json",
+  "defines": {
+    "HAS_TRANSPORT": 1,
+    "HAS_LFO_BPM": 1
+  }
+}

@@ -17,10 +17,11 @@
 #include "er99_pots.h"
 #include "er99_perc909.h"
 
-/* 9X9: the voices come from Lemus's TR-909 voicing board (l909_board.h, AGPL); 9W9's own voices
- * stand in for the hi-hat, crash and ride when their ROM is missing. 0 builds the 9W9 voices. */
+/* 1 builds 9X9 (ports/9x9, Gen2): the voices from Lemus's TR-909 voicing board (l909_board.h, AGPL),
+ * 9W9's own voices standing in for the hi-hat, crash and ride when their ROM is missing. 0 (the
+ * default) is 9W9 and its Move module, unchanged. */
 #ifndef ER99_ENGINE_LEMUS
-#define ER99_ENGINE_LEMUS 1
+#define ER99_ENGINE_LEMUS 0
 #endif
 #if ER99_ENGINE_LEMUS
 #include "l909_board.h"

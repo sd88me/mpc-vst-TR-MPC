@@ -189,12 +189,6 @@ dly=[{"key":"dly_time","name":"Time","type":"enum","options":DIVS},
      F("dly_level","Level",0,1.2,0.01)]
 cp+=rev+dly   # without this the grid has no type/range for them and toggles
 
-# 9X9's render-ahead (src/dsp/l909_board.h): the board renders this many 128-frame blocks ahead of
-# the host, 2.9 ms each. Last in the list: params.lock binds saved projects by index.
-LATENCY={"key":"latency","name":"Latency","type":"enum","default":1,
-         "options":["0 blocks (0 ms)","1 block (+2.9 ms)","2 blocks (+5.8 ms)","3 blocks (+8.7 ms)"]}
-cp+=[LATENCY]
-
 for lid,label,ps in (("rim","Rim Shot",rim),("clap","Hand Clap",clap),
                      ("chh","Closed Hat",chat),("ohh","Open Hat",ohat),
                      ("ride","Ride",ride),("crash","Crash",crash),
@@ -206,7 +200,7 @@ for lid,label,ps in (("rim","Rim Shot",rim),("clap","Hand Clap",clap),
 root+=[{"key":"master_dist","name":"Master Dist"},{"key":"master_drive","name":"Master Drive"},
        {"key":"master_comp","name":"Comp"},
        {"key":"volume","name":"Volume"},{"key":"accent","name":"Accent"},
-       {"key":"vel_depth","name":"Velocity"},{"key":"latency","name":"Latency"}]
+       {"key":"vel_depth","name":"Velocity"}]
 levels["root"]={"name":"9W9","knobs":["master_dist","master_drive","master_comp","volume","accent","vel_depth"],"params":root}
 
 # Two audiences, two spellings of the same control.

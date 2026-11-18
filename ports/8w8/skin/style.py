@@ -35,7 +35,7 @@ def panel(t):
     d.rectangle((0, 0, W * SS, 2 * SS), fill=(96, 96, 94))
     d.rectangle((0, (H - 2) * SS, W * SS, H * SS), fill=(26, 26, 26))
     x = SIDE + 30
-    for s, size, fill, face in (("8W8", 32, ORANGE, "logo"), ("Rhythm Composer", 26, ORANGE, "logo"),
+    for s, size, fill, face in ((t.st.get("logo", "8W8"), 32, ORANGE, "logo"),   # 8X8 reuses this style ("Rhythm Composer", 26, ORANGE, "logo"),
                                 ("Computer Controlled", 14, (205, 205, 200), "regular")):
         t.text(x, 25, s, size, fill, face, "lm")
         x += ds.font(size, face).getlength(s) / SS + 22

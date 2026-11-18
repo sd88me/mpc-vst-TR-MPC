@@ -30,9 +30,7 @@ STYLE = dict(
     fx=[("rev", ["rev_level", "rev_decay", "rev_tone", "rev_hpf"], []),
         ("dly", ["dly_level", "dly_time", "dly_fdbk", "dly_tone"], ["dly_hpf"]),
         ("master", ["volume", "master_drive", "master_dist", "master_comp"], []),
-        ("accent", ["accent", "vel_depth"], ["latency"])],
-    fx_names={"latency": "LATENCY"},
-    fx_captions={"latency": "EACH BLOCK ADDS 2.9 ms LATENCY\nBUT IMPROVES PERFORMANCE"})
+        ("accent", ["accent", "vel_depth"], [])])
 
 
 SIDE = 20
@@ -47,7 +45,7 @@ def panel(t):
     d.rectangle((0, 0, W * SS, 2 * SS), fill=(250, 249, 244))
     d.rectangle((0, (H - 2) * SS, W * SS, H * SS), fill=(150, 148, 140))
     # name and line in Earth, the face nearest the 909's lettering (baked, not shipped)
-    t.text(ds.X_START + 24, 38, "9W9", 34, (70, 72, 80), "earth", "ls")
+    t.text(ds.X_START + 24, 38, t.st.get("logo", "9W9"), 34, (70, 72, 80), "earth", "ls")   # 9X9 reuses this style
     t.text(W - ds.X_START - 24, 37, "RHYTHM COMPOSER", 20, (92, 94, 102), "earth", "rs")
     d.line([(SIDE * SS, HEAD * SS), ((W - SIDE) * SS, HEAD * SS)], fill=SLATE, width=2 * SS)
     ds.cheeks(t, SIDE, (122, 115, 95), 26)      # the 909's warm khaki grey (~146,139,117), nearly flat

@@ -4,37 +4,20 @@
   "uid": "T9W9",
   "version": 1101,
   "so": "tr9w9.so",
-  "targets": [
-    "aarch64"
-  ],
+  "targets": ["armv7", "aarch64"],
   "art": "html",
   "build": {
     "root": ".",
     "sources": [
       "src/dsp/er99_plugin.c",
       "src/dsp/er99_engine.c",
-      "src/dsp/l909_board.cpp",
-      "src/mpc_pads_engine.c",
-      "src/vendor/lemus/tr909/core/circuit.cpp",
-      "src/vendor/lemus/tr909/core/voiceboard.cpp",
-      "src/vendor/lemus/tr909/core/noise.cpp",
-      "src/vendor/lemus/tr909/core/hihat.cpp",
-      "src/vendor/lemus/tr909/core/cymbals.cpp",
-      "src/vendor/lemus/tr909/core/oversampler.cpp",
-      "src/vendor/lemus/tr909/core/parallel.cpp"
+      "src/mpc_pads_engine.c"
     ],
     "cflags": [
       "-Isrc",
       "-Isrc/dsp",
       "-Isrc/host",
-      "-Isrc/vendor/lemus",
-      "-Isrc/vendor/lemus/generated",
-      "-std=gnu++17",
-      "-O3",
-      "-DLEMUS_TOL=1e-3",
-      "-DLEMUS_LINTOL=1e-3",
-      "-DLEMUS_FACTOR=1",
-      "-DLEMUS_BEH_VCO=1"
+      "-O3"
     ],
     "libs": [
       "-lm"

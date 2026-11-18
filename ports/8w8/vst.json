@@ -4,37 +4,21 @@
   "uid": "T8W8",
   "version": 1101,
   "so": "tr8w8.so",
-  "targets": [
-    "aarch64"
-  ],
+  "targets": ["armv7", "aarch64"],
   "art": "html",
   "build": {
     "root": ".",
     "sources": [
       "src/dsp/sc808_plugin.cpp",
       "src/dsp/sc808_engine.cpp",
-      "src/dsp/l808_board.cpp",
-      "src/mpc_pads_engine.c",
-      "src/vendor/lemus/tr808/core/circuit.cpp",
-      "src/vendor/lemus/tr808/core/voiceboard.cpp",
-      "src/vendor/lemus/tr808/core/parallel.cpp",
-      "src/vendor/lemus/tr808/core/oversampler.cpp",
-      "src/vendor/lemus/tr808/core/trimmers.cpp",
-      "src/vendor/lemus/tr808/core/machine.cpp",
-      "src/vendor/lemus/tr808/core/ucom43.cpp",
-      "src/vendor/lemus/tr808/core/factory.cpp"
+      "src/mpc_pads_engine.c"
     ],
     "cflags": [
       "-Isrc",
       "-Isrc/dsp",
       "-Isrc/host",
-      "-Isrc/vendor/lemus",
-      "-Isrc/vendor/lemus/generated",
-      "-std=gnu++17",
-      "-O3",
-      "-DLEMUS_TOL=1e-3",
-      "-DLEMUS_LINTOL=1e-3",
-      "-DLEMUS_GROUP_OVER=1"
+      "-std=gnu++14",
+      "-O3"
     ],
     "libs": [
       "-lm"
