@@ -1364,6 +1364,8 @@ void er99_engine_seed_pots(er99_engine_t *e)
     }
 }
 
+int er99_engine_key_is_enum(const char *key) { return is_enum_key(key); }
+
 int er99_engine_set_param(er99_engine_t *e, const char *key, const float pot)
 {
     if(is_enum_key(key))

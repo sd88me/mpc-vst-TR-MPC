@@ -337,7 +337,15 @@ static int get_param(void *_instance, const char *_key, char *_buf, const int _l
 
     float v = 0.0f;
     if(er99_engine_get_param(&inst->engine, _key, &v))
+    {
+#if ER99_ENGINE_LEMUS
+        /* An option list's index goes back as a whole number: the wrapper only takes a read-back as the index when
+         * the whole string is numeric ("2.0000" reads as the first option, and the dropdown snaps back). */
+        if(er99_engine_key_is_enum(_key))
+            return snprintf(_buf, (size_t)_len, "%d", (int)(v + 0.5f));
+#endif
         return snprintf(_buf, (size_t)_len, "%.4f", v);
+    }
 
     return -1;
 }

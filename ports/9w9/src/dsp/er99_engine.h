@@ -220,6 +220,8 @@ int er99_engine_get_raw(const er99_engine_t *e, const char *key, float *out);
 void er99_engine_seed_pots(er99_engine_t *e);
 int er99_engine_set_param(er99_engine_t *e, const char *key, float pot);
 int er99_engine_get_param(const er99_engine_t *e, const char *key, float *pot);
+/* 1 for a key that is an option list (master_dist, dly_time, latency, *_dist_type): its value is the index. */
+int er99_engine_key_is_enum(const char *key);
 
 /* Self-contained state blob — required for slot autosave and User Presets. */
 int er99_engine_get_state(const er99_engine_t *e, char *buf, int len);
