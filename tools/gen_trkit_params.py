@@ -123,6 +123,33 @@ for sl in range(1, 17):
     slots_on.append("s%02d_on" % sl)
 sections.append({"label": "Slots on", "keys": slots_on})
 
+# read-only (trkit.cpp): each slot's voice on this build, flat index (+ one more than the voices on Gen2), so the skin can draw
+# a Gen2 voice's own coloured controls: `when=` takes one condition, and sNN_src is the same on both builds. Appended last.
+vg = []
+for sl in range(1, 17):
+    params.append({"key": "s%02d_vg" % sl, "name": "Slot %d voice and build" % sl,
+                   "options": ["v%d" % i for i in range(2 * (len(SRC) + 1))], "default": DEFAULT_FLAT[sl - 1]})
+    vg.append("s%02d_vg" % sl)
+sections.append({"label": "Skin", "keys": vg})
+
+# User presets (trkit.cpp): the PRESET menu (the `preset` parameter is vst.json's programs list: 23 factory presets, then 32 user ones), SAVE PRESET /
+# DELETE PRESET, and the drawn naming keyboard (kb_open = 1 shows it; its keys are momentary). Appended last, in this order.
+KB_CHARS = "1234567890QWERTYUIOPASDFGHJKL-ZXCVBNM"
+def kb_key(c): return "kb_" + ("dash" if c == "-" else c.lower())
+pr = []
+params.append({"key": "preset", "name": "Preset", "min": 0, "max": 54, "default": 0, "display": "int", "refresh_display": True})
+params.append({"key": "pr_save", "name": "Save Preset", "momentary": True, "refresh_display": True}); pr.append("pr_save")
+params.append({"key": "pr_del", "name": "Delete Preset", "momentary": True, "refresh_display": True}); pr.append("pr_del")
+params.append({"key": "pr_name", "name": "Preset Name", "min": 0, "max": 1, "default": 0, "display": "string", "poll": True}); pr.append("pr_name")
+params.append({"key": "kb_name", "name": "Typed Name", "min": 0, "max": 1, "default": 0, "display": "string", "poll": True}); pr.append("kb_name")
+params.append({"key": "kb_open", "name": "Keyboard", "options": ["CLOSED", "OPEN"], "default": 0, "refresh_display": True}); pr.append("kb_open")
+for c in KB_CHARS:
+    params.append({"key": kb_key(c), "name": "Key " + c, "momentary": True}); pr.append(kb_key(c))
+for k, n in (("space", "Space"), ("bksp", "Delete"), ("shift", "Shift"), ("cancel", "Cancel"), ("save", "Save")):
+    params.append({"key": "kb_" + k, "name": "Key " + n, "momentary": True, **({"refresh_display": True} if k in ("cancel", "save") else {})})
+    pr.append("kb_" + k)
+sections.append({"label": "Presets", "keys": pr})
+
 for p in params:   # the jog wheel: a click moves a knob three steps (wrapper "nudge_gain", mpc-vst-plugins)
     if "options" not in p and not p.get("momentary") and "min" in p and "max" in p:
         p["nudge_gain"] = 3

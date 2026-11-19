@@ -71,5 +71,8 @@
     "HAS_LFO_BPM": 1
   },
   "layout": "layout.conf",
-  "art": "html"
+  "art": "html",
+  "programs": {
+    "param": "preset"
+  }
 }
