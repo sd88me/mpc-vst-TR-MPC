@@ -19,6 +19,7 @@
  * GPL-3.0, as the kits it links; the Gen2 build AGPL-3.0, with Lemus.
  */
 #include <stdint.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -419,7 +420,7 @@ void presets_clear(Inst *in) {
 void presets_load(Inst *in) {
     presets_clear(in);
     char path[560];
-    snprintf(path, sizeof path, "%s/trmpc-presets.txt", in->dir);
+    snprintf(path, sizeof path, "%s/user/trmpc-presets.txt", in->dir);   /* engine/user: kept on updates (the release lists it as user data) */
     FILE *f = fopen(path, "r");
     if (!f) return;
     char *line = (char *)malloc(kStateMax + 128);
@@ -442,7 +443,8 @@ void presets_load(Inst *in) {
 
 void presets_save(Inst *in) {
     char path[560], tmp[580];
-    snprintf(path, sizeof path, "%s/trmpc-presets.txt", in->dir);
+    { char d[560]; snprintf(d, sizeof d, "%s/user", in->dir); mkdir(d, 0755); }
+    snprintf(path, sizeof path, "%s/user/trmpc-presets.txt", in->dir);
     snprintf(tmp, sizeof tmp, "%s.tmp", path);
     FILE *f = fopen(tmp, "w");
     if (!f) return;
