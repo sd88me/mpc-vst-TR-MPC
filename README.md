@@ -17,7 +17,7 @@ Four classic drum machines, and a modular kit that combines them, as native VST2
 | **8X8** | Roland TR-808, circuit-solved (Gen2 only) | 16 | not yet released |
 | **9X9** | Roland TR-909, circuit-solved (Gen2 only) | 11 | not yet released |
 
-**W or X?** 8X8 and 9X9 (in development) share 8W8's and 9W9's panels and effects; what differs is how the voices are made:
+**W or X?** 8X8 and 9X9 (coming soon, Gen2 only) are accurate, circuit-solved versions of the 808 and 909, faithful to the original machines, with the same drive, distortion, reverb, delay and master effects as 8W8 and 9W9:
 - **8W8:** 808 voices modelled by hand from original schematics and knowledge bases for low CPU; runs on every MPC.
 - **8X8:** 808 solved as a complete circuit from the service-note schematics (Lemus), part values fitted to a real unit. High quality, accurate, CPU heavy - Gen2 only.
 - **9W9:** 909 modelled after ER-99's open-source emulation, with its cymbal samples; runs on every MPC.
@@ -71,12 +71,11 @@ Circuit-modelled kick, snare, three toms, rim shot and hand clap; **sampled** hi
 
 ## 8X8 and 9X9 (Gen2)
 
-The same kits as 8W8 and 9W9, but every voice is [Lemus](https://github.com/lemus-dev/lemus)'s model of the 808's or 909's voicing board, its netlists taken from the service notes and solved as a circuit sample by sample. The panels, drive, distortion, sends, effects and Q-Links are 8W8's and 9W9's. The solver needs a Gen2 CPU, so these are separate plugins for the Live III and later; 8W8 and 9W9 are unchanged.
+**Accurate, circuit-solved 808 and 909.** Every voice is the original machine's own circuit, solved from the service-note schematics by [Lemus](https://github.com/lemus-dev/lemus) and calibrated against real units, so they sound faithful to the hardware. Around them is everything 8W8 and 9W9 add: drive and seven distortion types per voice, reverb and delay sends, a master bus with distortion and compression, the touchscreen panels and Q-Links. They need the power of an MPC Gen2 (Live III and later); 8W8 and 9W9 stay for every MPC.
 
-- **9X9's CPU budget:** to fit a Live III, its kick, snare and tom oscillators are simpler stand-in models fitted to Lemus's circuits (within 1-2 dB), and the solver runs at a lower precision. Everything else is Lemus's circuit. 8X8 keeps every voice as Lemus's circuit, at the same lower solver precision.
-- **9X9's hi-hat, crash and ride** play the 909's own sample ROMs, which are not included: put your copies in the plugin folder's `engine/roms/` (names and checks in [`ports/9x9/README.md`](ports/9x9/README.md)). Without them, 9W9's samples play those voices.
-- **Latency** (FX/MASTER): 0-3 blocks, 2.9 ms each. Above 0 the circuits are rendered that many blocks ahead on a thread of the plugin's own, so a busy pattern doesn't overrun MPC's audio deadline. The default is 2; at 1 MPC's own audio threads can delay ours enough to miss blocks.
-- **Controls the hardware doesn't have**, such as 8X8's kick Tune or 9X9's ride Decay, have their scale drawn in orange, with an orange triangle at the default where the control leaves the machine exactly as built. Each port's README lists what they do: [8X8](ports/8x8/README.md), [9X9](ports/9x9/README.md).
+- **Extra controls** the original machines don't have, such as Tune on the 808's kick or Decay on the 909's ride, have an orange scale, with an orange triangle at the default where the voice sounds exactly like the original. See [8X8](ports/8x8/README.md) and [9X9](ports/9x9/README.md) for each.
+- **9X9's hi-hat and cymbals** play the 909's own sample ROMs, which you supply (see [9X9](ports/9x9/README.md)). Without them, 9W9's samples play those voices.
+- **Latency** (FX/MASTER): 0-3 blocks of 2.9 ms each, giving the circuits time to render. The default of 2 plays busy patterns cleanly.
 
 ## Install
 
@@ -168,4 +167,4 @@ bash tools/test_ci.sh 9w9       # offline ASan/UBSan host test
 Sound design, DSP and the original modules: **athousanddetails**. 8X8's and 9X9's voices (and TR-MPC's on Gen2): [Lemus](https://github.com/lemus-dev/lemus), vendored with local changes listed in each `VENDORED.md`. 9W9's cymbals and early engine: Matthew Cieplak's ER-99. 8W8's rim shot: Sonic Pi's sc808. Schwung is by Charles Vestal. Not affiliated with or endorsed by Roland or Akai; TR-606, TR-808, CR-78 and TR-909 are Roland trademarks, used only to describe what is modelled. GPL-3.0, see `LICENSE`; 8X8, 9X9 and TR-MPC's Gen2 build are AGPL-3.0 with Lemus (`ports/8x8/LICENSE`, `ports/9x9/LICENSE`).
 
 ## Optional drum-pad firmware patch
-Not part of any plugin release. A standalone script ([`tools/mpc_patch/mpc-drum-pad-patch.sh` in mpc-vst-plugins](https://github.com/sd88me/mpc-vst-plugins/tree/main/tools/mpc_patch); a development copy is in `patch/`) gives 6W6, 8W8, CW-78, 9W9, TR-MPC and Machinedrum Module (and 8X8 and 9X9, from the patch's version 10, not yet merged) the 16-pad drum layout on MPC OS 3.9.1.2. It modifies Akai's factory MPC program; read its README first.
+Not part of any plugin release. A standalone script ([`tools/mpc_patch/mpc-drum-pad-patch.sh` in mpc-vst-plugins](https://github.com/sd88me/mpc-vst-plugins/tree/main/tools/mpc_patch); a development copy is in `patch/`) gives 6W6, 8W8, 8X8, CW-78, 9W9, 9X9, TR-MPC and Machinedrum Module the 16-pad drum layout on MPC OS 3.9.1.2. It modifies Akai's factory MPC program; read its README first.
