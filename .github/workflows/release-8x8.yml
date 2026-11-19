@@ -1,0 +1,33 @@
+# Build 8X8 (Gen2 only) into a DRAFT release (8x8-vst-v<version>) with mpc-vst-plugins' shared workflow:
+# Actions -> "Release 8X8 (draft)" -> Run workflow. Install that draft's zip on a Gen2 device, smoke-test it, then publish
+# the draft (mpc-vst-plugins docs/RELEASING.md). dry_run builds the zip and skin previews as run artifacts only.
+name: Release 8X8 (draft)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version, e.g. 1.0.0
+        required: true
+      dry_run:
+        description: Build only (zip + skin previews as run artifacts), no draft release
+        type: boolean
+        default: false
+
+jobs:
+  tr_8x8:
+    uses: open-mpc/mpc-vst-plugins/.github/workflows/vst-release.yml@606d78b9a675b7fb83c9b648ec163b06cb106c3b
+    permissions:
+      contents: write
+    with:
+      tag: 8x8-vst-v${{ inputs.version }}
+      version: ${{ inputs.version }}
+      tools_ref: 606d78b9a675b7fb83c9b648ec163b06cb106c3b
+      vst_dir: ports/8x8
+      build: SHADOW_SKIN_MPC_OS=2 bash tools/build_ci.sh 8x8
+      host_test: bash tools/test_ci.sh 8x8
+      plugin_id: tr-8x8
+      license: AGPL-3.0-only
+      about: Circuit-solved TR-808 (Lemus) with 8W8's panel, drive, distortion and effects, for MPC Gen2.
+      gen2_only: true
+      dry_run: ${{ inputs.dry_run }}
