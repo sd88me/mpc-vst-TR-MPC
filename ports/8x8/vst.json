@@ -2,7 +2,7 @@
   "name": "8X8",
   "vendor": "sd88me",
   "uid": "T8X8",
-  "version": 1000,
+  "version": 1001,
   "so": "tr8x8.so",
   "targets": [
     "aarch64"

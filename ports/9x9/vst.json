@@ -2,7 +2,7 @@
   "name": "9X9",
   "vendor": "sd88me",
   "uid": "T9X9",
-  "version": 1000,
+  "version": 1001,
   "so": "tr9x9.so",
   "targets": [
     "aarch64"

@@ -16,13 +16,13 @@ on:
 
 jobs:
   tr_8x8:
-    uses: open-mpc/mpc-vst-plugins/.github/workflows/vst-release.yml@606d78b9a675b7fb83c9b648ec163b06cb106c3b
+    uses: open-mpc/mpc-vst-plugins/.github/workflows/vst-release.yml@122ac4eece1de334ab452725751adbe9b01d0359
     permissions:
       contents: write
     with:
       tag: 8x8-vst-v${{ inputs.version }}
       version: ${{ inputs.version }}
-      tools_ref: 606d78b9a675b7fb83c9b648ec163b06cb106c3b
+      tools_ref: 122ac4eece1de334ab452725751adbe9b01d0359
       vst_dir: ports/8x8
       build: SHADOW_SKIN_MPC_OS=2 bash tools/build_ci.sh 8x8
       host_test: bash tools/test_ci.sh 8x8
