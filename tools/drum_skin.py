@@ -280,10 +280,12 @@ class Tab:
         self.hi.alpha_composite(soft_shadow(self.hi.size, box, 1, 180, (1, 1)))
         self.knobs.append(dict(key=key, cx=cx, cy=cy, level=level, r=r))
 
-    def popup(self, key, cx, cy, name):
+    LATENCY_W = 190    # "2 blocks (+5.8 ms)" needs more than the usual slot
+
+    def popup(self, key, cx, cy, name, width=None):
         self.text(cx, cy - 38, name, self.label_size)
         fill, top, bottom = self.st["slot"]
-        pw = self.st.get("popup_w", 112)                         # wider for long option names
+        pw = width or (self.LATENCY_W if key == "latency" else self.st.get("popup_w", 112))   # wider for long option names
         x0, y0, x1, y1 = cx - pw // 2 - 4, cy - 20, cx + pw // 2 + 4, cy + 20     # a recessed slot the live field sits in
         self.d.rounded_rectangle((x0 * SS, y0 * SS, x1 * SS, y1 * SS), 4 * SS, fill=fill)
         self.d.line([(x0 * SS, y0 * SS), (x1 * SS, y0 * SS)], fill=top, width=2 * SS)
@@ -401,7 +403,7 @@ def plain_column(t, i, tile, top, lower, params):
         if key == "-":   # an empty place (a style's spacer)
             continue
         if params[key].get("type") == "enum":
-            t.popup(key, cx, cy + (8 if cy < r2 else 0), names[key])
+            t.popup(key, (ca + cb) // 2 if key == "latency" else cx, cy + (8 if cy < r2 else 0), names[key])   # Latency: its wide slot centred in the column
             for n, line in enumerate(captions.get(key, "").split("\n") if key in captions else []):
                 t.text((ca + cb) / 2, cy + (8 if cy < r2 else 0) + 34 + 16 * n, line, 13)   # centred in the column
         else:

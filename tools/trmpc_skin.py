@@ -389,10 +389,10 @@ def fx_page(out):
     module_edges(kt, XM, title=True)
     kt.text(XM + PW / 2 + 6, TITLE_Y, "LATENCY", 17, (24, 24, 24), "bold")
     px, cy = PX0 + 3 * PPITCH, g["rows"][0]
-    kt.popup("x", XM + PW // 2, cy + 8, "BLOCKS")
+    kt.popup("x", XM + PW // 2, cy + 8, "BLOCKS", width=ds.Tab.LATENCY_W)
     for n, line in enumerate(("EACH BLOCK ADDS 2.9 ms LATENCY", "BUT IMPROVES PERFORMANCE")):
         kt.text(XM + PW / 2, cy + 8 + 34 + 16 * n, line, 13)
-    lines.append('popup cx=%d cy=%d w=112 h=36 label="" key=latency accent=%s' % (px + PW // 2, cy + 8 + Y_OFF, DIST_INK[kit]))
+    lines.append('popup cx=%d cy=%d w=%d h=36 label="" key=latency accent=%s' % (px + PW // 2, cy + 8 + Y_OFF, ds.Tab.LATENCY_W, DIST_INK[kit]))
     # SLOTS ON: a key per slot (off: it plays nothing, and on Gen2 its kit's circuit board is only built for slots that are on)
     gy = cy + 8 + 34 + 16 * 2 + 26
     kt.text(XM + PW / 2, gy, "SLOTS ON", 14, None, "bold")
