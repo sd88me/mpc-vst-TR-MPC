@@ -137,7 +137,7 @@ sections.append({"label": "Skin", "keys": vg})
 KB_CHARS = "1234567890QWERTYUIOPASDFGHJKL-ZXCVBNM"
 def kb_key(c): return "kb_" + ("dash" if c == "-" else c.lower())
 pr = []
-params.append({"key": "preset", "name": "Preset", "min": 0, "max": 54, "default": 0, "display": "int", "refresh_display": True})
+params.append({"key": "preset", "name": "Preset", "min": 0, "max": 54, "default": 0, "display": "int", "nudge_gain": 1, "refresh_display": True})
 params.append({"key": "pr_save", "name": "Save Preset", "momentary": True, "refresh_display": True}); pr.append("pr_save")
 params.append({"key": "pr_del", "name": "Delete Preset", "momentary": True, "refresh_display": True}); pr.append("pr_del")
 params.append({"key": "pr_name", "name": "Preset Name", "min": 0, "max": 1, "default": 0, "display": "string", "poll": True}); pr.append("pr_name")
@@ -151,7 +151,7 @@ for k, n in (("space", "Space"), ("bksp", "Delete"), ("shift", "Shift"), ("cance
 sections.append({"label": "Presets", "keys": pr})
 
 for p in params:   # the jog wheel: a click moves a knob three steps (wrapper "nudge_gain", mpc-vst-plugins)
-    if "options" not in p and not p.get("momentary") and "min" in p and "max" in p:
+    if "options" not in p and not p.get("momentary") and "min" in p and "max" in p and "nudge_gain" not in p:
         p["nudge_gain"] = 3
 
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ports", "trkit", "params.json")

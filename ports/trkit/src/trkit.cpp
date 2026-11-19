@@ -182,7 +182,6 @@ struct Inst {
     /* user presets (shared by every project, in <dir>/trmpc-presets.txt): the PRESET menu's 32 slots, each a name and the whole
      * kit's state string (get_state); the drawn naming keyboard */
     int preset;                      /* the picked program: 0..kFactory-1 factory, then the user slots */
-    long long created_ms;
     long long load_ms;               /* when set_state last ran (steady clock): the host re-picks the program right after a load */
     int loading;                     /* set_state is running: a "preset" in it only says which was picked */
     char pr_name[kPresets][kNameMax + 1];
@@ -287,7 +286,6 @@ void *create(const char *dir) {
     in->rnd_amount = 64; in->rng = 0x9e3779b9u ^ (uint32_t)(uintptr_t)in;
     presets_load(in);
     in->preset = 0;   /* F01 Init: the layout a new instance starts with */
-    in->created_ms = now_ms();   /* a new instance: MPC picks program 0 at once, which must neither apply F01 nor become the picked one */
     in->latency = 2;   /* 5.8 ms: at 1, MPC's audio threads preempting the boards' threads cost missed blocks (Live III) */
     for (int b = 0; b < kNumBackends; ++b) in->lat_sent[b] = -1;
     { const void *none = nullptr; in->tap_owner = g_tap.owner.compare_exchange_strong(none, in); }
@@ -547,7 +545,7 @@ void factory_name(int idx, char *buf, int n) {
     const char *nm = kFactoryPresets[idx].name;
     if (!TRKIT_LEMUS) {   /* Gen1 has 8W8 and 9W9 */
         char t[48]; snprintf(t, sizeof t, "%s", nm);
-        for (char *p = t; *p; ++p) if ((p[0] == '8' || p[0] == '9') && p[1] == 'X' && p[2] == p[0]) { p[1] = 'W'; p[2] = 'W'; }
+        for (char *p = t; *p; ++p) if ((p[0] == '8' || p[0] == '9') && p[1] == 'X' && p[2] == p[0]) p[1] = 'W';
         snprintf(buf, n, "F%02d %s", idx + 1, t);
     } else snprintf(buf, n, "F%02d %s", idx + 1, nm);
 }
@@ -635,7 +633,7 @@ void set_param(void *p, const char *key, const char *val) {
     if (!strcmp(key, "state")) { set_state(in, val); return; }
     if (!strcmp(key, "edit_slot")) { in->edit_slot = x < 0 ? 0 : (x >= kSlots ? kSlots - 1 : x); return; }
     if (!strcmp(key, "latency")) { in->latency = x < 0 ? 0 : (x > 3 ? 3 : x); return; }
-    if (!strcmp(key, "preset")) { if (now_ms() - in->created_ms < 2000) return; if (in->loading || now_ms() - in->load_ms < 2000) in->preset = x < 0 ? 0 : (x >= kProgs ? kProgs - 1 : x); else preset_apply(in, x); return; }
+    if (!strcmp(key, "preset")) { if (in->loading || now_ms() - in->load_ms < 2000) in->preset = x < 0 ? 0 : (x >= kProgs ? kProgs - 1 : x); else preset_apply(in, x); return; }
     if (!strcmp(key, "pr_save") || !strcmp(key, "pr_del")) { if (x) preset_key(in, key); return; }
     if (!strncmp(key, "kb_", 3)) { if (strcmp(key, "kb_open") && strcmp(key, "kb_name") && x) keyboard_key(in, key); return; }
     if (!strncmp(key, "rnd_", 4)) {
