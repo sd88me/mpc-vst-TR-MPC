@@ -322,22 +322,14 @@ N_VOICES = 49   # the kits' voices in all (trkit.cpp kTotalVoices)
 NINE_BD = 38    # the 9W9 kick's flat voice index (gen_trkit_params' voice order)
 
 
-def popup_panel(out):
-    """The voice menu's backing: a near-black plate with a light rim, so the open list stands off whatever module is behind it."""
-    im = Image.new("RGBA", (96, 96), (12, 13, 15, 255))
-    ImageDraw.Draw(im).rectangle((0, 0, 95, 95), outline=(238, 236, 228, 255), width=4)
-    return out.save(im, "popup_panel.png")
-
-
 def slot_lines(out, mods, s, px):
     k = "s%02d_" % s
-    panel = popup_panel(out)
     dx = px
     for gen in (0, 1):
         w = "when=%sfam:%d" % (k, OFF_FAM + FAM_STRIDE * gen)
         out.lines.append("art file=%s x=%d y=%d w=%d h=%d %s" % (mods["off"], px, MT + Y_OFF, PW, MB - MT, w))
-        out.lines.append('popup cx=%d cy=%d w=250 cw=118 h=34 label="" key=%ssrc groups="%s" accent=%s field=none img=%s %s' % (
-            px + PW // 2, TITLE_Y + Y_OFF, k, groups(gen), TITLE_INK["8w8"], panel, w))
+        out.lines.append('popup cx=%d cy=%d w=250 cw=118 h=34 label="" key=%ssrc groups="%s" accent=%s field=none %s' % (
+            px + PW // 2, TITLE_Y + Y_OFF, k, groups(gen), TITLE_INK["8w8"], w))
     for fid in [f + FAM_STRIDE * gen for gen in (0, 1) for f in range(5)]:
         fam, gen = fid % FAM_STRIDE, fid // FAM_STRIDE
         kit = FAMILIES[fam]
@@ -346,8 +338,8 @@ def slot_lines(out, mods, s, px):
         w = "when=%sfam:%d" % (k, fid)
         out.lines.append("art file=%s x=%d y=%d w=%d h=%d %s" % (m["art"], px, MT + Y_OFF, PW, MB - MT, w))
         tcx, tw = TITLE_CW78 if kit == "cw78" else (PW // 2, 250)
-        out.lines.append('popup cx=%d cy=%d w=%d cw=118 h=34 label="" key=%ssrc groups="%s" accent=%s field=none img=%s %s' % (
-            px + tcx, TITLE_Y + Y_OFF, tw, k, groups(gen), TITLE_INK[kit], panel, w))
+        out.lines.append('popup cx=%d cy=%d w=%d cw=118 h=34 label="" key=%ssrc groups="%s" accent=%s field=none %s' % (
+            px + tcx, TITLE_Y + Y_OFF, tw, k, groups(gen), TITLE_INK[kit], w))
         for name, _ in FIXED:
             cx, cy = cell_xy(g, cells, name)
             f, side = m["strips"][name]
