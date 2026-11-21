@@ -11,15 +11,24 @@
  *   - an engine that has been silent for a few seconds is not rendered until the next trigger.
  *
  * Pads: MIDI notes 36..51 -> slots 1..16 (MPC drum-pad default, C1 upward), or 0..15 with the drum-pad patch.
- * GPL-3.0, as the kits it links.
+ *
+ * Gen2 (TRKIT_LEMUS, the aarch64 build): the 808 and 909 voices are 8X8's and 9X9's circuit-solved voicing boards
+ * (Lemus), each rendered by its own thread `latency` blocks ahead (lemus_ahead.h). One kit-wide Latency (0..3 blocks of
+ * 128, 2.9 ms each) goes to both, and the 606 and CR-78 hits wait that many blocks so the kit stays in time. Gen1 keeps
+ * the 8W8 and 9W9 engines and ignores Latency.
+ * GPL-3.0, as the kits it links; the Gen2 build AGPL-3.0, with Lemus.
  */
 #include <stdint.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <algorithm>
+#include <atomic>
 #include <chrono>
+#include <mutex>
+#include <thread>
 #if defined(__SSE__)
 #include <xmmintrin.h>
 #endif
@@ -140,6 +149,9 @@ constexpr int kFxBackend = 1;                 /* 8W8's reverb, delay and master 
 constexpr int kSleepAfter = 5 * 44100;        /* samples of silence before an engine or the FX stage stops rendering */
 constexpr float kSilence = 1e-5f;
 
+constexpr int kPresets = 32, kNameMax = 20;
+constexpr int kFactory = 23, kProgs = kFactory + kPresets;   /* the PRESET menu: the factory presets, then the user slots */
+
 struct Inst {
     char dir[512];
     void *eng[kNumBackends];
@@ -155,23 +167,95 @@ struct Inst {
     int comp_saved;                   /* the Comp value while int_comp is off (the engine's own is set to 0) */
     uint32_t rng;
     int pan[kSlots], rev[kSlots], dly[kSlots];   /* 0..127; pan 64 = centre */
+    int on[kSlots];            /* 0: the slot is switched off (plays nothing, keeps its voice; its kit's engine is only made
+                                  for slots that are on) */
     bool tap_owner;            /* this Inst publishes the slot planes for the Tap plugins */
     int16_t pending[kBlock * 2];   /* the owner outputs one block behind what it publishes, so a tap called before it in a period still finds its block */
     bool have_pending;
+    int latency;                   /* 0..3 blocks (Gen2): the circuit engines render this far ahead */
+    int lat_sent[kNumBackends];    /* what each engine was last told (-1: not yet) */
+    struct Held { int b, v, vel, blocks; } held[64];   /* 606 / CR-78 hits waiting out the latency */
+    int nheld;
+    /* A kit's engine is made when a slot that is on first needs it, on this thread or a non-audio caller's (the audio
+     * thread only sets `want` and skips the kit until it exists: an engine reads its samples, and on Gen2 its circuit
+     * board takes about a second and starts threads) */
+    /* user presets (shared by every project, in <dir>/trmpc-presets.txt): the PRESET menu's 32 slots, each a name and the whole
+     * kit's state string (get_state); the drawn naming keyboard */
+    int preset;                      /* the picked program: 0..kFactory-1 factory, then the user slots */
+    long long load_ms;               /* when set_state last ran (steady clock): the host re-picks the program right after a load */
+    int loading;                     /* set_state is running: a "preset" in it only says which was picked */
+    char pr_name[kPresets][kNameMax + 1];
+    char *pr_state[kPresets];        /* malloc'd; null = an empty slot */
+    int kb_open, kb_lower;           /* the keyboard is showing; letters are lower case (SHIFT) */
+    char kb_buf[kNameMax + 1];
+    char *kb_snap;                   /* the state as it was when SAVE PRESET was pressed */
+    struct Maker { std::thread t; std::atomic<unsigned> want{0}; std::atomic<bool> quit{false}; std::mutex mx; } *maker;
 };
 
+#ifndef TRKIT_LEMUS
+#define TRKIT_LEMUS 0
+#endif
+/* the engines that render ahead by themselves (Gen2's circuit boards) */
+inline bool renders_ahead(int b) { return TRKIT_LEMUS && (b == 1 || b == 3); }
+
+/* the slot's engine and voice; false while the slot is switched off */
+bool slot_voice(const Inst *in, int slot, int *b, int *v) {
+    if (!in->on[slot] || in->slot_flat[slot] >= kTotalVoices) return false;
+    flat_to_bv(in->slot_flat[slot], b, v);
+    return true;
+}
+
+/* sNN_fam, which picks the slot's faceplate in the skin: 0 6W6, 1 8W8, 2 CW-78, 3 9W9, 4 the 9W9 kick, 5 OFF; the Gen2
+ * build adds 6 (its faceplates say 8X8 and 9X9, and so do its voice menus) */
+int slot_family(const Inst *in, int slot) {
+    int b, v, f = 5;
+    if (slot_voice(in, slot, &b, &v)) f = (b == 3 && v == 0) ? 4 : b;
+    return f + (TRKIT_LEMUS ? 6 : 0);
+}
+
+void *engine_for(Inst *in, int b);
+void build_board(void *e, int b) {
+#if TRKIT_LEMUS
+    if (b == 1) sc808_lemus_build((sc808_engine_t *)e);
+    else if (b == 3) er99_engine_lemus_build((er99_engine_t *)e);
+#else
+    (void)e; (void)b;
+#endif
+}
+void maker_loop(Inst *in) {
+    Inst::Maker &mk = *in->maker;
+    unsigned done = 0;
+    while (!mk.quit.load(std::memory_order_acquire)) {
+        const unsigned w = mk.want.load(std::memory_order_acquire) & ~done;
+        for (int b = 0; b < kNumBackends && !mk.quit.load(std::memory_order_relaxed); ++b)
+            if (w & (1u << b)) {
+                if (void *e = engine_for(in, b)) build_board(e, b);
+                done |= 1u << b;
+            }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+}
+inline int effective_latency(const Inst *in) { return TRKIT_LEMUS ? in->latency : 0; }
+
+/* the kit's engine if it exists (any thread) */
+inline void *eng_get(const Inst *in, int b) { return __atomic_load_n(&in->eng[b], __ATOMIC_ACQUIRE); }
+
+/* the kit's engine, made if need be: never on the audio thread (midi / render use eng_get and `want`) */
 void *engine_for(Inst *in, int b) {
+    if (void *e = eng_get(in, b)) return e;
+    std::lock_guard<std::mutex> lk(in->maker->mx);
     if (!in->eng[b]) {
-        in->eng[b] = kBackends[b].create(in->dir);
+        void *e = kBackends[b].create(in->dir);
         in->tap[b] = (float *)calloc((size_t)kBackends[b].nvoices * kBlock, sizeof(float));
-        if (in->eng[b] && in->tap[b]) kBackends[b].set_tap(in->eng[b], in->tap[b]);
+        if (e && in->tap[b]) kBackends[b].set_tap(e, in->tap[b]);
+        __atomic_store_n(&in->eng[b], e, __ATOMIC_RELEASE);   /* after its tap: the audio thread renders it from here */
     }
     return in->eng[b];
 }
 
 /* try "<id>_<suffix>", then "<id>_c_<suffix>" (9W9 kick/snare/toms) */
 bool forward(Inst *in, int slot, const Knob &k, int *val, bool set) {
-    int b, v;
+    int b, v;   /* on or off: a slot switched off keeps its voice's pots (the engine without its board is light) */
     flat_to_bv(in->slot_flat[slot], &b, &v);
     void *e = engine_for(in, b);
     if (!e) return false;
@@ -188,17 +272,27 @@ bool forward(Inst *in, int slot, const Knob &k, int *val, bool set) {
     return false;
 }
 
+void presets_load(Inst *in);
+void presets_clear(Inst *in);
+long long now_ms();
+
 void *create(const char *dir) {
     Inst *in = (Inst *)calloc(1, sizeof(Inst));
     if (!in) return nullptr;
     snprintf(in->dir, sizeof in->dir, "%s", dir ? dir : "");
     for (int s = 0; s < kSlots; ++s) in->slot_flat[s] = default_flat(s);
-    for (int s = 0; s < kSlots; ++s) { in->pan[s] = 64; in->rev[s] = 0; in->dly[s] = 0; }
+    for (int s = 0; s < kSlots; ++s) { in->pan[s] = 64; in->rev[s] = 0; in->dly[s] = 0; in->on[s] = 1; }
     in->int_rev = in->int_dly = in->int_comp = 1;
     in->rnd_amount = 64; in->rng = 0x9e3779b9u ^ (uint32_t)(uintptr_t)in;
+    presets_load(in);
+    in->preset = 0;   /* F01 Init: the layout a new instance starts with */
+    in->latency = 2;   /* 5.8 ms: at 1, MPC's audio threads preempting the boards' threads cost missed blocks (Live III) */
+    for (int b = 0; b < kNumBackends; ++b) in->lat_sent[b] = -1;
     { const void *none = nullptr; in->tap_owner = g_tap.owner.compare_exchange_strong(none, in); }
+    in->maker = new Inst::Maker;
+    in->maker->t = std::thread(maker_loop, in);
+    /* the other engines are created when a slot first needs one (a hit, a knob, a voice change) */
     engine_for(in, kFxBackend);
-    for (int s = 0; s < kSlots; ++s) { int b, v; flat_to_bv(in->slot_flat[s], &b, &v); engine_for(in, b); }
     return in;
 }
 
@@ -206,6 +300,11 @@ void destroy(void *p) {
     Inst *in = (Inst *)p;
     if (!in) return;
     { const void *me = in; g_tap.owner.compare_exchange_strong(me, nullptr); }
+    in->maker->quit.store(true, std::memory_order_release);
+    if (in->maker->t.joinable()) in->maker->t.join();   /* a board being built finishes first */
+    delete in->maker;
+    presets_clear(in);
+    free(in->kb_snap);
     for (int b = 0; b < kNumBackends; ++b) { if (in->eng[b]) kBackends[b].destroy(in->eng[b]); free(in->tap[b]); }
     free(in);
 }
@@ -217,8 +316,17 @@ void midi(void *p, const uint8_t *m, int len) {
     const int slot = m[1] < kSlots ? (int)m[1] : (int)m[1] - 36;
     if (slot < 0 || slot >= kSlots) return;
     int b, v;
-    flat_to_bv(in->slot_flat[slot], &b, &v);
-    if (void *e = engine_for(in, b)) { in->voice_owner[b][v] = slot; kBackends[b].trigger(e, v, m[2]); in->quiet[b] = 0; }
+    if (!slot_voice(in, slot, &b, &v)) return;   /* OFF */
+    void *e = eng_get(in, b);
+    if (!e) { in->maker->want.fetch_or(1u << b, std::memory_order_release); return; }   /* being made: this hit is lost */
+    in->voice_owner[b][v] = slot;
+    in->quiet[b] = 0;
+    const int lat = effective_latency(in);
+    if (lat > 0 && !renders_ahead(b)) {   /* held back to sound with the circuit boards' hits */
+        if (in->nheld < (int)(sizeof in->held / sizeof in->held[0])) in->held[in->nheld++] = { b, v, m[2], lat };
+        return;
+    }
+    kBackends[b].trigger(e, v, m[2]);
 }
 
 /* keys: sNN_src (flat voice index), sNN_level/tune/decay/drive (the voice's pots), sNN_pan/rev/dly (the slot's),
@@ -231,6 +339,7 @@ bool parse_slot(const char *key, int *slot, const char **rest) {
 }
 
 int *owned(Inst *in, int slot, const char *rest) {
+    if (!strcmp(rest, "on")) return &in->on[slot];
     if (!strcmp(rest, "pan")) return &in->pan[slot];
     if (!strcmp(rest, "rev")) return &in->rev[slot];
     if (!strcmp(rest, "dly")) return &in->dly[slot];
@@ -295,12 +404,238 @@ bool editor_key(const Inst *in, const char *key, char *out, size_t n) {
     return false;
 }
 
+/* ---- user presets ------------------------------------------------------------------------------------------------------------------ */
+int get_state(Inst *in, char *buf, int n);
+void set_param(void *p, const char *key, const char *val);
+long long now_ms() { return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count(); }
+constexpr int kStateMax = 12288;
+
+void presets_clear(Inst *in) {
+    for (int i = 0; i < kPresets; ++i) { free(in->pr_state[i]); in->pr_state[i] = nullptr; in->pr_name[i][0] = 0; }
+}
+
+/* "TRMPP1", then a line per used slot: <slot>\t<name>\t<state> (plain text: names hold keyboard characters only) */
+void presets_load(Inst *in) {
+    presets_clear(in);
+    char path[560];
+    snprintf(path, sizeof path, "%s/user/trmpc-presets.txt", in->dir);   /* engine/user: kept on updates (the release lists it as user data) */
+    FILE *f = fopen(path, "r");
+    if (!f) return;
+    char *line = (char *)malloc(kStateMax + 128);
+    if (line && fgets(line, kStateMax + 128, f) && !strncmp(line, "TRMPP1", 6))
+        while (fgets(line, kStateMax + 128, f)) {
+            char *t1 = strchr(line, '\t'); if (!t1) continue;
+            char *t2 = strchr(t1 + 1, '\t'); if (!t2) continue;
+            const int sl = atoi(line);
+            if (sl < 0 || sl >= kPresets) continue;
+            *t1 = 0; *t2 = 0;
+            size_t len = strlen(t2 + 1);
+            while (len && (t2[len] == '\n' || t2[len] == '\r')) t2[len--] = 0;
+            snprintf(in->pr_name[sl], sizeof in->pr_name[sl], "%s", t1 + 1);
+            free(in->pr_state[sl]);
+            in->pr_state[sl] = strdup(t2 + 1);
+        }
+    free(line);
+    fclose(f);
+}
+
+void presets_save(Inst *in) {
+    char path[560], tmp[580];
+    { char d[560]; snprintf(d, sizeof d, "%s/user", in->dir); mkdir(d, 0755); }
+    snprintf(path, sizeof path, "%s/user/trmpc-presets.txt", in->dir);
+    snprintf(tmp, sizeof tmp, "%s.tmp", path);
+    FILE *f = fopen(tmp, "w");
+    if (!f) return;
+    fputs("TRMPP1\n", f);
+    for (int i = 0; i < kPresets; ++i)
+        if (in->pr_state[i]) fprintf(f, "%d\t%s\t%s\n", i, in->pr_name[i], in->pr_state[i]);
+    fclose(f);
+    rename(tmp, path);
+}
+
+/* ---- factory presets: a layout of the 16 slots (voices "kit:id", "-" = the slot off; none = the slots stay as they are) and
+ * settings applied to all slots (-1 = leave alone), with sends, a pan spread and a few FX values ---- */
+#define NOLAYOUT { nullptr }
+struct Factory {
+    const char *name;           /* 8X8 / 9X9 here read 8W8 / 9W9 on Gen1 */
+    const char *voice[16];
+    int drive, rev, dly;        /* rev / dly go to the voices `sends` lists (all slots if it is empty) */
+    int decay, dist, spread;    /* decay 0..127, distortion type, pan spread 0..64 */
+    int latency;                /* -1: leave it */
+    const char *sends;          /* voice ids, space separated */
+    const char *fx;             /* extra "key=value;" pairs for the shared stage */
+};
+const Factory kFactoryPresets[kFactory] = {
+    { "Init (Four-Kit Mix)", { "808:bd", "909:sd", "606:ch", "CR78:hh", "909:bd", "606:sd", "808:cp", "CR78:rs", "606:lt", "808:mt", "909:ht", "CR78:hb", "909:rc", "606:cy", "808:cb", "CR78:gu" }, 0, 0, 0, -1, -1, -1, -1, "", "" },
+    { "All 8X8 Kit", { "808:bd", "808:sd", "808:lt", "808:mt", "808:ht", "808:lc", "808:mc", "808:hc", "808:rs", "808:cl", "808:ma", "808:cp", "808:cb", "808:ch", "808:oh", "808:cy" }, 0, 0, 0, -1, -1, -1, -1, "", "" },
+    { "All 9X9 Kit", { "909:bd", "909:sd", "909:lt", "909:mt", "909:ht", "909:rs", "909:hc", "909:ohh", "909:chh", "909:rc", "909:cr", "-", "-", "-", "-", "-" }, 0, 0, 0, -1, -1, -1, -1, "", "" },
+    { "All 6W6 Kit", { "606:bd", "606:sd", "606:lt", "606:ht", "606:ch", "606:oh", "606:cy", "606:cp", "-", "-", "-", "-", "-", "-", "-", "-" }, 0, 0, 0, -1, -1, -1, -1, "", "" },
+    { "All CW-78 Kit", { "CR78:bd", "CR78:sd", "CR78:rs", "CR78:hh", "CR78:cy", "CR78:ma", "CR78:cl", "CR78:hb", "CR78:lb", "CR78:lc", "CR78:cb", "CR78:tb", "CR78:gu", "CR78:mb", "-", "-" }, 0, 0, 0, -1, -1, -1, -1, "", "" },
+    { "909 Kick + 8X8 Kit", { "909:bd", "909:sd", "808:cp", "909:rs", "808:lt", "808:mt", "808:ht", "909:chh", "909:ohh", "808:cb", "909:rc", "909:cr", "808:ma", "808:cl", "808:lc", "808:mc" }, 0, 0, 0, -1, -1, -1, -1, "", "" },
+    { "Lo-Fi Box (6W6 + CW-78)", { "606:bd", "CR78:sd", "606:sd", "606:cp", "CR78:cl", "606:ch", "606:oh", "CR78:cy", "606:lt", "606:ht", "CR78:lc", "CR78:cb", "CR78:tb", "CR78:gu", "CR78:ma", "606:cy" }, 40, 0, 0, -1, -1, -1, -1, "", "" },
+    { "8X8 Dub Room", { "808:bd", "808:sd", "808:lt", "808:mt", "808:ht", "808:lc", "808:mc", "808:hc", "808:rs", "808:cl", "808:ma", "808:cp", "808:cb", "808:ch", "808:oh", "808:cy" }, 0, 45, 60, -1, -1, -1, -1, "sd rs cl cp cb hc",
+      "fx_rev_level=90;fx_rev_decay=80;fx_dly_level=90;fx_dly_fdbk=70;" },
+    { "9X9 Warehouse", { "909:bd", "909:sd", "909:lt", "909:mt", "909:ht", "909:rs", "909:hc", "909:ohh", "909:chh", "909:rc", "909:cr", "-", "-", "-", "-", "-" }, 55, 30, 0, -1, -1, -1, -1, "sd hc rs ohh cr",
+      "fx_rev_level=80;fx_rev_decay=90;fx_master_drive=40;" },
+    { "Boom Bap", { "909:bd", "808:sd", "808:cp", "CR78:hh", "808:oh", "909:rs", "808:lt", "808:mt", "808:ht", "CR78:cl", "808:cb", "CR78:cy", "606:ch", "606:oh", "909:cr", "808:ma" }, 15, 0, 0, -1, -1, -1, -1, "", "" },
+    { "Electro", { "808:bd", "808:cp", "606:sd", "808:sd", "808:ch", "808:oh", "808:cl", "808:cb", "808:lt", "808:mt", "808:ht", "808:cy", "606:cp", "909:bd", "808:rs", "808:ma" }, 20, 0, 0, 45, -1, -1, -1, "", "" },
+    { "Techno Rack", { "909:bd", "909:hc", "909:chh", "909:ohh", "909:rs", "909:sd", "909:lt", "909:mt", "909:ht", "909:rc", "909:cr", "909:bd", "-", "-", "-", "-" }, 45, 25, 0, -1, -1, -1, -1, "hc ohh cr rc",
+      "fx_rev_level=70;fx_rev_decay=60;" },
+    { "Latin Perc", { "808:lc", "808:mc", "808:hc", "808:cl", "808:ma", "808:cb", "808:rs", "CR78:lc", "CR78:lb", "CR78:hb", "CR78:cb", "CR78:tb", "CR78:gu", "CR78:mb", "CR78:cl", "CR78:ma" }, 0, 20, 0, -1, -1, -1, -1, "", "" },
+    { "Hats and Percs Only", { "606:ch", "606:oh", "606:cy", "808:ch", "808:oh", "808:cy", "CR78:hh", "CR78:cy", "909:chh", "909:ohh", "909:rc", "909:cr", "808:ma", "CR78:ma", "808:cl", "808:cb" }, 0, 0, 0, -1, -1, -1, -1, "", "" },
+    { "Kicks and Snares Palette", { "606:bd", "808:bd", "CR78:bd", "909:bd", "606:sd", "808:sd", "CR78:sd", "909:sd", "808:cp", "606:cp", "909:rs", "808:rs", "CR78:rs", "606:lt", "808:lt", "909:lt" }, 0, 0, 0, -1, -1, -1, -1, "", "" },
+    { "Dry and Clean", NOLAYOUT, 0, 0, 0, -1, 0, 0, -1, "", "fx_master_drive=0;fx_master_dist=0;" },
+    { "Everything Off", { "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-", "-" }, -1, -1, -1, -1, -1, -1, -1, "", "" },
+    { "Tape Drive", NOLAYOUT, 70, -1, -1, -1, -1, -1, -1, "", "fx_master_drive=50;" },
+    { "Wide Mix", NOLAYOUT, -1, -1, -1, -1, -1, 52, -1, "", "" },
+    { "Tight Decays", NOLAYOUT, -1, -1, -1, 25, -1, -1, -1, "", "" },
+    { "Open Decays", NOLAYOUT, -1, -1, -1, 100, -1, -1, -1, "", "" },
+    { "Live Safe (Latency 2)", NOLAYOUT, -1, -1, -1, -1, -1, -1, 2, "", "" },
+    { "Light (Latency 0)", NOLAYOUT, -1, -1, -1, -1, -1, -1, 0, "", "" },
+};
+
+int flat_of(const char *spec) {   /* "808:bd" -> the flat voice index, -1 for none */
+    const char *c = strchr(spec, ':');
+    if (!c) return -1;
+    for (int b = 0, base = 0; b < kNumBackends; base += kBackends[b].nvoices, ++b) {
+        if (strlen(kBackends[b].tag) != (size_t)(c - spec) || strncmp(kBackends[b].tag, spec, c - spec)) continue;
+        for (int v = 0; v < kBackends[b].nvoices; ++v) if (!strcmp(kBackends[b].voice_id(v), c + 1)) return base + v;
+    }
+    return -1;
+}
+
+/* the factory preset as a state string (the same form a user preset keeps) */
+void factory_state(int idx, char *buf, int n) {
+    const Factory &f = kFactoryPresets[idx];
+    int len = snprintf(buf, n, "trmpc1;");
+    const bool layout = f.voice[0] != nullptr;
+    auto add = [&](int sl, const char *key, int v) { if (len < n - 40) len += snprintf(buf + len, n - len, "s%02d_%s=%d;", sl + 1, key, v); };
+    for (int sl = 0; sl < 16; ++sl) {
+        int fl = -1;
+        bool send = !f.sends[0];   /* no list: every slot */
+        if (layout) {
+            fl = flat_of(f.voice[sl]);
+            if (fl >= 0 && f.sends[0]) {
+                const char *id = strchr(f.voice[sl], ':') + 1;
+                send = false;
+                for (const char *p = f.sends; *p; ) {
+                    const char *e = strchr(p, ' '); const size_t l = e ? (size_t)(e - p) : strlen(p);
+                    if (strlen(id) == l && !strncmp(id, p, l)) send = true;
+                    p += l + (e ? 1 : 0);
+                }
+            }
+            if (fl >= 0) add(sl, "src", fl);
+        }
+        if (fl >= 0 || !layout) {
+            if (f.drive >= 0) add(sl, "drive", f.drive);
+            if (f.decay >= 0) add(sl, "decay", f.decay);
+            if (f.dist >= 0) add(sl, "dist", f.dist);
+        }
+        if (layout) add(sl, "pan", 64);
+        if (f.spread >= 0) add(sl, "pan", 64 + f.spread * (2 * sl - 15) / 15);
+        if (f.rev >= 0 || layout) add(sl, "rev", send && f.rev > 0 ? f.rev : 0);
+        if (f.dly >= 0 || layout) add(sl, "dly", send && f.dly > 0 ? f.dly : 0);
+        if (layout) add(sl, "on", fl >= 0);
+    }
+    if (f.latency >= 0 && len < n - 40) len += snprintf(buf + len, n - len, "latency=%d;", f.latency);
+    snprintf(buf + len, n - len, "%s", f.fx);
+}
+
+void factory_name(int idx, char *buf, int n) {
+    const char *nm = kFactoryPresets[idx].name;
+    if (!TRKIT_LEMUS) {   /* Gen1 has 8W8 and 9W9 */
+        char t[48]; snprintf(t, sizeof t, "%s", nm);
+        for (char *p = t; *p; ++p) if ((p[0] == '8' || p[0] == '9') && p[1] == 'X' && p[2] == p[0]) p[1] = 'W';
+        snprintf(buf, n, "F%02d %s", idx + 1, t);
+    } else snprintf(buf, n, "F%02d %s", idx + 1, nm);
+}
+
+/* a preset's values: everything but what belongs to the project's own bookkeeping */
+void apply_state(Inst *in, const char *st, bool factory = false) {
+    if (!st || strncmp(st, "trmpc1;", 7)) return;
+    st += 7;
+    char k[24], v[16];
+    while (*st) {
+        const char *eq = strchr(st, '='), *end = strchr(st, ';');
+        if (!eq || !end || eq > end) break;
+        snprintf(k, sizeof k, "%.*s", (int)(eq - st) < 23 ? (int)(eq - st) : 23, st);
+        snprintf(v, sizeof v, "%.*s", (int)(end - eq - 1) < 15 ? (int)(end - eq - 1) : 15, eq + 1);
+        if (strcmp(k, "edit_slot") && strncmp(k, "rnd_", 4) && (factory || strcmp(k, "latency")) && strcmp(k, "preset")) set_param(in, k, v);
+        st = end + 1;
+    }
+}
+
+void preset_apply(Inst *in, int idx) {
+    if (idx < 0 || idx >= kProgs) return;
+    in->preset = idx;
+    if (idx < kFactory) { char st[3072]; factory_state(idx, st, sizeof st); apply_state(in, st, true); return; }
+    apply_state(in, in->pr_state[idx - kFactory]);
+}
+
+void keyboard_key(Inst *in, const char *key) {   /* a drawn key was pressed */
+    const char *k = key + 3;
+    const size_t len = strlen(in->kb_buf);
+    if (!strcmp(k, "bksp")) { if (len) in->kb_buf[len - 1] = 0; return; }
+    if (!strcmp(k, "shift")) { in->kb_lower = !in->kb_lower; return; }
+    if (!strcmp(k, "cancel")) { in->kb_open = 0; free(in->kb_snap); in->kb_snap = nullptr; return; }
+    if (!strcmp(k, "save")) {
+        if (!in->kb_snap) { in->kb_open = 0; return; }
+        char name[kNameMax + 1];
+        snprintf(name, sizeof name, "%s", len ? in->kb_buf : "PRESET");
+        presets_load(in);   /* the file may have changed under another instance */
+        int slot = -1;
+        for (int i = 0; i < kPresets && slot < 0; ++i) if (in->pr_state[i] && !strcmp(in->pr_name[i], name)) slot = i;   /* same name: replace it */
+        for (int i = 0; i < kPresets && slot < 0; ++i) if (!in->pr_state[i]) slot = i;
+        if (slot < 0) slot = in->preset >= kFactory ? in->preset - kFactory : kPresets - 1;   /* all 32 used: the picked one, else the last */
+        snprintf(in->pr_name[slot], sizeof in->pr_name[slot], "%s", name);
+        free(in->pr_state[slot]);
+        in->pr_state[slot] = in->kb_snap;
+        in->kb_snap = nullptr;
+        in->preset = kFactory + slot;
+        presets_save(in);
+        in->kb_open = 0;
+        return;
+    }
+    if (len >= (size_t)kNameMax) return;
+    char c = 0;
+    if (!strcmp(k, "space")) c = ' ';
+    else if (!strcmp(k, "dash")) c = '-';
+    else if (k[0] && !k[1]) c = (k[0] >= 'a' && k[0] <= 'z') ? (in->kb_lower ? k[0] : (char)(k[0] - 32)) : k[0];
+    if (c) { in->kb_buf[len] = c; in->kb_buf[len + 1] = 0; }
+}
+
+void preset_key(Inst *in, const char *key) {     /* SAVE PRESET / DELETE PRESET */
+    if (!strcmp(key, "pr_save")) {
+        presets_load(in);
+        free(in->kb_snap);
+        in->kb_snap = (char *)malloc(kStateMax);
+        if (!in->kb_snap) return;
+        get_state(in, in->kb_snap, kStateMax);
+        { const int u = in->preset - kFactory; snprintf(in->kb_buf, sizeof in->kb_buf, "%s", u >= 0 && in->pr_state[u] ? in->pr_name[u] : ""); }
+        in->kb_lower = 0;
+        in->kb_open = 1;
+    } else {   /* pr_del: the picked user preset */
+        presets_load(in);
+        const int u = in->preset - kFactory;   /* factory presets stay */
+        if (u >= 0 && u < kPresets && in->pr_state[u]) {
+            free(in->pr_state[u]);
+            in->pr_state[u] = nullptr;
+            in->pr_name[u][0] = 0;
+            presets_save(in);
+        }
+    }
+}
+
 void set_param(void *p, const char *key, const char *val) {
     Inst *in = (Inst *)p;
     int slot; const char *rest;
     const int x = atoi(val);
     if (!strcmp(key, "state")) { set_state(in, val); return; }
     if (!strcmp(key, "edit_slot")) { in->edit_slot = x < 0 ? 0 : (x >= kSlots ? kSlots - 1 : x); return; }
+    if (!strcmp(key, "latency")) { in->latency = x < 0 ? 0 : (x > 3 ? 3 : x); return; }
+    if (!strcmp(key, "preset")) { if (in->loading || now_ms() - in->load_ms < 2000) in->preset = x < 0 ? 0 : (x >= kProgs ? kProgs - 1 : x); else preset_apply(in, x); return; }
+    if (!strcmp(key, "pr_save") || !strcmp(key, "pr_del")) { if (x) preset_key(in, key); return; }
+    if (!strncmp(key, "kb_", 3)) { if (strcmp(key, "kb_open") && strcmp(key, "kb_name") && x) keyboard_key(in, key); return; }
     if (!strncmp(key, "rnd_", 4)) {
         if (!strcmp(key, "rnd_go")) { if (x) randomise(in); }
         else if (!strcmp(key, "rnd_go_voice")) { if (x) randomise(in, true); }
@@ -328,9 +663,12 @@ void set_param(void *p, const char *key, const char *val) {
     char ek[24];
     if (editor_key(in, key, ek, sizeof ek)) { set_param(p, ek, val); return; }
     if (parse_slot(key, &slot, &rest)) {
+        if (!strcmp(rest, "vg")) return;   /* derived; the skin only reads it */
         if (!strcmp(rest, "fam")) return;   /* derived from the voice; the skin only reads it */
         if (!strcmp(rest, "src")) {
-            if (x >= 0 && x < kTotalVoices) { in->slot_flat[slot] = x; int b, v; flat_to_bv(x, &b, &v); engine_for(in, b); }
+            /* the menu's last entry, OFF, switches the slot off and keeps its voice; a voice switches it on */
+            if (x == kTotalVoices) { in->on[slot] = 0; return; }
+            if (x >= 0 && x < kTotalVoices) { in->slot_flat[slot] = x; in->on[slot] = 1; int b, v; flat_to_bv(x, &b, &v); engine_for(in, b); }
             return;
         }
         if (int *o = owned(in, slot, rest)) { *o = x < 0 ? 0 : (x > 127 ? 127 : x); return; }
@@ -346,7 +684,9 @@ void set_param(void *p, const char *key, const char *val) {
 
 const char *const kFxKeys[] = { "rev_decay", "rev_tone", "rev_hpf", "rev_level", "dly_time", "dly_fdbk", "dly_tone",
                                 "dly_hpf", "dly_level", "master_dist", "master_drive", "comp", "volume" };
-const char *const kSlotKeys[] = { "src", "level", "tune", "decay", "drive", "dist", "attack", "tone", "snappy", "noise", "rate", "sweep", "pmod", "ndecay", "sat", "pan", "rev", "dly" };
+/* the voice (saved as the voice itself, even while the slot is off: get_state), its pots, then "on" last: picking a voice
+ * switches a slot on, so a slot saved off is switched off after */
+const char *const kSlotKeys[] = { "src", "level", "tune", "decay", "drive", "dist", "attack", "tone", "snappy", "noise", "rate", "sweep", "pmod", "ndecay", "sat", "pan", "rev", "dly", "on" };
 
 int get_param(void *p, const char *key, char *buf, int n);
 
@@ -359,7 +699,8 @@ int get_state(Inst *in, char *buf, int n) {
     for (int s = 1; s <= kSlots; ++s)
         for (const char *sk : kSlotKeys) {
             snprintf(k, sizeof k, "s%02d_%s", s, sk);
-            if (get_param(in, k, v, sizeof v) < 0) continue;
+            if (!strcmp(sk, "src")) snprintf(v, sizeof v, "%d", in->slot_flat[s - 1]);   /* the voice, not OFF */
+            else if (get_param(in, k, v, sizeof v) < 0) continue;
             len += snprintf(buf + len, n - len, "%s=%s;", k, v);
             if (len >= n - 32) return len;
         }
@@ -370,7 +711,7 @@ int get_state(Inst *in, char *buf, int n) {
         if (len >= n - 32) break;
     }
     /* after the fx values: switching the compressor off saves the Comp value set above */
-    len += snprintf(buf + len, n - len, "int_rev=%d;int_dly=%d;int_comp=%d;", in->int_rev, in->int_dly, in->int_comp);
+    len += snprintf(buf + len, n - len, "int_rev=%d;int_dly=%d;int_comp=%d;latency=%d;preset=%d;", in->int_rev, in->int_dly, in->int_comp, in->latency, in->preset);
     return len;
 }
 
@@ -380,6 +721,7 @@ void set_state(Inst *in, const char *st) {
     if (strncmp(st, "trmpc1;", 7)) return;
     st += 7;
     char k[24], v[16];
+    in->loading = 1;
     while (*st) {
         const char *eq = strchr(st, '=');
         const char *end = strchr(st, ';');
@@ -389,6 +731,8 @@ void set_state(Inst *in, const char *st) {
         set_param(in, k, v);
         st = end + 1;
     }
+    in->loading = 0;
+    in->load_ms = now_ms();
 }
 
 int get_param(void *p, const char *key, char *buf, int n) {
@@ -396,6 +740,25 @@ int get_param(void *p, const char *key, char *buf, int n) {
     int slot; const char *rest;
     if (!strcmp(key, "state")) return get_state(in, buf, n);
     if (!strcmp(key, "edit_slot")) return snprintf(buf, n, "%d", in->edit_slot);
+    if (!strcmp(key, "latency")) return snprintf(buf, n, "%d", in->latency);
+    if (!strcmp(key, "preset")) return snprintf(buf, n, "%d", in->preset);
+    if (!strncmp(key, "preset:", 7)) {   /* a program's name, for MPC's PRESET menu */
+        const int i = atoi(key + 7);
+        if (i < 0 || i >= kProgs) return -1;
+        if (i < kFactory) { factory_name(i, buf, n); return (int)strlen(buf); }
+        const int u = i - kFactory;
+        return in->pr_state[u] ? snprintf(buf, n, "U%02d %s", u + 1, in->pr_name[u]) : snprintf(buf, n, "U%02d -", u + 1);
+    }
+    if (!strcmp(key, "pr_name")) {
+        const int i = in->preset;
+        if (i < 0 || i >= kProgs) return snprintf(buf, n, "-");
+        if (i < kFactory) { factory_name(i, buf, n); return (int)strlen(buf); }
+        const int u = i - kFactory;
+        return in->pr_state[u] ? snprintf(buf, n, "U%02d %s", u + 1, in->pr_name[u]) : snprintf(buf, n, "U%02d -", u + 1);
+    }
+    if (!strcmp(key, "kb_name")) return snprintf(buf, n, "%s_", in->kb_buf);
+    if (!strcmp(key, "kb_open")) return snprintf(buf, n, "%d", in->kb_open);
+    if (!strncmp(key, "kb_", 3) || !strcmp(key, "pr_save") || !strcmp(key, "pr_del")) return snprintf(buf, n, "0");
     if (!strncmp(key, "rnd_", 4)) {
         if (!strcmp(key, "rnd_go") || !strcmp(key, "rnd_go_voice") || !strcmp(key, "rnd_all") || !strcmp(key, "rnd_none")) return snprintf(buf, n, "0");
         if (!strcmp(key, "rnd_amount")) return snprintf(buf, n, "%d", in->rnd_amount);
@@ -412,8 +775,9 @@ int get_param(void *p, const char *key, char *buf, int n) {
     char ek[24];
     if (editor_key(in, key, ek, sizeof ek)) return get_param(p, ek, buf, n);
     if (parse_slot(key, &slot, &rest)) {
-        if (!strcmp(rest, "src")) return snprintf(buf, n, "%d", in->slot_flat[slot]);
-        if (!strcmp(rest, "fam")) { int b, v; flat_to_bv(in->slot_flat[slot], &b, &v); return snprintf(buf, n, "%d", (b == 3 && v == 0) ? 4 : b); }   /* read-only: the voice's kit; the 909 kick (three extra controls) is 4 */
+        if (!strcmp(rest, "src")) return snprintf(buf, n, "%d", in->on[slot] ? in->slot_flat[slot] : kTotalVoices);   /* OFF while off */
+        if (!strcmp(rest, "vg")) return snprintf(buf, n, "%d", in->slot_flat[slot] + (TRKIT_LEMUS ? kTotalVoices + 1 : 0));   /* read-only: the skin's per-voice, per-build controls */
+        if (!strcmp(rest, "fam")) return snprintf(buf, n, "%d", slot_family(in, slot));   /* read-only: picks the faceplate */
         if (int *o = owned(in, slot, rest)) return snprintf(buf, n, "%d", *o);
         for (int i = 0; i < kNumKnobs; ++i)
             if (!strcmp(rest, kKnobs[i].name)) { int v = 0; if (!forward(in, slot, kKnobs[i], &v, false)) v = 0; return snprintf(buf, n, "%d", v); }
@@ -465,6 +829,22 @@ void render(void *p, int16_t *out, int frames) {
     static thread_local float scratch[kBlock], dl[kBlock], dr[kBlock], sr[kBlock], sd[kBlock], ol[kBlock], orr[kBlock];
     for (int done = 0; done < frames; done += kBlock) {
         const int n = frames - done < kBlock ? frames - done : kBlock;
+        /* the latency to the circuit engines; held 606 / CR-78 hits whose wait is over (queued with the latency before
+         * call k, the boards' hits sound from call k + latency: count it down, fire at the next) */
+        const int lat = effective_latency(in);
+        {   /* the kits the slots that are on need: their engines (and Gen2 boards) are made off this thread, once */
+            unsigned w = 0;
+            for (int s = 0; s < kSlots; ++s) { int b, v; if (slot_voice(in, s, &b, &v)) w |= 1u << b; }
+            if (w & ~in->maker->want.load(std::memory_order_relaxed)) in->maker->want.fetch_or(w, std::memory_order_release);
+        }
+        for (int b = 0; b < kNumBackends; ++b)
+            if (renders_ahead(b) && eng_get(in, b) && in->lat_sent[b] != lat) { kBackends[b].set(in->eng[b], "latency", lat); in->lat_sent[b] = lat; }
+        for (int h = 0; h < in->nheld; ) {
+            Inst::Held &hd = in->held[h];
+            if (hd.blocks > 0) { hd.blocks--; ++h; continue; }
+            if (eng_get(in, hd.b)) { kBackends[hd.b].trigger(in->eng[hd.b], hd.v, hd.vel); in->quiet[hd.b] = 0; }
+            in->held[h] = in->held[--in->nheld];
+        }
         memset(dl, 0, sizeof(float) * n); memset(dr, 0, sizeof(float) * n);
         memset(sr, 0, sizeof(float) * n); memset(sd, 0, sizeof(float) * n);
         const bool pub = in->tap_owner && n == kBlock;
@@ -480,14 +860,14 @@ void render(void *p, int16_t *out, int frames) {
         auto q = [](float x) { x *= 32767.0f; return (int16_t)(x > 32767.0f ? 32767.0f : (x < -32768.0f ? -32768.0f : x)); };
         bool awake = false;
         for (int b = 0; b < kNumBackends; ++b) {
-            if (!in->eng[b] || !in->tap[b] || in->quiet[b] >= kSleepAfter) continue;
+            if (!eng_get(in, b) || !in->tap[b] || in->quiet[b] >= kSleepAfter) continue;
             awake = true;
             memset(in->tap[b], 0, sizeof(float) * kBlock * kBackends[b].nvoices);
             kBackends[b].render(in->eng[b], scratch, n);
             float pk = 0.0f;
             for (int s = 0; s < kSlots; ++s) {
                 int sb, v;
-                flat_to_bv(in->slot_flat[s], &sb, &v);
+                if (!slot_voice(in, s, &sb, &v)) continue;   /* OFF */
                 if (sb != b || in->voice_owner[b][v] != s) continue;   /* two slots on one voice: the one that was hit */
                 const float *src = in->tap[b] + v * kBlock;
                 pk = peak_of(src, n, pk);

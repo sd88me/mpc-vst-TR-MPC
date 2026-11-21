@@ -21,6 +21,7 @@ Fonts: Helvetica from FONT_SRC (the mpc-vst-plugins Assets/fonts folder; baked, 
 (tools/assets, AGPL-3.0 with a font exception, URW-LICENSE) and Michroma (tools/assets, SIL OFL 1.1) for header names."""
 import json
 import math
+import re
 import os
 import shutil
 import sys
@@ -215,26 +216,76 @@ class Tab:
             d.text((x, base), s, font=f, fill=ink, anchor="ls")
             x += d.textlength(s, font=f)
 
-    def ticks(self, cx, cy, r):
+    def ticks(self, cx, cy, r, fill=None):
         for i in range(11):
             a = -150 + 30 * i
             x0, y0 = polar(cx * SS, cy * SS, (r + 6) * SS, a)
             x1, y1 = polar(cx * SS, cy * SS, (r + 12) * SS, a)
-            self.d.line([(x0, y0), (x1, y1)], fill=self.st["ink"], width=2 * SS)
+            self.d.line([(x0, y0), (x1, y1)], fill=fill or self.st["ink"], width=2 * SS)
+
+    def default_mark(self, key, cx, cy, r):
+        """An extended control's default (where it leaves the machine as it is): an accent triangle outside its scale,
+        pointing in. st["defaults"]: key -> rotation 0..1."""
+        d = self.st.get("defaults", {}).get(key)
+        if d is None:
+            return
+        a = -SWEEP / 2 + SWEEP * d
+        tip = polar(cx * SS, cy * SS, (r + 13) * SS, a)
+        b1 = polar(cx * SS, cy * SS, (r + 20) * SS, a - 7)
+        b2 = polar(cx * SS, cy * SS, (r + 20) * SS, a + 7)
+        self.d.polygon([tip, b1, b2], fill=self.accent())
+
+    def accent(self):
+        """The style's accent colour (its theme's accent), for marks."""
+        m = re.search(r"\baccent=([0-9a-fA-F]{6})", self.st.get("theme", ""))
+        return tuple(int(m.group(1)[i:i + 2], 16) for i in (0, 2, 4)) if m else (240, 120, 40)
+
+    def extended(self, key):
+        return key in self.st.get("extended", ())
+
+    def label(self, key, cx, cy, name):
+        """A control's name. A key in the style's `extended` set is a control the original machine doesn't have (8X8, 9X9),
+        marked by `extended_mark`: "pill" its name inverted on a pill of the ink colour, "ink" in the accent colour, "dot" an
+        accent dot before it, "ticks" its scale in the accent colour (knob())."""
+        mark = self.st.get("extended_mark", "pill")
+        if not self.extended(key) or mark == "ticks":
+            self.text(cx, cy, name, self.label_size)
+            return
+        if mark == "ink":
+            self.text(cx, cy, name, self.label_size, self.st.get("extended_ink", self.accent()), "bold")
+            return
+        if mark == "dot":
+            self.text(cx, cy, name, self.label_size)
+            w = self.d.textlength(name, font=font(self.label_size)) / SS
+            dx, rr = cx - w / 2 - 9, 4
+            self.d.ellipse(((dx - rr) * SS, (cy - rr) * SS, (dx + rr) * SS, (cy + rr) * SS), fill=self.accent())
+            return
+        f = font(self.label_size, "bold")
+        w = self.d.textlength(name, font=f) / SS + 14
+        h = self.label_size + 8
+        ink = self.st["ink"]
+        self.d.rounded_rectangle(((cx - w / 2) * SS, (cy - h / 2) * SS, (cx + w / 2) * SS, (cy + h / 2) * SS), h / 2 * SS, fill=ink)
+        light = sum(ink[:3]) / 3 > 128            # the pill's text: dark on a light pill (8X8's panel), light on a dark one
+        self.text(cx, cy, name, self.label_size, self.st.get("extended_pill_text", (28, 28, 28) if light else (236, 234, 226)), "bold")
 
     def knob(self, key, cx, cy, name, level=False):
         r = self.r
-        self.text(cx, cy + self.label_dy, name, self.label_size)
-        self.ticks(cx, cy, r)
+        self.label(key, cx, cy + self.label_dy, name)
+        ext = self.extended(key)
+        self.ticks(cx, cy, r, self.accent() if ext and self.st.get("extended_mark") == "ticks" else None)
+        if ext:
+            self.default_mark(key, cx, cy, r)
         box = ((cx - r) * SS, (cy - r) * SS, (cx + r) * SS, (cy + r) * SS)
         self.hi.alpha_composite(soft_shadow(self.hi.size, box, 4, 170, (3, 5)))
         self.hi.alpha_composite(soft_shadow(self.hi.size, box, 1, 180, (1, 1)))
         self.knobs.append(dict(key=key, cx=cx, cy=cy, level=level, r=r))
 
-    def popup(self, key, cx, cy, name):
+    LATENCY_W = 190    # "2 blocks (+5.8 ms)" needs more than the usual slot
+
+    def popup(self, key, cx, cy, name, width=None):
         self.text(cx, cy - 38, name, self.label_size)
         fill, top, bottom = self.st["slot"]
-        pw = self.st.get("popup_w", 112)                         # wider for long option names
+        pw = width or (self.LATENCY_W if key == "latency" else self.st.get("popup_w", 112))   # wider for long option names
         x0, y0, x1, y1 = cx - pw // 2 - 4, cy - 20, cx + pw // 2 + 4, cy + 20     # a recessed slot the live field sits in
         self.d.rounded_rectangle((x0 * SS, y0 * SS, x1 * SS, y1 * SS), 4 * SS, fill=fill)
         self.d.line([(x0 * SS, y0 * SS), (x1 * SS, y0 * SS)], fill=top, width=2 * SS)
@@ -347,9 +398,14 @@ def plain_column(t, i, tile, top, lower, params):
     t.tile(x0, SMALLCAPS.get(tile, tile))
     r0, r1, r2 = t.rows[:3]
     names = dict(FX_NAMES, **t.st.get("fx_names", {}))
+    captions = t.st.get("fx_captions", {})   # a line under a control (9W9's LATENCY: what a block costs)
     for key, (cx, cy) in zip(top + lower, [(ca, r0), (cb, r0), (ca, r1), (cb, r1), (ca, r2), (cb, r2)]):
+        if key == "-":   # an empty place (a style's spacer)
+            continue
         if params[key].get("type") == "enum":
-            t.popup(key, cx, cy + (8 if cy < r2 else 0), names[key])
+            t.popup(key, (ca + cb) // 2 if key == "latency" else cx, cy + (8 if cy < r2 else 0), names[key])   # Latency: its wide slot centred in the column
+            for n, line in enumerate(captions.get(key, "").split("\n") if key in captions else []):
+                t.text((ca + cb) / 2, cy + (8 if cy < r2 else 0) + 34 + 16 * n, line, 13)   # centred in the column
         else:
             t.knob(key, cx, cy, names[key], key in LEVELS)
 
@@ -370,6 +426,10 @@ def build(kit):
     st = load_style(kit)
     port = os.path.join(ROOT, "ports", kit)
     params = {p["key"]: p for p in json.load(open(os.path.join(port, "module.mpc.json")))["chain_params"]}
+    for k in st.get("hide", ()):            # controls the panel leaves out (9X9: Rim and Clap Tune, nothing to drive yet)
+        params.pop(k, None)
+    st["defaults"] = {k: (p["default"] - p.get("min", 0)) / ((p.get("max", 127) - p.get("min", 0)) or 1)
+                      for k, p in params.items() if k in st.get("extended", ()) and "default" in p}
     art = os.path.join(port, "art")
     prev = os.path.join(port, "build", "drum_skin")
     shutil.rmtree(art, ignore_errors=True)

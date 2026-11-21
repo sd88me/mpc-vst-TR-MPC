@@ -21,6 +21,13 @@
 #include "sc808_fx.h"
 #include "sc808_shape.h"
 
+#ifndef SC808_ENGINE_LEMUS
+#define SC808_ENGINE_LEMUS 0   /* 1 builds 8X8 (ports/8x8, Gen2): Lemus's circuit-solved voicing board (l808_board.h) */
+#endif
+#if SC808_ENGINE_LEMUS
+#include "l808_board.h"
+#endif
+
 using namespace sc808;
 
 /*
@@ -237,6 +244,24 @@ float pot_value(int slot, int pot)
     return p.min + (p.max - p.min) * t;
 }
 
+/*
+ * 8X8's trims: each Lemus jack (volts / 10) to the level 8W8's lane had
+ * into its drive stage at the default knobs, so Drive and Level keep their
+ * meaning. Measured by src/tools/l808_levels.cpp (peak, default knobs,
+ * unaccented hit, against the sc808/circuit engine's trimmed peak).
+ */
+/* One gain for every voice, so the voices keep the 808's own balance (each jack's circuit output
+ * with its Level pot full): the geometric mean of the per-voice gains that would match 8W8's levels
+ * (+0.2 dB on the low conga to +7.3 dB on the CH), keeping the drive stage and old projects close. */
+constexpr float kLemusGain = 1.553f;
+/* Into the drive stage each voice goes at its 8W8 level (these per-voice gains match a hit's level
+ * to the old engine's, within 1 dB), so Drive and Dist bite on it as they did on 8W8; after it the
+ * same gain comes back out and kLemusGain goes on, so the clean voices keep the 808's balance. */
+constexpr float kLemusTrim[SC808_NUM_VOICES] = {
+    1.466f, 1.796f, 1.114f, 1.218f, 1.201f, 1.046f, 1.733f, 1.259f,
+    2.030f, 1.635f, 1.180f, 1.629f, 2.351f, 2.324f, 1.959f, 1.715f,
+};
+
 } /* namespace */
 
 struct sc808_engine {
@@ -299,6 +324,17 @@ struct sc808_engine {
      * src/tools/nullref.cpp includes it without going through this engine.
      */
     RimClave  rs;
+
+#if SC808_ENGINE_LEMUS
+    l808::Engine *lem;                       /* the board as the audio thread uses it (null: not built yet) */
+    l808::Engine *lem_built;                 /* published by sc808_lemus_build (atomic), new'd */
+    float lbuf[SC808_NUM_VOICES][l808::kMaxBlock];
+    l808::LaneKnobs lknobs[SC808_NUM_VOICES];/* what the board was last told     */
+    float atk_env[SC808_NUM_VOICES];         /* the Attack lanes' transient       */
+    int   latency;                           /* blocks of render-ahead, 0..3 (l808_board.h) */
+    long  under_seen, under_frames;          /* missed blocks logged; frames since       */
+    float atk_hp[SC808_NUM_VOICES];
+#endif
 };
 
 /*
@@ -343,6 +379,27 @@ static void sc808_fx_sync(sc808_engine_t *e)
         e->fx_bpm  = e->dly.bpm;
     }
 }
+
+#if SC808_ENGINE_LEMUS
+/* One lane's pots as the board's knobs. Tune's default pot (64 of 0..127) is a hair off the
+ * centre of its range, so the ratio is taken against the default's: the default is the parts
+ * as built, exactly. */
+static l808::LaneKnobs l808_knobs(const sc808_engine_t *e, int v)
+{
+    const VoiceSlots &s = e->slot[v];
+    l808::LaneKnobs k;
+    const float tune = e->potv[s.tune];
+    const float tdef = pot_value(s.tune, g_sc808_pots[s.tune].def);
+    /* tune: semitones on most lanes, a ratio on the metal ones (the pot table) */
+    k.ratio   = (v >= SC808_CB) ? tune / tdef : powf(2.0f, (tune - tdef) / 12.0f);
+    k.tunePot = (float)e->pot[s.tune] / 127.0f;
+    k.decay   = (float)e->pot[s.decay] / 127.0f;
+    k.decayDef = (float)g_sc808_pots[s.decay].def / 127.0f;
+    k.tone    = (float)e->pot[e->bd_tone] / 127.0f;
+    k.snappy  = (float)e->pot[e->sd_snappy] / 127.0f;
+    return k;
+}
+#endif
 
 const char *sc808_voice_id(int voice)
 {
@@ -446,10 +503,29 @@ sc808_engine_t *sc808_create(float sample_rate)
     sc808_dly_init(&e->dly, (float)sr);
     e->dly.dcur = e->dly.time_ms * 0.001f * (float)sr;
     e->glue.env_db = 0.0f; e->glue.det = 0.0f;
+#if SC808_ENGINE_LEMUS
+    /* the boards are built from the starting knobs, so the first sync changes nothing */
+    for(int v = 0; v < SC808_NUM_VOICES; ++v) e->lknobs[v] = l808_knobs(e, v);
+#if !LEMUS_LAZY_BOARD
+    sc808_lemus_build(e);                    /* 8X8: now; TR-MPC builds it once a slot plays an 808 voice */
+#endif
+    /* 2 blocks (5.8 ms): the board renders ahead on its own thread, the audio call only copies. Inside MPC (Live III,
+     * 2026-11-18) MPC's audio threads preempt it on the fast cores: at 1 block a busy pattern missed ~45 blocks in 5 s,
+     * at 2 next to none. */
+    e->latency = 2;
+    if(getenv("L808_LATENCY")) e->latency = atoi(getenv("L808_LATENCY"));   /* tools: bench at 0 */
+#endif
     return e;
 }
 
-void sc808_destroy(sc808_engine_t *e) { free(e); }
+void sc808_destroy(sc808_engine_t *e)
+{
+    if(!e) return;
+#if SC808_ENGINE_LEMUS
+    delete e->lem_built;   /* the builder has returned: sc808_lemus_build's caller joins it first */
+#endif
+    free(e);
+}
 
 void sc808_set_mutes(sc808_engine_t *e, unsigned mask)
 {
@@ -524,9 +600,11 @@ void sc808_trigger(sc808_engine_t *e, int voice, int velocity)
     /* what a voltage lane still has to do with gain, once the volts bottom */
     const float softGain = vgain < 1.0f ? vgain : 1.0f;
 
+#if !SC808_ENGINE_LEMUS
     e->rt[voice].hit_gain   = vgain;
     e->rt[voice].choke_gain = 1.0f;
     e->rt[voice].choke_step = 0.0f;
+#endif
 
     const VoiceSlots &s = e->slot[voice];
     const float decay = e->potv[s.decay];
@@ -538,9 +616,26 @@ void sc808_trigger(sc808_engine_t *e, int voice, int velocity)
      * on the hardware it shares the same oscillators, but nobody wants a
      * hi-hat swallowing their crash. */
     const int choke = e->env[e->e_choke];
+#if SC808_ENGINE_LEMUS
+    (void)choke;   /* the hit's gain, choke and attack land with its block (l808_arrive) */
+#else
     if(voice == SC808_CH && choke >= 1) { choke_voice(e, SC808_OH); e->ohc.choke(); }
     if(voice == SC808_OH && choke == 2) { choke_voice(e, SC808_CH); e->chc.choke(); }
+#endif
 
+#if SC808_ENGINE_LEMUS
+    /*
+     * 8X8. Velocity is the 808's own ACCENT: above the unaccented point the
+     * hit carries ACCENT data with VR3 turned to match 8W8's trigger volts
+     * (4 V..14 V); below it the hit is unaccented and the lane's gain carries
+     * the rest. The board's CH chokes its OH by its wiring (one circuit), so
+     * only Mutual's OH-cuts-CH needs the fade.
+     */
+    (void)decay; (void)tune;
+    if(e->lem)   /* not built yet (TR-MPC, its first second): the hit is dropped */
+        e->lem->trigger(voice, vgain > 1.0f ? (volts - 4.0f) / 10.0f : 0.0f, softGain);
+    return;
+#endif
     switch(voice)
     {
     case SC808_BD:
@@ -698,10 +793,18 @@ static inline float voice_sample(sc808_engine *e, int v, float raw)
      * kit-wide, and it lets the diode stage do what a diode stage is for:
      * catching the spiky voices. The rim shot has a crest factor of 11, and
      * post-drive trimming would have had it peaking at 6.5 to sit level. */
+#if SC808_ENGINE_LEMUS
+    const float trimmed = raw * kLemusTrim[v];
+#else
     const float trimmed = raw * kVoiceTrim[v];
+#endif
     const float shaped = sc808_shape_st(trimmed, e->potv[s.drive],
                                         e->env[s.dist], r.crush_st);
+#if SC808_ENGINE_LEMUS
+    return shaped * (kLemusGain / kLemusTrim[v]) * e->potv[s.level] * r.hit_gain * r.choke_gain;
+#else
     return shaped * e->potv[s.level] * r.hit_gain * r.choke_gain;
+#endif
 }
 
 /*
@@ -731,6 +834,119 @@ static inline void sc808_add(sc808_engine *e, const int v, const float raw,
        } while(0)
 
 
+#if SC808_ENGINE_LEMUS
+/* Builds the board from the knobs as they are (not on the audio thread: about a second, and threads). Once. */
+void sc808_lemus_build(sc808_engine_t *e)
+{
+    if(__atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE)) return;
+    /* the knobs: the audio thread leaves lknobs alone until it has the board (l808_sync) */
+    l808::Engine *b = new l808::Engine(e->sample_rate, e->lknobs);
+    __atomic_store_n(&e->lem_built, b, __ATOMIC_RELEASE);
+}
+
+int sc808_lemus_ready(const sc808_engine_t *e) { return __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE) != nullptr; }
+
+/* Pots to the board's knobs (l808_board.h): cheap, and only a change reaches it. */
+static void l808_sync(sc808_engine_t *e)
+{
+    for(int v = 0; v < SC808_NUM_VOICES; ++v)
+    {
+        const l808::LaneKnobs k = l808_knobs(e, v);
+        const l808::LaneKnobs &o = e->lknobs[v];
+        if(k.ratio != o.ratio || k.tunePot != o.tunePot || k.decay != o.decay
+           || k.tone != o.tone || k.snappy != o.snappy)
+        {
+            e->lknobs[v] = k;
+            e->lem->setKnobs(v, k);
+        }
+    }
+}
+
+/* A hit reaching the output (its block, after the latency): the lane's gain, Mutual's OH-cuts-CH, and BD/MA's
+ * Attack transient start here, so they line up with the sound. */
+static void l808_arrive(sc808_engine_t *e, int v, float gain)
+{
+    e->rt[v].hit_gain   = gain;
+    e->rt[v].choke_gain = 1.0f;
+    e->rt[v].choke_step = 0.0f;
+    if(v == SC808_OH && e->env[e->e_choke] == 2) choke_voice(e, SC808_CH);
+    if(v == SC808_BD || v == SC808_MA) e->atk_env[v] = 1.0f;
+}
+
+/* BD and MA Attack: no such knob on an 808, so a transient on the jack's
+ * first few ms — the high-passed signal added under a 3 ms envelope. */
+static inline float l808_attack(sc808_engine_t *e, int v, float raw, int pot)
+{
+    const float hp = raw - e->atk_hp[v];
+    e->atk_hp[v] += 0.12f * hp;
+    float &env = e->atk_env[v];
+    const float out = raw + 3.0f * e->potv[pot] * hp * env;
+    env *= 1.0f - 1.0f / (0.003f * e->sample_rate);
+    return out;
+}
+
+void sc808_render(sc808_engine_t *e, float *out, int frames)
+{
+    const int   mdist  = e->env[e->e_master_dist];
+    const float mdrive = e->potv[e->p_master_drive];
+    const float vol    = e->potv[e->p_volume];
+    const float comp   = e->potv[e->p_comp];
+
+    if(!e->lem)
+        e->lem = __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE);
+    if(!e->lem)   /* TR-MPC: no board yet */
+    {
+        memset(out, 0, sizeof(float) * (size_t)frames);
+        return;
+    }
+    l808_sync(e);
+    e->lem->setLatency(e->latency);
+    {   /* missed blocks (the render-ahead thread late): one stderr line (MPC's journal) at most every 5 s */
+        const long u = e->lem->underruns();
+        e->under_frames += frames;
+        if(u != e->under_seen && e->under_frames >= (long)(5.0f * e->sample_rate))
+        {
+            fprintf(stderr, "8X8: %ld block(s) not rendered in time (%ld in all), latency %d\n",
+                    u - e->under_seen, u, e->latency);
+            e->under_seen = u;
+            e->under_frames = 0;
+        }
+    }
+    for(int base = 0; base < frames; base += l808::kMaxBlock)
+    {
+        const int n = frames - base < l808::kMaxBlock ? frames - base : l808::kMaxBlock;
+        float *lanes[SC808_NUM_VOICES];
+        for(int v = 0; v < SC808_NUM_VOICES; ++v) lanes[v] = e->lbuf[v];
+        e->lem->render(n, lanes);
+        bool on[SC808_NUM_VOICES];
+        for(int v = 0; v < SC808_NUM_VOICES; ++v) on[v] = e->lem->active(v);
+        for(int v = 0; v < SC808_NUM_VOICES; ++v)
+        {
+            float tag;
+            if(e->lem->hit(v, &tag)) l808_arrive(e, v, tag);
+        }
+        for(int i = 0; i < n; ++i)
+        {
+            float mix = 0.0f, send_r = 0.0f, send_d = 0.0f;
+            for(int v = 0; v < SC808_NUM_VOICES; ++v)
+            {
+                if(!on[v] || e->rt[v].choke_gain <= 0.0f) continue;
+                float raw = e->lbuf[v][i];
+                if(v == SC808_BD) raw = l808_attack(e, v, raw, e->bd_attack);
+                else if(v == SC808_MA) raw = l808_attack(e, v, raw, e->ma_attack);
+                sc808_add(e, v, raw, &mix, &send_r, &send_d);
+            }
+            mix += sc808_verb_tick(&e->verb, send_r);
+            mix += sc808_dly_tick(&e->dly, send_d, e->sample_rate);
+            if(mdist > 0) mix = sc808_shape_st(mix, mdrive, mdist - 1, e->crush_master);
+            if(comp > 0.001f) mix = sc808_glue_tick(&e->glue, mix, comp, e->sample_rate);
+            mix *= vol;
+            if(!(mix > -8.0f && mix < 8.0f)) mix = 0.0f;
+            out[base + i] = mix;
+        }
+    }
+}
+#else
 void sc808_render(sc808_engine_t *e, float *out, int frames)
 {
     const int   mdist  = e->env[e->e_master_dist];
@@ -798,6 +1014,8 @@ void sc808_render(sc808_engine_t *e, float *out, int frames)
     }
 }
 
+#endif /* SC808_ENGINE_LEMUS */
+
 /* ---- parameters ------------------------------------------------------- */
 
 int sc808_set_param(sc808_engine_t *e, const char *key, const char *val)
@@ -810,6 +1028,14 @@ int sc808_set_param(sc808_engine_t *e, const char *key, const char *val)
         if(bpm > 20.0f) { e->dly.bpm = bpm; sc808_fx_sync(e); }
         return 1;
     }
+#if SC808_ENGINE_LEMUS
+    if(!strcmp(key, "latency"))   /* 8X8's render-ahead, 0..3 blocks */
+    {
+        const int v = atoi(val);
+        e->latency = v < 0 ? 0 : v > 3 ? 3 : v;
+        return 1;
+    }
+#endif
 
     /* "default" resets a control to its sc808 default. Those defaults are not
      * pot centre — they are the arguments the SynthDefs declare — so a UI
@@ -845,6 +1071,9 @@ int sc808_get_param(sc808_engine_t *e, const char *key, char *buf, int len)
     if(slot >= 0) return snprintf(buf, len, "%d", e->pot[slot]);
     const int es = find_enum(key);
     if(es >= 0)   return snprintf(buf, len, "%d", e->env[es]);
+#if SC808_ENGINE_LEMUS
+    if(!strcmp(key, "latency")) return snprintf(buf, len, "%d", e->latency);
+#endif
     return -1;
 }
 
@@ -856,7 +1085,11 @@ int sc808_serialize(const sc808_engine_t *e, char *buf, int len)
     if(n < len) n += snprintf(buf + n, len - n, "],\"enums\":[");
     for(int i = 0; i < SC808_NUM_ENUMS && n < len; ++i)
         n += snprintf(buf + n, len - n, i ? ",%d" : "%d", e->env[i]);
+#if SC808_ENGINE_LEMUS
+    if(n < len) n += snprintf(buf + n, len - n, "],\"mutes\":%u,\"latency\":%d}", e->mutes, e->latency);
+#else
     if(n < len) n += snprintf(buf + n, len - n, "],\"mutes\":%u}", e->mutes);
+#endif
     return n;
 }
 
@@ -994,6 +1227,10 @@ void sc808_deserialize(sc808_engine_t *e, const char *json)
     }
     sc808_fx_sync(e);
 
+#if SC808_ENGINE_LEMUS
+    if(const char *lp = strstr(json, "\"latency\""))
+        if((lp = strchr(lp, ':'))) { const int v = atoi(lp + 1); e->latency = v < 0 ? 0 : v > 3 ? 3 : v; }
+#endif
     const char *mp = strstr(json, "\"mutes\"");
     if(mp) { mp = strchr(mp, ':'); if(mp) e->mutes = (unsigned)strtoul(mp + 1, NULL, 10)
                                                      & ((1u << SC808_NUM_VOICES) - 1u); }

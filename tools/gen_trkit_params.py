@@ -40,12 +40,15 @@ for s in range(1, 17):
     sk = "s%02d_" % s
     # refresh_display: picking a voice changes sNN_fam (derived in trkit.cpp), and the skin's `when=` panels follow it; MPC only re-reads
     # the host's values on an UpdateDisplay, which the wrapper no longer sends on a plain write
-    params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC, "default": DEFAULT_FLAT[s - 1], "refresh_display": True})
+    params.append({"key": sk + "src", "name": "Slot %d voice" % s, "options": SRC + ["OFF"], "default": DEFAULT_FLAT[s - 1], "refresh_display": True})
     keys.append(sk + "src")
     # the voice's kit (read-only, derived in trkit.cpp): the skin swaps each slot's faceplate on it
     dflat = DEFAULT_FLAT[s - 1]   # the default voice's kit (4: the 9W9 kick), so a new instance draws the right modules
     dfam = 4 if dflat == off[3] else max(b for b in range(4) if off[b] <= dflat)
-    params.append({"key": sk + "fam", "name": "Kit", "options": [k for k, _ in KITS_ORDER] + ["9W9 BD"], "default": dfam})
+    # read-only, picks the faceplate (trkit.cpp slot_family): the kits, the 9W9 kick, OFF; then the same for the Gen2 build,
+    # whose 808 and 909 are 8X8's and 9X9's
+    params.append({"key": sk + "fam", "name": "Kit", "options": [k for k, _ in KITS_ORDER] + ["9W9 BD", "OFF",
+                   "6W6", "8X8", "CW-78", "9X9", "9X9 BD", "OFF"], "default": dfam})
     keys.append(sk + "fam")
     for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
                            ("dist", "Dist", 0)] + EXTRA_KNOBS + [
@@ -60,7 +63,7 @@ for s in range(1, 17):
 ed = []
 params.append({"key": "edit_slot", "name": "Slot", "options": [str(i) for i in range(1, 17)], "default": 0})
 ed.append("edit_slot")
-params.append({"key": "edit_voice", "name": "Voice", "options": SRC, "default": DEFAULT_FLAT[0]})
+params.append({"key": "edit_voice", "name": "Voice", "options": SRC + ["OFF"], "default": DEFAULT_FLAT[0]})
 ed.append("edit_voice")
 for k, label, dflt in ([("level", "Level", 64), ("tune", "Tune", 64), ("decay", "Decay", 64), ("drive", "Drive", 64),
                        ("dist", "Dist", 0)] + EXTRA_KNOBS + [
@@ -108,9 +111,47 @@ for key, name in (("int_rev", "Internal Reverb"), ("int_dly", "Internal Delay"),
 sections.append({"label": "Internal FX", "keys": ix})
 params.append({"key": "rnd_go_voice", "name": "Random Voices", "momentary": True})
 sections[[s["label"] for s in sections].index("Randomise")]["keys"].append("rnd_go_voice")
+# Gen2: the circuit engines render this many 128-frame blocks ahead (2.9 ms each); Gen1 ignores it
+params.append({"key": "latency", "name": "Latency", "default": 2,
+               "options": ["0 blocks (0 ms)", "1 block (+2.9 ms)", "2 blocks (+5.8 ms)", "3 blocks (+8.7 ms)"]})
+sections[[s["label"] for s in sections].index("FX and master")]["keys"].append("latency")
+# a power switch per slot (appended: the list is append-only): off, a slot plays nothing and its kit's engine (on Gen2 its
+# circuit board) is only made for the slots that are on
+slots_on = []
+for sl in range(1, 17):
+    params.append({"key": "s%02d_on" % sl, "name": "Slot %d on" % sl, "options": ["OFF", "ON"], "default": 1, "refresh_display": True})
+    slots_on.append("s%02d_on" % sl)
+sections.append({"label": "Slots on", "keys": slots_on})
+
+# read-only (trkit.cpp): each slot's voice on this build, flat index (+ one more than the voices on Gen2), so the skin can draw
+# a Gen2 voice's own coloured controls: `when=` takes one condition, and sNN_src is the same on both builds. Appended last.
+vg = []
+for sl in range(1, 17):
+    params.append({"key": "s%02d_vg" % sl, "name": "Slot %d voice and build" % sl,
+                   "options": ["v%d" % i for i in range(2 * (len(SRC) + 1))], "default": DEFAULT_FLAT[sl - 1]})
+    vg.append("s%02d_vg" % sl)
+sections.append({"label": "Skin", "keys": vg})
+
+# User presets (trkit.cpp): the PRESET menu (the `preset` parameter is vst.json's programs list: 23 factory presets, then 32 user ones), SAVE PRESET /
+# DELETE PRESET, and the drawn naming keyboard (kb_open = 1 shows it; its keys are momentary). Appended last, in this order.
+KB_CHARS = "1234567890QWERTYUIOPASDFGHJKL-ZXCVBNM"
+def kb_key(c): return "kb_" + ("dash" if c == "-" else c.lower())
+pr = []
+params.append({"key": "preset", "name": "Preset", "min": 0, "max": 54, "default": 0, "display": "int", "nudge_gain": 1, "refresh_display": True})
+params.append({"key": "pr_save", "name": "Save Preset", "momentary": True, "refresh_display": True}); pr.append("pr_save")
+params.append({"key": "pr_del", "name": "Delete Preset", "momentary": True, "refresh_display": True}); pr.append("pr_del")
+params.append({"key": "pr_name", "name": "Preset Name", "min": 0, "max": 1, "default": 0, "display": "string", "poll": True}); pr.append("pr_name")
+params.append({"key": "kb_name", "name": "Typed Name", "min": 0, "max": 1, "default": 0, "display": "string", "poll": True}); pr.append("kb_name")
+params.append({"key": "kb_open", "name": "Keyboard", "options": ["CLOSED", "OPEN"], "default": 0, "refresh_display": True}); pr.append("kb_open")
+for c in KB_CHARS:
+    params.append({"key": kb_key(c), "name": "Key " + c, "momentary": True}); pr.append(kb_key(c))
+for k, n in (("space", "Space"), ("bksp", "Delete"), ("shift", "Shift"), ("cancel", "Cancel"), ("save", "Save")):
+    params.append({"key": "kb_" + k, "name": "Key " + n, "momentary": True, **({"refresh_display": True} if k in ("cancel", "save") else {})})
+    pr.append("kb_" + k)
+sections.append({"label": "Presets", "keys": pr})
 
 for p in params:   # the jog wheel: a click moves a knob three steps (wrapper "nudge_gain", mpc-vst-plugins)
-    if "options" not in p and not p.get("momentary") and "min" in p and "max" in p:
+    if "options" not in p and not p.get("momentary") and "min" in p and "max" in p and "nudge_gain" not in p:
         p["nudge_gain"] = 3
 
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ports", "trkit", "params.json")

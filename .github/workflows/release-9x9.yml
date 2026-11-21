@@ -16,13 +16,13 @@ on:
 
 jobs:
   tr_9x9:
-    uses: open-mpc/mpc-vst-plugins/.github/workflows/vst-release.yml@606d78b9a675b7fb83c9b648ec163b06cb106c3b
+    uses: open-mpc/mpc-vst-plugins/.github/workflows/vst-release.yml@122ac4eece1de334ab452725751adbe9b01d0359
     permissions:
       contents: write
     with:
       tag: 9x9-vst-v${{ inputs.version }}
       version: ${{ inputs.version }}
-      tools_ref: 606d78b9a675b7fb83c9b648ec163b06cb106c3b
+      tools_ref: 122ac4eece1de334ab452725751adbe9b01d0359
       vst_dir: ports/9x9
       build: SHADOW_SKIN_MPC_OS=2 bash tools/build_ci.sh 9x9
       host_test: bash tools/test_ci.sh 9x9
@@ -32,4 +32,5 @@ jobs:
       gen2_only: true
       extra: ports/9w9/src/samples:engine/samples ports/9x9/roms/README.txt:engine/roms/README.txt
       user_data: engine/roms
+      requires: Your own copies of the three 909 hat, crash and ride ROMs (optional; without them 9W9 samples play)
       dry_run: ${{ inputs.dry_run }}

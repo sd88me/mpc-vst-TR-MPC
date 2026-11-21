@@ -1,0 +1,52 @@
+{
+  "name": "9X9",
+  "vendor": "sd88me",
+  "uid": "T9X9",
+  "version": 1001,
+  "so": "tr9x9.so",
+  "targets": [
+    "aarch64"
+  ],
+  "art": "html",
+  "build": {
+    "root": "../..",
+    "sources": [
+      "ports/9w9/src/dsp/er99_plugin.c",
+      "ports/9w9/src/dsp/er99_engine.c",
+      "ports/9w9/src/dsp/l909_board.cpp",
+      "ports/9w9/src/mpc_pads_engine.c",
+      "ports/9w9/src/vendor/lemus/tr909/core/circuit.cpp",
+      "ports/9w9/src/vendor/lemus/tr909/core/voiceboard.cpp",
+      "ports/9w9/src/vendor/lemus/tr909/core/noise.cpp",
+      "ports/9w9/src/vendor/lemus/tr909/core/hihat.cpp",
+      "ports/9w9/src/vendor/lemus/tr909/core/cymbals.cpp",
+      "ports/9w9/src/vendor/lemus/tr909/core/oversampler.cpp",
+      "ports/9w9/src/vendor/lemus/tr909/core/parallel.cpp"
+    ],
+    "cflags": [
+      "-Iports/common",
+      "-Iports/9w9/src",
+      "-Iports/9w9/src/dsp",
+      "-Iports/9w9/src/host",
+      "-Iports/9w9/src/vendor/lemus",
+      "-Iports/9w9/src/vendor/lemus/generated",
+      "-std=gnu++17",
+      "-O3",
+      "-DER99_ENGINE_LEMUS=1",
+      "-DLEMUS_TOL=1e-3",
+      "-DLEMUS_LINTOL=1e-3",
+      "-DLEMUS_FACTOR=1",
+      "-DLEMUS_BEH_VCO=1"
+    ],
+    "libs": [
+      "-lm"
+    ]
+  },
+  "defines": {
+    "MODULE_SUBDIR": "\"engine\"",
+    "HAS_TRANSPORT": 1,
+    "HAS_LFO_BPM": 1
+  },
+  "layout": "layout.conf",
+  "params": "module.mpc.json"
+}

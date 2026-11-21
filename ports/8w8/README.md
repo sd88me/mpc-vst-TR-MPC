@@ -1,6 +1,8 @@
-﻿# 8W8 for MPC / Force
+# 8W8 for MPC / Force
 
 MPC OS VST plugin port of [8W8](https://github.com/athousanddetails/schwung-8W8) by athousanddetails (TR-808 style drum machine). Manufacturer: athousanddetails. GPL-3.0, see `LICENSE` and `THIRD_PARTY.md` (if present) and `VENDORED.md`. The DSP is the upstream's, unmodified; this folder adds the MPC wrapper settings (`vst.json`), the skin (`layout.conf`) and a MIDI pad-note remap (`src/mpc_pads_engine.c`).
+
+**808 voices modelled by hand from original schematics and knowledge bases for low CPU; runs on every MPC.** For a Gen2 MPC there is also **8X8** (`ports/8x8`), the same panel with the voices solved as circuits by Lemus: higher quality and CPU heavy.
 
 - **Voices:** 16 voices (pads 1-16). Pad n plays voice n in the drum layout (MIDI notes 0-15 from the drum-pad layout, or 36 and up from the keyboard layout).
 - **Skin:** a header with the plugin name, then voice panels (two columns of knobs per voice), four panels per page.

@@ -4,7 +4,10 @@
   "uid": "TRMP",
   "version": 1000,
   "so": "trmpc.so",
-  "targets": ["armv7", "aarch64"],
+  "targets": [
+    "armv7",
+    "aarch64"
+  ],
   "params": "params.json",
   "build": {
     "root": "..",
@@ -13,7 +16,24 @@
       "trkit/engines/6w6/sd606_engine.cpp",
       "trkit/engines/8w8/sc808_engine.cpp",
       "trkit/engines/cw78/cr78_engine.cpp",
-      "trkit/engines/9w9/er99_engine.c"
+      "trkit/engines/9w9/er99_engine.c",
+      "trkit/src/lemus/l808_board.cpp",
+      "trkit/src/lemus/l909_board.cpp",
+      "trkit/src/lemus/tr808_circuit.cpp",
+      "trkit/src/lemus/tr808_factory.cpp",
+      "trkit/src/lemus/tr808_machine.cpp",
+      "trkit/src/lemus/tr808_oversampler.cpp",
+      "trkit/src/lemus/tr808_parallel.cpp",
+      "trkit/src/lemus/tr808_trimmers.cpp",
+      "trkit/src/lemus/tr808_ucom43.cpp",
+      "trkit/src/lemus/tr808_voiceboard.cpp",
+      "trkit/src/lemus/tr909_circuit.cpp",
+      "trkit/src/lemus/tr909_cymbals.cpp",
+      "trkit/src/lemus/tr909_hihat.cpp",
+      "trkit/src/lemus/tr909_noise.cpp",
+      "trkit/src/lemus/tr909_oversampler.cpp",
+      "trkit/src/lemus/tr909_parallel.cpp",
+      "trkit/src/lemus/tr909_voiceboard.cpp"
     ],
     "cflags": [
       "-Itrkit/src",
@@ -22,11 +42,28 @@
       "-Itrkit/engines/8w8",
       "-Itrkit/engines/cw78",
       "-Itrkit/engines/9w9",
+      "-Icommon",
+      "-I8w8/src/vendor/lemus",
+      "-I8w8/src/vendor/lemus/generated",
+      "-I9w9/src/vendor/lemus",
+      "-I9w9/src/vendor/lemus/generated",
       "-std=gnu++14",
       "-O3"
     ],
     "libs": [
       "-lm"
+    ],
+    "cflags_aarch64": [
+      "-std=gnu++17",
+      "-DTRKIT_LEMUS=1",
+      "-DSC808_ENGINE_LEMUS=1",
+      "-DER99_ENGINE_LEMUS=1",
+      "-DLEMUS_TOL=1e-3",
+      "-DLEMUS_LINTOL=1e-3",
+      "-DLEMUS_GROUP_OVER=1",
+      "-DLEMUS_FACTOR=1",
+      "-DLEMUS_BEH_VCO=1",
+      "-DLEMUS_LAZY_BOARD=1"
     ]
   },
   "defines": {
@@ -34,5 +71,8 @@
     "HAS_LFO_BPM": 1
   },
   "layout": "layout.conf",
-  "art": "html"
+  "art": "html",
+  "programs": {
+    "param": "preset"
+  }
 }

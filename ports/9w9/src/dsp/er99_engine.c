@@ -20,6 +20,98 @@ const char *const er99_trigger_names[ER99_NUM_TRIGGERS] = {
     "bd", "sd", "lt", "mt", "ht", "rs", "hc", "ohh", "chh", "rc", "cr"
 };
 
+#if ER99_ENGINE_LEMUS
+/* ---- 9X9: Lemus's TR-909 voicing board ------------------------------------------------------
+ *
+ * The board's panel pots (Lemus Controls), in l909_controls_t's order. Each 9W9 pot maps to a
+ * rotation with its default at noon, Lemus's default, so a fresh 9X9 is a stock 909 and a
+ * project's settings keep their sense either side of it. 9W9's knobs no 909 has (BD P.Depth and
+ * Pitch, the toms' Attack, RS and HC Tune, ...) do nothing on these voices yet. */
+static const char *const g_lem_keys[ER99_LEMUS_KNOBS] = {
+    "bd_c_tune", "bd_c_attack", "bd_c_decay", "sd_c_tune", "sd_c_noise_decay", "sd_c_snappy",
+    "lt_c_tune", "lt_c_decay", "mt_c_tune", "mt_c_decay", "ht_c_tune", "ht_c_decay",
+    "chh_decay", "ohh_decay", "cr_pitch", "rc_pitch",
+};
+typedef char er99_lem_knobs_fit[sizeof(l909_controls_t) == ER99_LEMUS_KNOBS * sizeof(float) ? 1 : -1];
+/* each er99 trigger's board voice, and the ROM it needs (-1: none) */
+static const signed char g_lem_voice[ER99_NUM_TRIGGERS] = {0, 1, 2, 3, 4, 5, 6, L909_OH, 7, 9, 8};
+static const signed char g_lem_rom[ER99_NUM_TRIGGERS]   = {-1, -1, -1, -1, -1, -1, -1, 0, 0, 2, 1};
+/* each lane's ROM (-1: none) */
+static const signed char g_lem_lane_rom[L909_LANES] = {-1, -1, -1, -1, -1, -1, -1, 0, 1, 2};
+
+/* Each lane's jack (volts / 10) into unit peak for 9W9's shapers (1 / its peak at velocity 127;
+ * the HH lane: the open and closed hats' mean), and one gain for the whole board, the geometric
+ * mean of the voices' gains to 9W9's peaks (+7.5 dB): the 909's own balance at 9W9's loudness, as
+ * 8X8 keeps the 808's. Against 9W9 the BD sits 4.6 dB lower, RS 7.3, SD 1.6; CH 7.0 higher, CR
+ * 3.9, OH 3.1. Measured by src/tools/l909_levels.c (built both ways). */
+static const float kLemTrim[L909_LANES] = {1.926f, 1.561f, 2.001f, 1.924f, 1.942f, 3.310f, 1.334f, 1.684f, 1.903f, 3.766f};
+static const float kLemGain = 2.370f;
+
+/* The 909's MIDI velocity to its accent DAC code (Lemus docs/firmware.md, "Accent codes": the
+ * firmware's table 1F80 at the velocities it lists, between them straight lines; the hats and
+ * cymbals' table 1FC0 is about v / 2). */
+static int lem_code(int v, const int metal)
+{
+    if(v < 1) v = 1;
+    if(v > 127) v = 127;
+    if(metal) return v / 2 < 1 ? 1 : v / 2;
+    static const unsigned char vx[6] = {1, 32, 64, 84, 100, 127}, cy[6] = {2, 6, 14, 24, 37, 63};
+    for(int i = 0; i < 5; ++i)
+        if(v <= vx[i + 1])
+            return cy[i] + (int)((float)(cy[i + 1] - cy[i]) * (float)(v - vx[i]) / (float)(vx[i + 1] - vx[i]) + 0.5f);
+    return 63;
+}
+static int pot_index(const char *key);
+
+/* A trigger's 9W9 voice controls that shape the board's lane: Drive, Distortion, Level. */
+static void lem_voice_fields(er99_engine_t *e, const int t, float **drive, float **dist, float **level)
+{
+    if(t <= ER99_HT) { er99_bt_t *b = &e->bt[t]; *drive = &b->drive; *dist = &b->dist_type; *level = &b->level; return; }
+    if(t == ER99_RS) { *drive = &e->rim909.drive; *dist = &e->rim909.dist_type; *level = &e->rim909.level; return; }
+    if(t == ER99_HC) { *drive = &e->clap909.drive; *dist = &e->clap909.dist_type; *level = &e->clap909.level; return; }
+    er99_sampler_t *s = &e->sampler[t == ER99_OHH ? ER99_SAMP_OHH : t == ER99_CHH ? ER99_SAMP_CHH
+                                    : t == ER99_RC ? ER99_SAMP_RC : ER99_SAMP_CR];
+    *drive = &s->drive; *dist = &s->dist_type; *level = &s->volume;
+}
+
+/* 9X9's extras: 9W9 controls a 909 doesn't have, built on the board's voices (the skin marks them). At its default each
+ * leaves the 909 as it is.
+ *   BD P.Depth (bd_c_sweep_depth): ENV3's share of the kick VCO's control voltage, 1x..4x (the sweep's depth);
+ *   BD Pitch (bd_c_pitch_mod): the whole control voltage, 0.43x..4.7x (both on the behavioural VCO: behave.h KickVco);
+ *   LT/MT/HT Attack: above its default, a transient on the jack's first few ms (as 8X8's BD and MA Attack);
+ *   HC, RD and CR Decay: below its default, an envelope shortens the tail (a 909 lets them ring their full length);
+ *   CH and OH Tune: the hi-hat ROM's clock, 0.5x..2x, set as each hat starts (they share one).
+ * RS and HC Tune need parts changed in their circuits: not yet. */
+enum { LX_SWEEP, LX_PITCH, LX_LTATK, LX_MTATK, LX_HTATK, LX_HCDEC, LX_RCDEC, LX_CRDEC, LX_CHP, LX_OHP, LX_N };
+static const char *const g_lx_keys[LX_N] = {
+    "bd_c_sweep_depth", "bd_c_pitch_mod", "lt_c_attack", "mt_c_attack", "ht_c_attack",
+    "hc_decay", "rc_decay", "cr_decay", "chh_pitch", "ohh_pitch",
+};
+int er99_engine_get_raw(const er99_engine_t *e, const char *key, float *out);
+static float lx(const er99_engine_t *e, const int i)
+{
+    float v = 0.0f;
+    er99_engine_get_raw(e, g_lx_keys[i], &v);
+    return v;
+}
+
+/* A pot as a rotation: its default at noon, straight lines to either end. */
+static l909_controls_t lem_controls(const er99_engine_t *e)
+{
+    float r[ER99_LEMUS_KNOBS];
+    for(int k = 0; k < ER99_LEMUS_KNOBS; ++k)
+    {
+        const int i = pot_index(g_lem_keys[k]);
+        const float p = i >= 0 ? (float)e->pots[i] : 64.0f, d = (float)e->lpot_def[k];
+        r[k] = (d <= 0.0f || d >= 127.0f) ? p / 127.0f
+             : p <= d ? 0.5f * p / d : 0.5f + 0.5f * (p - d) / (127.0f - d);
+    }
+    l909_controls_t c;
+    memcpy(&c, r, sizeof c);
+    return c;
+}
+#endif
+
 static inline float ms_to_samples(const float _ms, const float _sr)
 {
     return _ms * 0.001f * _sr;
@@ -285,10 +377,54 @@ void er99_engine_init(er99_engine_t *e, const float _sr, const char *_module_dir
 
     /* Derive initial pot positions from the defaults above. */
     er99_engine_seed_pots(e);
+
+#if ER99_ENGINE_LEMUS
+    {
+        for(int k = 0; k < ER99_LEMUS_KNOBS; ++k)
+        {
+            const int i = pot_index(g_lem_keys[k]);
+            e->lpot_def[k] = i >= 0 ? e->pots[i] : 64;
+        }
+        for(int t = 0; t < ER99_NUM_TRIGGERS; ++t)
+        {
+            float *drive, *dist, *level;
+            lem_voice_fields(e, t, &drive, &dist, &level);
+            e->ldef_drive[t] = *drive;
+            e->ldef_level[t] = *level;
+        }
+        for(int l = 0; l < L909_LANES; ++l) e->lgain[l] = e->master.accent;
+        for(int i = 0; i < LX_N; ++i) e->lx_def[i] = lx(e, i);
+        /* 2 blocks (5.8 ms): inside MPC (Live III, 2026-11-18) MPC's audio threads preempt the render
+         * thread on the fast cores; at 1 block a busy pattern missed ~10 blocks in 5 s */
+        e->latency = 2;
+        if(getenv("L909_LATENCY")) e->latency = atoi(getenv("L909_LATENCY"));   /* tools: bench at 0 */
+        e->lknobs = lem_controls(e);
+        if(_module_dir) snprintf(e->lem_roms, sizeof e->lem_roms, "%s/roms", _module_dir);
+#if !LEMUS_LAZY_BOARD
+        er99_engine_lemus_build(e);   /* 9X9: now; TR-MPC builds it once a slot plays a 909 voice */
+#endif
+    }
+#endif
 }
+
+#if ER99_ENGINE_LEMUS
+/* Builds the board from the panel as it is (not on the audio thread: about a second, and threads). Once. The
+ * audio thread leaves lknobs alone until it has the board (lem_render). */
+void er99_engine_lemus_build(er99_engine_t *e)
+{
+    if(__atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE)) return;
+    l909_t *b = l909_create(e->sample_rate, e->lem_roms[0] ? e->lem_roms : NULL, &e->lknobs);
+    __atomic_store_n(&e->lem_built, b, __ATOMIC_RELEASE);
+}
+int er99_engine_lemus_ready(const er99_engine_t *e) { return __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE) != NULL; }
+#endif
 
 void er99_engine_free(er99_engine_t *e)
 {
+#if ER99_ENGINE_LEMUS
+    l909_destroy(e->lem_built);   /* the builder has returned: er99_engine_lemus_build's caller joins it first */
+    e->lem = e->lem_built = NULL;
+#endif
     for(int i=0; i<ER99_NUM_SAMPLERS; ++i)
     {
         free(e->sample_data[i]);        /* NULL for the closed hat: borrowed */
@@ -328,6 +464,35 @@ void er99_engine_trigger(er99_engine_t *e, const er99_trigger_t _which, const in
                       * (1.0f - e->master.vel_depth
                                 * (1.0f - (float)vi * (1.0f/127.0f)));
     const float sr = e->sample_rate;
+
+#if ER99_ENGINE_LEMUS
+    if(!e->lem)
+        e->lem = __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE);
+    if(!e->lem) return;   /* not built yet (TR-MPC, its first second): the hit is dropped */
+    {
+        /* The board's hit: velocity (scaled by Velocity) is the 909's accent code; Accent's gain
+         * comes back with the block the hit sounds in. A voice without its ROM is 9W9's own,
+         * held back by the latency so it stays in time with the board. */
+        const int rom = g_lem_rom[_which];
+        if(rom < 0 || l909_rom_ok(e->lem, rom))
+        {
+            const int v = 127 - (int)(e->master.vel_depth * (float)(127 - vi) + 0.5f);
+            l909_trigger(e->lem, g_lem_voice[_which], lem_code(v, rom >= 0), e->master.accent);
+            return;
+        }
+        if(!e->lfb_now && l909_latency(e->lem) > 0)
+        {
+            if(e->nlfb < (int)(sizeof(e->lfb) / sizeof(e->lfb[0])))
+            {
+                e->lfb[e->nlfb].which = (signed char)_which;
+                e->lfb[e->nlfb].vel = (unsigned char)vi;
+                e->lfb[e->nlfb].blocks = (unsigned char)l909_latency(e->lem);
+                e->nlfb++;
+            }
+            return;
+        }
+    }
+#endif
 
     switch(_which)
     {
@@ -619,8 +784,34 @@ static float master_glue(er99_master_t *m, const float _in, const float _sr)
     return _in * powf(10.0f, (m->comp_env_db + makeup) / 20.0f);
 }
 
+/* The bus after the voices: FX returns join it before the master stages, so master distortion
+ * and the Comp work on the wet signal too. */
+static inline float bus_out(er99_engine_t *e, float mix, const float rbus, const float dbus)
+{
+    mix += er99_verb_tick(&e->verb, rbus);
+    mix += er99_dly_tick(&e->dly, dbus, e->sample_rate);
+
+    if(e->master.dist_mode >= 0.5f)
+        mix = er99_shape_st(mix * e->master.drive, e->master.drive,
+                         e->master.dist_mode - 1.0f, e->master.crush_st) * 0.7f;
+    if(e->master.comp > 0.001f)
+        mix = master_glue(&e->master, mix, e->sample_rate);
+    return mix * e->master.volume;
+}
+
+#if ER99_ENGINE_LEMUS
+static void lem_render(er99_engine_t *e, float *out, int frames);
+#endif
+
 void er99_engine_render(er99_engine_t *e, float *out, const int frames)
 {
+#if ER99_ENGINE_LEMUS
+    if(!e->lem)
+        e->lem = __atomic_load_n(&e->lem_built, __ATOMIC_ACQUIRE);
+    if(e->lem) lem_render(e, out, frames);
+    else memset(out, 0, sizeof(float) * (size_t)frames);   /* TR-MPC: no board yet */
+    return;
+#endif
     for(int n=0; n<frames; ++n)
     {
         const float noise = wa_noise_tick(&e->noise);
@@ -656,19 +847,162 @@ void er99_engine_render(er99_engine_t *e, float *out, const int frames)
             }
         }
 
-        /* FX returns join the bus before the master stages, so master
-         * distortion and the Comp work on the wet signal too. */
-        mix += er99_verb_tick(&e->verb, rbus);
-        mix += er99_dly_tick(&e->dly, dbus, e->sample_rate);
-
-        if(e->master.dist_mode >= 0.5f)
-            mix = er99_shape_st(mix * e->master.drive, e->master.drive,
-                             e->master.dist_mode - 1.0f, e->master.crush_st) * 0.7f;
-        if(e->master.comp > 0.001f)
-            mix = master_glue(&e->master, mix, e->sample_rate);
-        out[n] = mix * e->master.volume;
+        out[n] = bus_out(e, mix, rbus, dbus);
     }
 }
+
+#if ER99_ENGINE_LEMUS
+/* One lane after the board: 9W9's Drive and Distortion only above the voice's default Drive (at
+ * its default the board's own sound passes untouched; the shaping fades in over the first quarter
+ * of the rest of the pot), then Level and Accent against their defaults. */
+static inline float lem_post(er99_engine_t *e, const int lane, const int t, const float y)
+{
+    float *drive, *dist, *level;
+    lem_voice_fields(e, t, &drive, &dist, &level);
+    const float d0 = e->ldef_drive[t];
+    float v = y;
+    if(*drive > d0 * 1.0001f && d0 < 12.0f)
+    {
+        const float a = (*drive - d0) / (12.0f - d0);
+        const float m = a * 4.0f > 1.0f ? 1.0f : a * 4.0f;
+        const float tr = kLemTrim[lane];
+        const float sh = er99_shape_st(y * tr, 1.0f + 11.0f * a, *dist, e->lcrush[lane]) / tr;
+        v = y + m * (sh - y);
+    }
+    const float l0 = e->ldef_level[t];
+    return v * kLemGain * (l0 > 0.0f ? *level / l0 : *level) * (e->lgain[lane] * 0.5f);
+}
+
+static void lem_render(er99_engine_t *e, float *out, const int frames)
+{
+    const l909_controls_t k = lem_controls(e);
+    if(memcmp(&k, &e->lknobs, sizeof k))
+    {
+        e->lknobs = k;
+        l909_set_controls(e->lem, &k);
+    }
+    l909_set_latency(e->lem, e->latency);
+    /* the extras (see g_lx_keys) */
+    {
+        l909_mods_t m;
+        m.bd_pitch = e->lx_def[LX_PITCH] > 0.0f ? lx(e, LX_PITCH) / e->lx_def[LX_PITCH] : 1.0f;
+        m.bd_depth = 1.0f + 3.0f * (lx(e, LX_SWEEP) - e->lx_def[LX_SWEEP]);
+        if(m.bd_depth < 0.0f) m.bd_depth = 0.0f;
+        /* the hats: 9W9's 0.25x..4x pot as 0.5x..2x of the ROM's clock (the square root): up, the ROM's content moves
+         * into the hat circuit's own filters and the hat gets thinner and quieter, as a clock mod on a 909 does */
+        m.ch_tune = e->lx_def[LX_CHP] > 0.0f ? sqrtf(lx(e, LX_CHP) / e->lx_def[LX_CHP]) : 1.0f;
+        m.oh_tune = e->lx_def[LX_OHP] > 0.0f ? sqrtf(lx(e, LX_OHP) / e->lx_def[LX_OHP]) : 1.0f;
+        l909_set_mods(e->lem, &m);
+    }
+    float atk[L909_LANES] = {0}, dec[L909_LANES];
+    for(int l = 0; l < L909_LANES; ++l) dec[l] = 1.0f;
+    for(int t = 0; t < 3; ++t)   /* LT MT HT Attack: the part above its default, 0..1 */
+    {
+        const float d = e->lx_def[LX_LTATK + t], v = lx(e, LX_LTATK + t);
+        atk[2 + t] = v > d && d < 1.0f ? (v - d) / (1.0f - d) : 0.0f;
+    }
+    {   /* HC, RD, CR Decay: below the default, a tail with time constant (ms / 6.9) / (1 - ms/default), so it reaches
+         * the 909's full length (no envelope) at the default */
+        static const int lane[3] = {6, 9, 8}, key[3] = {LX_HCDEC, LX_RCDEC, LX_CRDEC};
+        for(int i = 0; i < 3; ++i)
+        {
+            const float d = e->lx_def[key[i]], v = lx(e, key[i]), r = d > 0.0f ? v / d : 1.0f;
+            if(r < 0.999f)
+                dec[lane[i]] = expf(-1.0f / ((v * 0.001f / 6.9f) / (1.0f - r) * e->sample_rate));
+        }
+    }
+    const float atk_fall = 1.0f - 1.0f / (0.003f * e->sample_rate);
+    /* Missed blocks (the render-ahead thread late): one stderr line (MPC's journal) at most every
+     * 5 s, and only when the count rose. */
+    {
+        const long u = l909_underruns(e->lem);
+        e->lunder_blocks += frames;
+        if(u != e->lunder_seen && e->lunder_blocks >= (long)(5.0f * e->sample_rate))
+        {
+            fprintf(stderr, "9X9: %ld block(s) not rendered in time (%ld in all), latency %d\n",
+                    u - e->lunder_seen, u, e->latency);
+            e->lunder_seen = u;
+            e->lunder_blocks = 0;
+        }
+    }
+    static const int strig[ER99_NUM_SAMPLERS] = { ER99_OHH, ER99_RC, ER99_CR, ER99_CHH };
+    static const signed char srom[ER99_NUM_SAMPLERS] = { 0, 2, 1, 0 };
+    int standin[ER99_NUM_SAMPLERS], any_standin = 0;
+    for(int i = 0; i < ER99_NUM_SAMPLERS; ++i)
+        any_standin |= standin[i] = !l909_rom_ok(e->lem, srom[i]);
+    int lane_on[L909_LANES];
+    for(int l = 0; l < L909_LANES; ++l)
+        lane_on[l] = g_lem_lane_rom[l] < 0 || l909_rom_ok(e->lem, g_lem_lane_rom[l]);
+
+    for(int base = 0; base < frames; base += L909_BLOCK)
+    {
+        const int n = frames - base < L909_BLOCK ? frames - base : L909_BLOCK;
+        /* stand-ins whose wait is over */
+        for(int i = 0; i < e->nlfb; )
+        {
+            /* queued with the latency (L blocks) before render k, the board's hit plays in render
+             * k + L's block: count L renders down, fire at the next */
+            if(e->lfb[i].blocks > 0) { e->lfb[i].blocks--; ++i; continue; }
+            const int which = e->lfb[i].which, vel = e->lfb[i].vel;
+            e->lfb[i] = e->lfb[--e->nlfb];
+            e->lfb_now = 1;
+            er99_engine_trigger(e, (er99_trigger_t)which, vel);
+            e->lfb_now = 0;
+        }
+        float *lanes[L909_LANES];
+        int hv[L909_LANES];
+        float tg[L909_LANES];
+        for(int l = 0; l < L909_LANES; ++l) lanes[l] = e->lbuf[l];
+        l909_render(e->lem, n, lanes, hv, tg);
+        for(int l = 0; l < L909_LANES; ++l)
+            if(hv[l] >= 0)
+            {
+                e->lgain[l] = tg[l];
+                if(l == 7) e->lhat_open = hv[l] == L909_OH;
+                e->latk_env[l] = 1.0f;   /* the extras' transient and tail start with the hit */
+                e->ldec_env[l] = 1.0f;
+            }
+        const int ltrig[L909_LANES] = { ER99_BD, ER99_SD, ER99_LT, ER99_MT, ER99_HT, ER99_RS, ER99_HC,
+                                        e->lhat_open ? ER99_OHH : ER99_CHH, ER99_CR, ER99_RC };
+        for(int i = 0; i < n; ++i)
+        {
+            float mix = 0.0f, rbus = 0.0f, dbus = 0.0f;
+            for(int l = 0; l < L909_LANES; ++l)
+            {
+                if(!lane_on[l]) continue;
+                /* the jack's DC (its op-amps' offsets) out: a 1 Hz high-pass */
+                const float x = e->lbuf[l][i];
+                float y = x - e->ldc_x[l] + 0.99986f * e->ldc_y[l];
+                e->ldc_x[l] = x;
+                e->ldc_y[l] = y;
+                if(atk[l] > 0.0f)   /* extras: Attack's transient (the jack high-passed, under a 3 ms envelope) */
+                {
+                    const float hp = y - e->latk_hp[l];
+                    e->latk_hp[l] += 0.12f * hp;
+                    y += 3.0f * atk[l] * hp * e->latk_env[l];
+                    e->latk_env[l] *= atk_fall;
+                }
+                if(dec[l] < 1.0f)   /* extras: Decay's shorter tail */
+                {
+                    y *= e->ldec_env[l];
+                    e->ldec_env[l] *= dec[l];
+                }
+                const int t = ltrig[l];
+                const float v = lem_post(e, l, t, y);
+                mix += v; rbus += v * e->send_rev[t]; dbus += v * e->send_dly[t];
+            }
+            if(any_standin)
+                for(int s = 0; s < ER99_NUM_SAMPLERS; ++s)
+                {
+                    if(!standin[s]) continue;
+                    const float v = render_sampler(&e->sampler[s]);
+                    mix += v; rbus += v * e->send_rev[strig[s]]; dbus += v * e->send_dly[strig[s]];
+                }
+            out[base + i] = bus_out(e, mix, rbus, dbus);
+        }
+    }
+}
+#endif
 
 /* ===================================================================== */
 /* Parameters                                                             */
@@ -695,7 +1029,7 @@ static const char *const g_other_state_keys[] = {
     "chh_decay", "chh_volume", "chh_pitch", "chh_drive",
     "rc_decay", "rc_volume", "rc_pitch",
     "cr_decay", "cr_volume", "cr_pitch",
-    "volume", "accent", "vel_depth", "master_dist", "master_comp", "dly_time",
+    "volume", "accent", "vel_depth", "master_dist", "master_comp", "dly_time", "latency",
     "rs_dist_type", "hc_dist_type", "ohh_dist_type", "chh_dist_type",
     "rc_dist_type", "cr_dist_type",
 };
@@ -821,6 +1155,9 @@ int er99_engine_set_raw(er99_engine_t *e, const char *key, const float value)
 
     if(!strcmp(key, "master_drive")) { e->master.drive = value; return 1; }
     if(!strcmp(key, "master_dist"))  { e->master.dist_mode = value < 0 ? 0 : (value > 7 ? 7 : value); return 1; }
+#if ER99_ENGINE_LEMUS
+    if(!strcmp(key, "latency"))      { e->latency = value < 0 ? 0 : (value > L909_MAX_LATENCY ? L909_MAX_LATENCY : (int)(value + 0.5f)); return 1; }
+#endif
     if(!strcmp(key, "master_comp")) { e->master.comp = value < 0.0f ? 0.0f : (value > 1.0f ? 1.0f : value); return 1; }
     if(!strcmp(key, "volume")) { e->master.volume = value; return 1; }
     if(!strcmp(key, "accent")) { e->master.accent = value; return 1; }
@@ -902,6 +1239,9 @@ int er99_engine_get_raw(const er99_engine_t *e, const char *key, float *out)
     }
     if(!strcmp(key, "master_drive")) { *out = e->master.drive; return 1; }
     if(!strcmp(key, "master_dist"))  { *out = e->master.dist_mode; return 1; }
+#if ER99_ENGINE_LEMUS
+    if(!strcmp(key, "latency"))      { *out = (float)e->latency; return 1; }
+#endif
     if(!strcmp(key, "master_comp")) { *out = e->master.comp; return 1; }
     if(!strcmp(key, "volume"))    { *out = e->master.volume; return 1; }
     if(!strcmp(key, "accent"))    { *out = e->master.accent; return 1; }
@@ -915,6 +1255,7 @@ static int is_enum_key(const char *key)
 {
     if(!strcmp(key, "master_dist")) return 1;
     if(!strcmp(key, "dly_time")) return 1;     /* note division picker */
+    if(!strcmp(key, "latency")) return 1;      /* render-ahead blocks, 0..3 */
     const size_t n = strlen(key);
     return n > 10 && !strcmp(key + n - 10, "_dist_type");
 }
@@ -1022,6 +1363,8 @@ void er99_engine_seed_pots(er99_engine_t *e)
             e->pots[i] = (unsigned char)er99_value_to_pot(&g_er99_pots[i], v);
     }
 }
+
+int er99_engine_key_is_enum(const char *key) { return is_enum_key(key); }
 
 int er99_engine_set_param(er99_engine_t *e, const char *key, const float pot)
 {
