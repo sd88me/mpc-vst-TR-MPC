@@ -45,5 +45,26 @@
   "firmware": "MPC OS 3.10",
   "date": "2026-11-02",
   "note": "TR-MPC and Tap FX: slot modules in the kits' looks, VOICES Q-Link page."
+ },
+ {
+  "version": "1.0.1",
+  "device": "MPC Live III",
+  "firmware": "MPC OS 3.10.1",
+  "date": "2026-11-21",
+  "note": "8X8: loads from the release zip, plays 16 simultaneous voices, panel and FX/MASTER (Latency) draw correctly."
+ },
+ {
+  "version": "1.0.1",
+  "device": "MPC Live III",
+  "firmware": "MPC OS 3.10.1",
+  "date": "2026-11-21",
+  "note": "9X9: loads with the user's own 909 ROMs, plays 16 simultaneous voices (one late block at Latency 2 under that worst case), panel draws correctly."
+ },
+ {
+  "version": "1.3.0",
+  "device": "MPC Live III",
+  "firmware": "MPC OS 3.10.1",
+  "date": "2026-11-21",
+  "note": "TR-MPC: loads with the Gen2 8X8/9X9 panels, factory presets F01/F03/F07 apply, user preset save and delete work (kept in engine/user)."
  }
 ]
